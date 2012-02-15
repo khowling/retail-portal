@@ -1,6 +1,6 @@
 var express = require('express');
 var app = express.createServer();
-var port = 3000;
+var port = process.env.PORT || 3000;
 
 var lastRequestId = 0;
 var connectionTimeout = 60;
