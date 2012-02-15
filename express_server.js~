@@ -1,0 +1,25 @@
+
+var express = require('express').createServer();
+var port = 3000;
+
+/*
+console.log ('dir : ' + __dirname);
+app.use(express.static(__dirname + '/public'));
+
+
+app.get('/user/:id', function(req,res) {
+		console.log ('get');
+		res.send ('user' + req.params.id, 200);
+		res.end();
+});
+app.post('/', function(req,res) {
+		console.log ('POST');
+		res.send('post\n',200);
+		res.end();
+})
+
+		
+app.listen(port);
+console.log ('Server started on port ' + port);
+
+*/

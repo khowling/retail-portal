@@ -1,0 +1,28 @@
+
+var connect = require ('connect')
+var io = require('socket.io')
+
+
+server = connect(
+    connect.logger(),
+    connect.static(__dirname + '/public', { maxAge: 0 }),
+    connect.router (function (app) {
+
+	app.get('/user/:id', function (req, res, next) {
+	  res.writeHead (200, {'Content-Type' : 'text/plain'});
+	  res.write ("You Hit a routed URL : " + req.params.id);
+	  res.end ("end me");
+		
+	});
+      })
+)
+
+var lio = io.listen(server)
+server.listen(3000);
+
+lio.sockets.on ('connection', function (socket) {
+	 socket.emit('news', { hello: 'world' });
+  socket.on('my other event', function (data) {
+    console.log(data);
+  });
+});
