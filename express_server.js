@@ -289,8 +289,10 @@ app.get('/longpoll/:lasteventprocessed', function (req, res, next) {
 	} else {
 			console.log ('longpoll: got event to send to user');
 			event['my_points'] = users_collection[user].points;
-			res.send(JSON.stringify(event));
-			console.log ('longpoll sent :' + event.index);
+			setTimeout (function() {  // ADD A 1 SECOND DELAY - JUST FOR EFFECT!!!
+				res.send(JSON.stringify(event));
+				console.log ('longpoll sent :' + event.index);
+			}, 1000);
 	}
 });
 
