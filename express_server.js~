@@ -1,25 +1,312 @@
+var express = require('express');
+var app = express.createServer();
+var port = process.env.PORT || 3000;
 
-var express = require('express').createServer();
-var port = 3000;
+var lastRequestId = 0;
+var connectionTimeout = 10; // always send a empty '200' reponse to each open request after 60seconds.
 
-/*
-console.log ('dir : ' + __dirname);
-app.use(express.static(__dirname + '/public'));
+var users_collection = {};
+var quiz_collection = {
+	
+	'Q001': {
+			name: "Getting Started",
+			desc: "Sales assistant general (level1)",
+			forwho: { completed : {}},
+			points: 35,
+			quizdata: {
+						"multiList":[
+							{ 
+								ques: "Let 2x = 10. <br/>What is x?",
+								ans: 5,
+								ansSel: [ 10, 20, 0 ],
+								retry: 2 	// The question can only be tried twice. Otherwise the user's answer is wrong.
+							},
+							{ 
+								ques: "What is the capital of Canada?", 
+								ans: "Ottawa, Ontario",
+								ansInfo: "<a href='http://en.wikipedia.org/wiki/Ottawa'>The City of Ottawa</a> is where the capital of Canada.",
+								ansSel: [ "Hanoi", "Washington, D.C." ],
+								ansSelInfo: [
+									"Hanoi is the capital of Vietnam", 
+									"Washington, D.C. is the capital of the USA"
+								]
+							}
+						]
+					}
+			},
+		'Q002': {
+	
+			name: "Blackberry 9900",
+			desc: "Sales assistant general (level1)",
+			forwho: { completed : {'Q001':true}},
+			points: 35,
+			quizdata: {
+						"multiList":[
+							{ 
+								ques: "Let 2x = 10. <br/>What is x?",
+								ans: 5,
+								ansSel: [ 10, 20, 0 ],
+								retry: 2 	// The question can only be tried twice. Otherwise the user's answer is wrong.
+							},
+							{ 
+								ques: "What is the capital of Canada?", 
+								ans: "Ottawa, Ontario",
+								ansInfo: "<a href='http://en.wikipedia.org/wiki/Ottawa'>The City of Ottawa</a> is where the capital of Canada.",
+								ansSel: [ "Hanoi", "Washington, D.C." ],
+								ansSelInfo: [
+									"Hanoi is the capital of Vietnam", 
+									"Washington, D.C. is the capital of the USA"
+								]
+							}
+						]
+					}
+			},
+		Q003: {
+			name: "Nokia Lumia 800",
+			desc: "Technical Specification (level5)",
+			forwho: { completed : {'Q001':true}},
+			points: 600
+		}
+	};
 
-
-app.get('/user/:id', function(req,res) {
-		console.log ('get');
-		res.send ('user' + req.params.id, 200);
-		res.end();
-});
-app.post('/', function(req,res) {
-		console.log ('POST');
-		res.send('post\n',200);
-		res.end();
-})
+app.use(express.static(__dirname + '/public'));	// middleware for static resources
+app.use(express.logger());
+app.use(express.cookieParser());
+app.use(express.session({secret: "genhashfromthis"}));  // middleware for session management
+app.use(express.bodyParser());  // middleware for parsing a POST body into 'req.body'
 
 		
+app.post('/login', function (req,res,next) {
+		console.log ('Attempt to login as ' + req.body.username);
+		var sess = req.session;
+		//Properties on req.session are automatically saved on a response
+		sess.username = req.body.username;
+		users_collection[sess.username] = {department: 'IT', completed_quiz: []};
+
+		createEvents(users_collection[req.body.username], null);
+		res.send({'username' : sess.username});
+});
+
+var events_by_user = {}
+function createEvents(user, just_completed_quiz) {
+	
+	for (var i in quiz_collection) {
+		var q = quiz_collection[i];
+		var selected = true, newlyselected = false;
+		for (var needtocomplete in q.forwho.completed) {
+			if (just_completed_quiz == needtocomplete ) {
+				newlyselected = true;
+			}
+			if (! (needtocomplete in user.completed_quiz)) {
+				seleced = false; break;
+			}
+		}
+		if ((!selected) || (just_completed_quiz != null && newlyselected == false)) continue;
+		
+		var event = {
+			id: i,
+			type: "QUIZ",
+			timestamp: currentTimestamp(),
+			active: true,
+			data: q
+		};
+				
+		if (!events_by_user[user])
+			events_by_user[user] = [];	
+		events_by_user[user].push(event);
+		console.log("added event " + user+ " : " +JSON.stringify(event));
+	}
+}
+
+var maxAge = 60;
+function nextEvent(user, lasteventprocessed) {
+    if (!events_by_user[user]) return null;
+    if (!lasteventprocessed) lasteventprocessed = 0;
+    
+    var event;
+    var minTimestamp = currentTimestamp() - (maxAge * 1000);
+    for(var i in events_by_user[user]) {
+    	var e = events_by_user[user][i];
+        // expire event (event generated, not consumed by longpoll, throu away)
+        if (e.timestamp < minTimestamp) {
+            console.log (user +  " expired " + JSON.stringify(event));
+            e.active = false;
+            continue;
+        } else if (e.timestamp > lasteventprocessed) {
+        		event = e;
+        		break;
+        }
+    }
+    return event;
+}
+
+
+function notify_long_connection_by_user(user) {	
+	// started notify //
+	if (!long_connections_by_user[user]) {
+		console.log ("no longpolling requests for " + user + ", do nothing");
+	} else {
+		for (var i=0; i < long_connections_by_user[user].length; i++) {
+			var req_info = long_connections_by_user[user][i];
+			if (!req_info.completed) {
+				
+				console.log ('got active connection for user ' + user + ', send event data, and clear the timeout');
+				
+				var event = nextEvent(user, req_info.lasteventprocessed);
+				if (!event) {
+					req_info.request.resume();
+					req_info.response.end (JSON.stringify(event));
+					clearTimeout(req_info.timeoutid);
+					req_info.completed = true;
+				}
+			}
+		}
+	}
+	//  finished notify //
+}
+
+app.post('/donequiz', function (req,res,next) {
+		
+	var user = req.session.username;
+		
+	// check the required parameters
+	if (!user) {
+		res.send ('Please Login', 400);
+		return;
+	} 
+
+	console.log ('Attempt to requester complted quiz' + user);
+
+	var qid = req.body.id;
+	var score = req.body.score;
+	users_collection[user].completed_quiz.push({ id: qid, score: score});
+	createEvents (user, qid);
+
+});
+
+/**
+* GET handler for retrieving events for the user.
+*/
+var long_connections_by_user = {};
+app.get('/longpoll/:lasteventprocessed', function (req, res, next) {
+	var user = req.session.username,
+			lasteventprocessed = req.params.lasteventprocessed;
+
+	// check the required parameters
+	if (!user) {
+		res.send ('Please Login', 400);
+		return;
+	} 
+	
+
+	var event = nextEvent(user, lasteventprocessed);
+	if (!event) {
+		console.log ('got request, pause it, no event to send');
+
+		var req_info = { request: req, response: res, lasteventprocessed: lasteventprocessed, completed: false};
+		req_info.timeoutid = setTimeout( function () { 
+			console.log ('timeout pulse, what variables are still in scope?\n');
+			req_info.request.resume();
+			req_info.response.end('no activity pulce');
+			req_info.completed = true;
+			 }, connectionTimeout * 1000); 
+
+		if (!long_connections_by_user[user])
+			long_connections_by_user[user] = [];  
+		long_connections_by_user[user].push(req_info);
+		req.pause();
+		console.log ('stored and paused request');
+
+	} else {
+			res.send(JSON.stringify(event));
+			console.log (req.params.user + " : " + requestId +  " sent " + JSON.stringify(event));
+	}
+});
+
+
+app.get('/post/:user/:name/:desc', function(req, res) {
+
+	var user = req.params.user,
+			name = req.params.name,
+			desc = req.params.desc;
+	// add the event    
+	var event = {
+			type : "QUIZ",
+			timestamp : currentTimestamp(),
+			name : name,
+			desc : desc,
+			points : 25
+	};
+			
+	if (!events[user])
+		events[user] = [];	events[user].push(event);
+	console.log("added event " + user+ " : " +JSON.stringify(event));
+	
+	
+	// now, find pending long poll requests for this user,
+	if (!pending[user]) {
+		console.log ("no longpolling requests for " + user + ", do nothing");
+	} else {
+
+		// loop over pending requests for the user
+		// and respond if an event is available
+		var ctx, event;
+		for (var i=0; i < pending[user].length; i++) {
+				ctx = pending[user][i];
+				
+				// ctx.req == null -> timeout, cleanup
+				if (!ctx.req) {
+						pending[user][i] = null;
+						continue;
+				}
+				console.log ("Got longpoll request for user " + user + ", id: " + ctx.id + ", sending event data");
+				
+				// get next event
+				event = nextEvent(user, ctx.lasteventprocessed);
+
+				// user has event? -> respond, close and cleanup
+				if (event) {
+						console.log ("Got event data " + JSON.stringify(event) + ", sending response");
+						pending[user][i] = null;
+						ctx.req.resume();
+						ctx.res.send(JSON.stringify(event));
+						
+				}
+		}
+		
+		// compact the list of pending requests
+		var i, data = [];
+		for (i=0; i < pending[user].length; i++) {
+				if (pending[user][i]) data.push(pending[user][i]);
+		}
+		pending[user] = data;
+		
+		// send 200 OK
+		res.send(200, null);
+	}
+});
+
 app.listen(port);
 console.log ('Server started on port ' + port);
 
+
+
+
+function currentTimestamp() {
+    return new Date().getTime();
+}
+
+
+// WEB SOCKET ??
+/*
+var io = require('socket.io');
+var lio = io.listen(server)
+
+
+lio.sockets.on ('connection', function (socket) {
+	 socket.emit('news', { hello: 'world' });
+  socket.on('my other event', function (data) {
+    console.log(data);
+  });
+});
 */

@@ -66,10 +66,10 @@ td { vertical-align: top; }
     Initializr styles
     http://verekia.com/initializr/responsive-template
     Author: Jonathan Verrecchia
-   =================================================== */
+   =================================================== 
 
 body{ font:16px/24px Helvetica, Helvetica Neue, Arial, sans-serif; }
-
+*/
 .wrapper{
 	width:90%;
 	margin:0 5%;
@@ -133,7 +133,7 @@ nav a:hover{
 
 #main aside{
 	color:white;
-	padding:0px 5% 10px;
+	padding:0px 10px 10px;
 }
 
 #footer-container footer{

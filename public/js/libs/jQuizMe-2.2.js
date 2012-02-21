@@ -149,7 +149,7 @@
 			btn:{	// [ "text", "title" ]
 				begin: [ "Begin Quiz" ],
 				check: [ "Check", "Check your answer" ],
-				del: [ "Delete", "Delete quiz" ],
+				del: [ "Close", "Delete quiz" ],
 				help: [ "Help", 'Click for help'],
 				next: [ "Next", "Next question" ],
 				restart: [ "Restart", "Restart the quit over" ],
@@ -157,7 +157,7 @@
 				review: [ "Review", "Review Questions" ],
 				showOnlyMissed: [ " *", "Click to show only missed questions." ],
 				quit: [ "Quit", "Quit quiz" ],
-				quitNo: [ "->", "Go Back" ],
+				quitNo: [ "Return to Quiz", "Go Back" ],
 				quitYes: [ '', "Yes, quit" ]
 			},
 			err:{
@@ -181,7 +181,7 @@
 			},
 			quiz:{
 				tfEqual: " = ",
-				tfEnd : "?",
+				tfEnd : "",
 				tfFalse: "False",
 				tfTrue: "True"
 			}
@@ -238,11 +238,13 @@
 		var settings = $.extend({},_settings, options),
 			lang = $.extend(true, {},_lang, userLang),
 			layout = setLangBtnTxt( lang.btn, _jQuizMeLayOut.clone(true));
-
+			
 		return this.each( function(){
+
 			// currQuiz is the output file.(this is what the user sees). $( el, currQuiz) must be used when accessing elements.
 			// Hide currQuiz until it's ready to be displayed.
 			var currQuiz = layout.clone(true).hide(), currIndex = 0, stickyEl = this, quit = false, totalQuesLen = 0,
+			
 			// The q object is where the quiz data, that was made before the quiz starts, is stored here.
 			// Please beware that all the questions are stored linearly. But you can find a quiz type by using index[Max|Min].
 			q = {
@@ -613,6 +615,7 @@
 					return;
 				}
 				var quizInfo = { 
+					"deleteQuiz": deleteQuiz,
 					"currIndex": currIndex,
 					"problem": stats.problem,
 					"numOfRight":stats.numOfRight,
@@ -620,7 +623,6 @@
 					"score": stats.perc(),
 					"total": stats.totalQues,
 					"hasQuit": quit,
-					"deleteQuiz": deleteQuiz,
 					"quitQuiz": ( !quit ) ? quitQuiz : function(){},
 					"nextQuestion": ( !quit ) ? goToNextProb : function(){}
 				};
@@ -1091,6 +1093,13 @@
 					$( currQuiz ).remove();
 				});
 				q = {};
+					
+				settings.statusUpdate( {
+						"deleted": true,
+						"numOfRight":stats.numOfRight,
+						"numOfWrong":stats.numOfWrong,
+						"score": stats.perc(),
+						"total": stats.totalQues} , currQuiz );
 			},
 			setToBeginningView = function(){
 				$( ".q-gameOver, .q-result, .q-review-menu", currQuiz).hide();

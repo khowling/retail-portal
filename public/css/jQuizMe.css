@@ -2,19 +2,19 @@
 jQuizMe 2.2 - 12/30/10 Programmed and CopyWrited by Larry Battle 2008 - 2010 
 */	
 .quiz-el{
-	background: #ffaa33;
+	background: #1798C1;
 	font-size: 1.1em;
 	font-family: Arial, Verdana, Helvetica, sans-serif;
 	position: relative;
 	padding: 0.2em;
-	width: 17em;
+	width: 32em;
 }
 .quiz-el div{
 	padding: 0.2em;
 }
 /* .q-innerArea = .q-header, .q-help, .q-prob, .q-intro, .q-gameOver */
 .q-innerArea{
-	background: #ffdd77;
+	background: #2276BB;
 	position:relative;
 	clear: both;
 	color: black;
