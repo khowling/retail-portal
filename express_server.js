@@ -10,15 +10,41 @@ var event_collection = {
 	'K001': {
 			type: "KNOWLEDGE",
 			name: "The Basics",
-			desc: "Your 1st Training",
-			intro: "Take this Training just to get you familiour with our portal",
+			desc: "Portal Training",
+			info: "HTML5 Video Stream",
 			forwho: { completed : {}},
 			points: 50,
 			knowledgedata: {
-				stream_url: '/stream/gizmo.webm'
+				url: '/stream/gizmo.webm',
+				type: 'HTML5_VIDEO'
 			}
 	},
-
+	'K002': {
+			type: "KNOWLEDGE",
+			name: "Nokia Lumia 710",
+			desc: "Basic Phone Demo Training",
+			info: "YouTube Embedded Video",
+			icon: "/image/icons/nokia-710.png",
+			forwho: { completed : { 'Q001':true}},
+			points: 50,
+			knowledgedata: {
+				url: 'http://www.youtube.com/embed/0NvgOOY7gJM',
+				type: 'EMBEDDED_IFRAME'
+			}
+	},
+	'K003': {
+			type: "KNOWLEDGE",
+			name: "Windows Phone 7",
+			desc: "Presenting Training",
+			info: "HTML5 Video Stream",
+			icon: "/image/icons/WP7.jpg",
+			forwho: { completed : {}},
+			points: 50,
+			knowledgedata: {
+				url: 'http://www.youtube.com/embed/cBISUhRIiSE',
+				type: 'EMBEDDED_IFRAME'
+			}
+	},	
 	'Q001': {
 			type: "QUIZ",
 			name: "Getting Started",
@@ -112,10 +138,10 @@ app.post('/login', function (req,res,next) {
 		var sess = req.session;
 		//Properties on req.session are automatically saved on a response
 		sess.username = req.body.username;
-		users_collection[sess.username] = {points: 0, department: 'IT', completed_events: {}};
+		users_collection[sess.username] = {points: 0, department: 'IT', picture_url: '/image/keith.jpg', completed_events: {}};
 
 		createEvents(req.body.username, null);
-		res.send({'username' : sess.username});
+		res.send({username: sess.username, userdata: users_collection[sess.username]});
 });
 
 var event_index = 1;
@@ -126,28 +152,28 @@ function createEvents(user, just_completed) {
 	for (var i in event_collection) {
 		var e = event_collection[i];
 		console.log ('createEvents : checking item : ' + i);
-		var event = null, results_data = null;
-
-		if (i == just_completed) {
-			// this is the event just completed, send an update
-			results_data = users_collection[user].completed_events[i];
-		} 
-		else { 
-			var selected = true, newlyselected = false;
-			for (var needtocomplete in e.forwho.completed) {
-				console.log ('createEvents: checking prereq for event, required : ' + needtocomplete + ', is it in ' + JSON.stringify(users_collection[user].completed_events) );
-				if (just_completed == needtocomplete ) {
-					newlyselected = true;
-				}
-				if (! (needtocomplete in users_collection[user].completed_events)) {
-					selected = false; break;
-				}
+		
+		var event = null, 
+				results_data = null,
+				selected = true, 
+				newlyselected = false;
+				
+		for (var needtocomplete in e.forwho.completed) {
+			console.log ('createEvents: checking prereq for event, required : ' + needtocomplete + ', is it in ' + JSON.stringify(users_collection[user].completed_events) );
+			if (just_completed == needtocomplete ) {
+				newlyselected = true;
 			}
-			if (((!selected) || (just_completed != null && newlyselected == false))) continue;
-			// 100 points for just getting a new event
-			users_collection[user].points = users_collection[user].points + 50;
-			console.log ('createEvents: points: adding ' + '50' + ', total now : ' +users_collection[user].points);
+			var hascompleted = users_collection[user].completed_events[needtocomplete];
+			if ((!hascompleted) || hascompleted.passed == false) {
+			//if (! (needtocomplete in users_collection[user].completed_events)) {
+				selected = false; break;
+			}
 		}
+		if (((!selected) || (just_completed != null && newlyselected == false))) continue;
+		// 100 points for just getting a new event
+		users_collection[user].points = users_collection[user].points + 50;
+		console.log ('createEvents: points: adding ' + '50' + ', total now : ' +users_collection[user].points);
+
 		
 		
 		event = {
@@ -157,12 +183,11 @@ function createEvents(user, just_completed) {
 			item_id: i,
 			item_type: e.type,
 			item_data: e,
-			results_data: results_data
+			results_data: users_collection[user].completed_events[i]
 		};
 		
 			
-		if (!events_by_user[user])
-			events_by_user[user] = [];	
+		if (!events_by_user[user])	events_by_user[user] = [];	
 		events_by_user[user].push(event);
 		console.log('createEvents: ADDED EVENT [' + event.index +  '] [' + event.item_id +'], results_data ' + results_data  + ', newlyselected : '+ newlyselected);
 	}
@@ -221,6 +246,7 @@ function notify_long_connection_by_user(user) {
 	}
 }
 
+var PASS_SCORE = 100;
 app.post('/donequiz', function (req,res,next) {
 		
 	var user = req.session.username;
@@ -230,25 +256,53 @@ app.post('/donequiz', function (req,res,next) {
 	} 
 
 	
-	var qid = req.body.id;
-	var score = req.body.score;
-	
-	console.log ('Attempt to requester complted quiz:' + user + ', quiz : ' + qid + ', score ' + score);
-	var aready_passed = false;
-	var alreadydone = users_collection[user].completed_events;
-	if (alreadydone[qid]) {
-		aready_passed = true;
-		alreadydone[qid].attempts = alreadydone[qid].attempts + 1;
-		alreadydone[qid].bestscore = Math.max(alreadydone[qid].bestscore, score);
-	} else {
-		alreadydone[qid] = { score: score, date: new Date(), attempts: 1, bestscore: score};
-		var points_award = score * event_collection[qid].points/100;
-		users_collection[user].points = users_collection[user].points + points_award
-		console.log ('points: adding ' + points_award + ', total now : ' +users_collection[user].points);
+	var qid = req.body.id,
+			score = req.body.score,
+			quesTried = req.body.quesTried,
+			now_passed = (req.body.quesTried>0 && req.body.score>=PASS_SCORE),
+			aready_passed = false;
+			
+			console.log ('donequiz: complted quiz:' + user + ', quiz : ' + qid + ', score ' + score + ', quesTried : ' + quesTried + ', now_passed : ' + now_passed);
+	// need to of least tryed one question to register quiz attempt!
+	if ( quesTried > 0) {
+		
+		var alreadydone = users_collection[user].completed_events;
+		
+		if (!alreadydone[qid]) { // first atemmpt
+			alreadydone[qid] = { passed: now_passed, score: score, date: new Date(), attempts: 1, bestscore: score};
+			var points_award = score * event_collection[qid].points/100;
+			
+			users_collection[user].points = users_collection[user].points + points_award
+			console.log ('points: adding ' + points_award + ', total now : ' +users_collection[user].points);
+		} else { // NOT first attempt
+			aready_passed = alreadydone[qid].passed;
+			alreadydone[qid].attempts = alreadydone[qid].attempts + 1;
+			alreadydone[qid].bestscore = Math.max(alreadydone[qid].bestscore, score);
+			if (!aready_passed) alreadydone[qid].passed = now_passed;
+		} 
+
+		console.log ('donequiz: create results event ' + JSON.stringify(alreadydone[qid]));
+		// create event to register new results of quiz
+		event = {
+			index: event_index++,
+			timestamp: new Date().getTime(),
+			active: true,
+			item_id: qid,
+			item_type: "QUIZ",
+			results_data: alreadydone[qid]
+		};
+		if (!events_by_user[user]) events_by_user[user] = [];	
+		events_by_user[user].push(event);
 	}
+	
+	// update points in response
 	res.send({my_points: users_collection[user].points});
-	if (!aready_passed) {
-		createEvents (user, qid);
+	
+	if (quesTried > 0) {
+		if ((!aready_passed) && now_passed) {
+			// just passwd new quiz, hunt for new unlocks!!
+			createEvents (user, qid);
+		}
 		notify_long_connection_by_user(user)
 	}
 });
@@ -296,8 +350,8 @@ app.get('/longpoll/:lasteventprocessed', function (req, res, next) {
 	}
 });
 
-app.get ('/stream', function (req,res,next) {
-	var fn = __dirname+'/public/media/Analytics Edition.mp4';
+app.get ('/stream/:filename', function (req,res,next) {
+	var fn = __dirname+'/public/media/' +req.params;
 	res.sendfile (fn);
 });
 

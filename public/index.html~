@@ -26,6 +26,10 @@
 	<script type="text/javascript" src="js/libs/jQuizMe-2.2.js"></script>
 	<script type="text/javascript" src="js/libs/gauge.min.js"></script>
 	<script type="text/javascript" src="js/libs/jquery.gauge.min.js"></script>
+	
+	<link rel="stylesheet" type="text/css" href="css/jRating.jquery.css" media="screen" />
+	<script type="text/javascript" src="js/libs/jRating.jquery.js"></script>
+
 	<style>
 			ul#quizList {
 					-moz-column-count: 2;
@@ -40,16 +44,21 @@
 			    background-color: #FFFFFF;
 			}
 			.myboarder {
-				padding: 5px;
-				border-radius: 6px;
-				border: 3px solid #2276BB;
-				margin: 0px;
+				border-top: 10px solid #DFDBCB; 
+				color: white; 
+				box-shadow: 0 5px 10px #AAAAAA; 
+				padding: 0 5px 5px; 
+				background: none repeat scroll 0 0 #6CA128;
 			}
-			#Logo {
-				margin-bottom: 5px;
-				color: red;
+			.myboarder-inside {
+				background-color: white;
+				padding: 2px;
+				border-radius: 4px;
+				border: 2px solid transparent;
 			}
-			
+			h3 {
+				margin: 5px;
+			}
 			li {
 			  display: list-item;
 			}		
@@ -85,7 +94,10 @@
 				border-radius: 4px;
 				text-overflow: ellipsis;
 			}
-
+			div.quizPass {
+				float: right;
+			}
+			
 			li.quiz div {
 				color: #2276BB;
 				text-decoration: none;
@@ -95,8 +107,12 @@
 				margin-right: 0.5em;
 				text-overflow: ellipsis;
 			}
+			li.quiz span.quizHtml {
+				color: black;
+				padding: 0px;
+			}
 			
-			li.quiz div.quizTime {
+			li.quiz div.quizResults {
 				font-size: 11px;
 				color: #999;
 				line-height: 16px;
@@ -105,82 +121,133 @@
 	</style>
 
 	<script>
-		var mypoints = 0;
-		var lasteventprocessed = 0;
-		
-			$(document).ready (function(){
-					$('#login-content').modal( { close : false});
-					$('#points-guage').gauge('init', {
-							value: 0,
-							valueFormat: function(a,b){return '';},
-							label: 'Newbie',
-							unitsLabel: '',
-							min: 0,
-							max: 20000,
-							majorTicks: 4,
-							minorTicks: 3, // small ticks inside each major tick
-							yellowFrom: 5000,
-							yellowTo: 15000,
-							greenFrom: 15000,
-							greenTo: 20000
-						});
-					return false;
-			});
 
-		function launchquiz (quizdata) {
-			 
+		$(document).ready (function(){
+				$('#login-content').modal( { close : false});
+				$('#points-guage').gauge('init', {
+						value: 0,
+						valueFormat: function(a,b){return '';},
+						label: 'Newbie',
+						unitsLabel: '',
+						min: 0,
+						max: 20000,
+						majorTicks: 4,
+						minorTicks: 3, // small ticks inside each major tick
+						yellowFrom: 5000,
+						yellowTo: 15000,
+						greenFrom: 15000,
+						greenTo: 20000
+					});
+				return false;
+		});
+
+		function launchknowledge (kid, kdata) {
+			$("#event-container").empty();
+			
+			if (kdata.knowledgedata.type == 'EMBEDDED_IFRAME') {
+				var _utLayOut = $("<iframe/>").attr({ "width": "100%", "height": "400px", "src": kdata.knowledgedata.url, "frameborder":"0", "allowfullscreen":""});
+				$("#event-container").append(_utLayOut);
+				$('#basic-modal-content').modal({ 
+						close : true,
+						onClose: function() {
+							$("#event-container").empty();
+							$.modal.close();
+					}});
+				return true;
+			}
+			
+			if (kdata.knowledgedata.type == 'HTML5_VIDEO') {
+				var _vLayOut = $("<video/>").attr({"id": "video-container", "width": "100%", "height": "100%", "controls": "controls"}).append( 
+					$("<source/>").attr({"src": kdata.knowledgedata.url, "type": "video/mp4"}),
+					$("<span/>").text("Your browser does not support the video tag."));
+	
+				$("#event-container").append(_vLayOut);
+				$('#basic-modal-content').modal({ 
+						close : true,
+						onClose: function() {
+							$("#video-container")[0].pause();
+							$("#event-container").empty();
+							$.modal.close();
+					}});
+				return true;
+			}
+			
+		}
+		function launchquiz (quizid, itemdata) {
 			var options = {
-				intro : "Welcome to your First Exam, when your are ready, press begin quiz", 
-				title : "Knowledge Portal",
+				title: itemdata.name,
+				intro: '<p>' + itemdata.desc + '</p>' +
+				'<p>You receive ' + itemdata.desc + ' points for getting 100% in this Quiz</p>' +
+				'<p>REMEBER - Its ONLY your <bold>1st</bold> attempt that get you the points</p>' + 
+				'<p>REMEBER - You will still need to get 100% in the quiz to unlock more content (have as many attempts as you need)</p>' + 
+				'<p>' + itemdata.intro + '</p>', 
 				disableDelete: false,
 				disableRestart: true,
 				statusUpdate: function( quizInfo, currQuiz ){
-						//alert(JSON.stringify(quizInfo));
 						if (quizInfo.deleted == true) {
-							// KEITH
-							$.post( '/donequiz', { 'id': quizdata.id,  'score': quizInfo.score},
+							$.post( '/donequiz', { id: quizid,  score: quizInfo.score, quesTried: quizInfo.quesTried},
 								function( data ) {
 										$.modal.close();
-										// update quiz with completed and score
-										//$('#' + 
 								});
-							
-							
-							//quizInfo.deleteQuiz();
-
-							//$('#resultsArea').removeAttr('style').find('#quiz-return').on('click', quizInfo.deleteQuiz, function(e) {
-							//		$.modal.close();	}).end()
-							//			.find("#numOfRight").text(quizInfo.numOfRight).end()
-							//			.find("#numOfWrong").text(quizInfo.numOfWrong).end()
-							//			.find("#score").text(quizInfo.score).end()
-							//			.find("#total").text(quizInfo.total).end();
 						}
 			}};
-		 $("#quiz").jQuizMe( quizdata, options );
-		 $('#basic-modal-content').modal({ close : false});
-			
-		 return false;
+			$("#event-container").empty();
+			$("#event-container").jQuizMe( itemdata.quizdata, options );
+			$('#basic-modal-content').modal({ close : false});
+			return true;
 		};
 		
 		
-				
-				
+		var mypoints = 0;
+		var lasteventprocessed = 0;		
+		var poll_err = false;		
 		function poll(){
+			if (!poll_err) {
 				console.log("creating longpoll request");
 				$.ajax({ 
 					url: "/longpoll/" + lasteventprocessed, 
 					success: function(res){
-							lasteventprocessed = data.timestamp;
-							$('#quiz-template').clone().attr({"id": res.id }).removeAttr("style").appendTo("#quizList").on('click', function(e) {
-									launchquiz (res.data.quizdata);
-									 return false;
-							}).find(".quizName").text(res.data.name).end().find(".quizHtml").text(res.data.desc).end();
+						if (res.item_type == 'QUIZ' || res.item_type == 'KNOWLEDGE') {
+							lasteventprocessed = res.index;
 
-							$.jGrowl("<p>New " + res.data.type + " for you<\p>" + res.data.name);
+							var itemid = $('#' + res.item_id);
+							if (itemid.length == 0) {
+								// not on the page, create!
+								if (res.item_type == 'QUIZ') {
+									itemid = $('#quiz-template').clone().attr({"id": res.item_id }).removeAttr("style").appendTo("#quizList").on('click', function(e) {
+										launchquiz (res.item_id, res.item_data);
+										 return false;
+									}).find(".quizName").text(res.item_data.name).end().find(".quizHtml").text(res.item_data.desc).end();
+
+								} else if (res.item_type == 'KNOWLEDGE') {
+									
+									if (!res.item_data.icon)  res.item_data.icon = '/image/knowledge-icon.gif';
+									itemid = $('#knowledge-template').clone().attr({"id": res.item_id }).removeAttr("style").appendTo("#knowledgeList").on('click', function(e) {
+										launchknowledge (res.item_id, res.item_data);
+										 return false;
+									}).find(".quizName").text(res.item_data.name).end().find(".quizHtml").text(res.item_data.desc).end()
+										.find(".quizResults").text(res.item_data.info).end()
+										.find(".quizImage").attr({"src": res.item_data.icon}).end()
+										.find(".knowRating").jRating({type: "small", isDisabled: true, defaultscore: 40});								
+								}
+								$.jGrowl("<p>New " + res.item_type + " for you<\p>" + res.item_data.name);
+							}
+							if (res.item_type == 'QUIZ') {
+								if (res.results_data) {
+									$(itemid).find(".quizResults").text('attp: ' + res.results_data.attempts + ' | first attempt (best) '+res.results_data.score+'% ('+res.results_data.bestscore+'%)').end();
+									if (res.results_data.passed) {
+										$(itemid).find(".quizPass").removeAttr("style");
+									}
+								} else {
+									$(itemid).find(".quizResults").text(res.item_data.points + ' points available!').end();
+								}
+							}
+					
+
 							jQuery(function($) {
 									$('.timer').countTo({
 											from: mypoints,
-											to: mypoints + res.data.points,
+											to: res.my_points,
 											speed: 1000,
 											refreshInterval: 10,
 											onComplete: function(value) {
@@ -188,16 +255,21 @@
 											}
 									});
 							});
-							mypoints += res.data.points;
+							mypoints = res.my_points;
 							$('#points-guage').gauge('setValue', mypoints); 
-						}, 
+							
+						}
+					}, 
 					error: function(XMLHttpRequest, textStatus, errorThrown){
-							$.jGrowl("error: " + textStatus + " (" + errorThrown + ")");
+							poll_err = true;
+							$.jGrowl("error: connection with server lost  (" + JSON.stringify(errorThrown) + ")");
 						}, 
 					dataType: "json", 
 					complete: poll, 
-					timeout: 60000 });
+					timeout: 60000 
+				});
 			}
+		}
 	</script>
 	
 	
@@ -234,7 +306,7 @@
 		}
 		input.modal-text-input {
 				background: none repeat scroll 0 0 #FFFFFF;
-				border: 1px solid transparent;
+				border: 2px solid transparent;
 				border-radius: 4px 4px 4px 4px;
 				color: #555555;
 				float: right;
@@ -271,17 +343,39 @@
 	<div id="login-content" class="popup-login">
 		<script>
 			$("#logmein").submit(function(event) {
-				/* stop form from submitting normally */
+			
 				event.preventDefault(); 
 						
 				/* get some values from elements on the page: */
 				var $form = $( this ),
 						un = $form.find( 'input[name="username"]' ).val(),
 						url = $form.attr( 'action' );
-				if (!un) alert ('Please enter username');
+						if (!un) {
+							//alert ('Please enter username');
+							 un = 'keith';
+						}
 				/* Send the data using post and put the results in a div */
 				$.post( url, { username: un },
 					function( data ) {
+						
+						
+							var _userOut = $("<div/>").append(
+								$("<img/>").attr({"src": data.userdata.picture_url, "width": "70%", "height": "70%"}), 
+								$("<div/>").attr({"style": "color: black;"}).text(data.username + ' ('+ data.userdata.points +')'));
+				
+							$("#top-performer").append(_userOut);
+			
+
+													
+							var _userOut = $("<div/>").append(
+								$("<img/>").attr({"src": "/image/carphone_warehouse.jpg", "width": "70%", "height": "70%"}), 
+								$("<div/>").attr({"style": "color: black;"}).text("Carphone" + ' '+ "23000" +''));
+				
+							$("#outlet-leader").append(_userOut);
+							
+							
+							
+							
 							$.modal.close();
 							poll();
 					});
@@ -314,8 +408,8 @@
 	<!-- modal content -->
 	<div id="basic-modal-content">
 		
-		<div id="quizArea">
-			<div id="quiz"></div>
+		<div id="eventArea">
+			<div id="event-container"></div>
 		</div>
 		
 		<div id="resultsArea"  style="display:none;" class="popup-login">
@@ -357,12 +451,12 @@
 
 	<div id="header-container">
 		<header class="wrapper clearfix">
-			<h1 id="title">making learning more engaging</h1>
+			<h1 id="title"><img src="/image/NokiaLogo.gif" class="myboarder-inside" style="margin-right: 15px;"/>more engaging learning</h1>
 			<nav>
 				<ul>
-					<li><a href="#">how to use</a></li>
+					<li><a href="#">Scan QR</a></li>
+					<li><a href="#">Enter Code</a></li>
 					<li><a href="#">log issue</a></li>
-					<li><a href="#">new feature</a></li>
 				</ul>
 			</nav>
 		</header>
@@ -371,30 +465,53 @@
 		<div id="main" class="wrapper clearfix">
 			
 			<article>
-			
-				<header id="quiz">
-				</header>
+
 				
 				<section>
 					<div style="overflow: auto;	width: 100%; margin-bottom : 10px;">
-						<div style="float : left; width : 74%;"><spam style="font-weight:bold;">My Quiz</spam> quizzes appear when something important occures, for example, a new product launches, you visit a store, your manager thinks you need to learn a new skill, the good thing, you get points for just getting the quiz</div>
-						<div class="myboarder" style="float : right; width : 22%;">
-							My Score <div style="font-weight:bold; float: right;" class="timer"></div>
-							<canvas id="points-guage" width="120" height="120"></canvas>
+
+						<div class="myboarder" style="float: left; width : 20%; min-width: 80px; height:155px; margin-right: 10px; margin-bottom: 10px;">
+							<div style="margin-top: 5px; margin-bottom: 5px; height:35px;">Recommended Training</div>
+							<ul id="rec-training" class="myboarder-inside" style="height:100px;" ></ul>
 						</div>
+
+						<div class="myboarder" style="float: left; width : 20%; min-width: 80px; height:155px; margin-right: 10px; margin-bottom: 10px;">
+							<div style="margin-top: 5px; margin-bottom: 5px; height:35px;">OutLet Leader</div>
+							<div id="outlet-leader" class="myboarder-inside" style="height:100px;" ></div>
+						</div>
+
+						<div class="myboarder" style="float: left; width : 20%; min-width: 80px; height:155px; margin-right: 10px; margin-bottom: 10px;">
+							<div style="margin-top: 5px; margin-bottom: 5px; height:35px;">Top Score</div>
+							<ul id="top-performer" class="myboarder-inside" style="align:center; height:100px;" ></ul>
+						</div>
+						
+						<div class="myboarder" style="float: left; width : 20%; min-width: 100px; height:155px; margin-bottom: 10px;">
+							<div style="margin-top: 5px; margin-bottom: 5px; height:35px;">My Score <div style="font-weight:bold; float: right;" class="timer"></div></div>
+							<canvas id="points-guage" width="110" height="110"></canvas>
+						</div>
+						
 					</div>
 					
-					<div id="quiz-container">
-
-          	<ul id="quizList" class="myboarder">
-          		<div id="Logo">click to take the exam</div>
+					<div id="quiz-container" class="myboarder">
+						<div>
+							<div style="float:left; margin-top: 6px; margin-bottom: 6px;"><h3>Quiz</h3></div>
+							<div style="float: right;margin-top: 5px; margin-bottom: 5px;">quizzes appear when something important occures</div>
+							<div style="clear: both;"></div>
+						</div>
+          	<ul id="quizList" class="myboarder-inside">
+          		
           		
 							<li id="quiz-template" style="display : none;" class="quiz">
 								<img class="quizImage" src="/image/quiz_icon.gif"/>
-								<div class="quizName" ></div> 
+								
+								<div class="quizPass" style="display : none;">
+									<img style="margin: 10px;" height="40px;" src="/image/pass.gif"></img>
+								</div>
+								
+								<div class="quizName"></div> 
 								<span class="quizHtml"></span>
 								<br/>
-								<div class="quizTime"> attempts 0 | frist attempt 0%</div>
+								<div class="quizResults"></div>
 							</li>
           	
 		        </ul>
@@ -407,7 +524,7 @@
 					
 					<div id="trophy-container">
 
-          	<ul id="trophyList" class="myboarder" style="height: 2in; ">
+          	<ul id="trophyList" class="myboarder-inside" style="height: 2in; ">
           		
           	</ul>
           </div>
@@ -420,8 +537,28 @@
 			</article>
 			
 			<aside>
-				<h3>Knowedge (to help with quiz)</h3>
-				<ul id="trophyList" class="myboarder" style="background: white; height: 2in; ">
+				
+				<div>
+							<div style="float:left; margin-top: 6px; margin-bottom: 6px;"><h3>Knowedge</h3></div>
+							<div style="float: right; margin-top: 5px; margin-bottom: 5px;"><input type="text" placeholder="search knowledge" class="modal-text-input" name="username" value=""></div>
+							<div style="clear: both;"/>
+				</div>
+				
+				<ul id="knowledgeList" class="myboarder-inside" style="background: white; height: 4in; ">
+				
+						<li id="knowledge-template"  style="display : none;" class="quiz">
+								<img class="quizImage" src=""/>
+								<div class="quizName"></div> 
+								<span class="quizHtml"></span>
+								<div style="float: right;">
+									<div id="whydoineedaid" class="knowRating" style="margin: 2px;"></div>
+									<div style="margin: 2px;">(4234 ratings)</div>
+								</div>
+								<br/>
+								<div class="quizResults"></div>
+								
+						</li>
+				
         </ul>
 			</aside>
 			

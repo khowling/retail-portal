@@ -3,69 +3,126 @@ var app = express.createServer();
 var port = process.env.PORT || 3000;
 
 var lastRequestId = 0;
-var connectionTimeout = 10; // always send a empty '200' reponse to each open request after 60seconds.
+var connectionTimeout = 30; // always send a empty '200' reponse to each open request after 60seconds.
 
 var users_collection = {};
-var quiz_collection = {
-	
-	'Q001': {
-			name: "Getting Started",
-			desc: "Sales assistant general (level1)",
+var event_collection = {
+	'K001': {
+			type: "KNOWLEDGE",
+			name: "The Basics",
+			desc: "Portal Training",
+			info: "HTML5 Video Stream",
 			forwho: { completed : {}},
-			points: 35,
+			points: 50,
+			knowledgedata: {
+				url: '/stream/gizmo.webm',
+				type: 'HTML5_VIDEO'
+			}
+	},
+	'K002': {
+			type: "KNOWLEDGE",
+			name: "Nokia Lumia 710",
+			desc: "Basic Phone Demo Training",
+			info: "YouTube Embedded Video",
+			icon: "/image/nokia-710.png",
+			forwho: { completed : { 'Q001':true}},
+			points: 50,
+			knowledgedata: {
+				url: 'http://www.youtube.com/embed/0NvgOOY7gJM',
+				type: 'EMBEDDED_IFRAME'
+			}
+	},
+	'K003': {
+			type: "KNOWLEDGE",
+			name: "Windows Phone 7",
+			desc: "Presenting Training",
+			info: "HTML5 Video Stream",
+			icon: "/image/WP7.jpg",
+			forwho: { completed : {}},
+			points: 50,
+			knowledgedata: {
+				url: 'http://www.youtube.com/embed/cBISUhRIiSE',
+				type: 'EMBEDDED_IFRAME'
+			}
+	},	
+	'Q001': {
+			type: "QUIZ",
+			name: "Getting Started",
+			desc: "Your 1st Quiz",
+			intro: "Take this Quiz just to get you familiour with our portal",
+			forwho: { completed : {}},
+			points: 500,
 			quizdata: {
 						"multiList":[
 							{ 
-								ques: "Let 2x = 10. <br/>What is x?",
-								ans: 5,
-								ansSel: [ 10, 20, 0 ],
-								retry: 2 	// The question can only be tried twice. Otherwise the user's answer is wrong.
+								ques: "This portal is build on salesforce, but which platform?",
+								ans: "heroku",
+								ansInfo: "<a href='http://heroku.com'>heroku</a> PaaS.",
+								ansSel: [ "force.com", "chatter.com", "mini.com" ],
+								retry: 0 	// The question can only be tried twice. Otherwise the user's answer is wrong.
 							},
 							{ 
-								ques: "What is the capital of Canada?", 
-								ans: "Ottawa, Ontario",
+								ques: "What is not a heroku language?", 
+								ans: "C#.NET",
 								ansInfo: "<a href='http://en.wikipedia.org/wiki/Ottawa'>The City of Ottawa</a> is where the capital of Canada.",
-								ansSel: [ "Hanoi", "Washington, D.C." ],
-								ansSelInfo: [
-									"Hanoi is the capital of Vietnam", 
-									"Washington, D.C. is the capital of the USA"
-								]
+								ansSel: [ "NODE.JS", "RUBY" ],
+						//		ansSelInfo: [
+						//			"Hanoi is the capital of Vietnam", 
+						//			"Washington, D.C. is the capital of the USA"
+						//		]
 							}
 						]
 					}
 			},
 		'Q002': {
-	
+			type: "QUIZ",
 			name: "Blackberry 9900",
 			desc: "Sales assistant general (level1)",
 			forwho: { completed : {'Q001':true}},
-			points: 35,
+			points: 5000,
 			quizdata: {
-						"multiList":[
-							{ 
-								ques: "Let 2x = 10. <br/>What is x?",
-								ans: 5,
-								ansSel: [ 10, 20, 0 ],
-								retry: 2 	// The question can only be tried twice. Otherwise the user's answer is wrong.
-							},
-							{ 
-								ques: "What is the capital of Canada?", 
-								ans: "Ottawa, Ontario",
-								ansInfo: "<a href='http://en.wikipedia.org/wiki/Ottawa'>The City of Ottawa</a> is where the capital of Canada.",
-								ansSel: [ "Hanoi", "Washington, D.C." ],
-								ansSelInfo: [
-									"Hanoi is the capital of Vietnam", 
-									"Washington, D.C. is the capital of the USA"
-								]
-							}
-						]
-					}
+					"multiList":[
+						{ 
+							ques: "When was the Blackberry 9900 launched?",
+							ans: "Jan 2011",
+							ansSel: [ "Jan 2012", "Dec 2010", "March 2010" ],
+							retry: 0
+						},
+						{ 
+							ques: "What is the killed feature of the 9900 over the previous model?", 
+							ans: "All of the above",
+							ansInfo: "<a href='http://en.wikipedia.org/wiki/Ottawa'>The City of Ottawa</a> is where the capital of Canada.",
+							ansSel: [ "Touch Screen", "1GHh Processer", "Thinner" ],
+						}
+					]
+				}
 			},
 		Q003: {
+			type: "QUIZ",
 			name: "Nokia Lumia 800",
 			desc: "Technical Specification (level5)",
 			forwho: { completed : {'Q001':true}},
-			points: 600
+			points: 5000,
+			quizdata: {
+				"multiList":[
+					{ 
+						ques: "Let 2x = 10. <br/>What is x?",
+						ans: 5,
+						ansSel: [ 10, 20, 0 ],
+						retry: 2 	// The question can only be tried twice. Otherwise the user's answer is wrong.
+					},
+					{ 
+						ques: "What is the capital of Canada?", 
+						ans: "Ottawa, Ontario",
+						ansInfo: "<a href='http://en.wikipedia.org/wiki/Ottawa'>The City of Ottawa</a> is where the capital of Canada.",
+						ansSel: [ "Hanoi", "Washington, D.C." ],
+						ansSelInfo: [
+							"Hanoi is the capital of Vietnam", 
+							"Washington, D.C. is the capital of the USA"
+						]
+					}
+				]
+			}
 		}
 	};
 
@@ -77,111 +134,177 @@ app.use(express.bodyParser());  // middleware for parsing a POST body into 'req.
 
 		
 app.post('/login', function (req,res,next) {
-		console.log ('Attempt to login as ' + req.body.username);
+		console.log ('login: Attempt to login as ' + req.body.username);
 		var sess = req.session;
 		//Properties on req.session are automatically saved on a response
 		sess.username = req.body.username;
-		users_collection[sess.username] = {department: 'IT', completed_quiz: []};
+		users_collection[sess.username] = {points: 0, department: 'IT', picture_url: '/image/keith.jpg', completed_events: {}};
 
-		createEvents(users_collection[req.body.username], null);
-		res.send({'username' : sess.username});
+		createEvents(req.body.username, null);
+		res.send({username: sess.username, userdata: users_collection[sess.username]});
 });
 
+var event_index = 1;
 var events_by_user = {}
-function createEvents(user, just_completed_quiz) {
+function createEvents(user, just_completed) {
+	console.log ('createEvents :' + user + ', just_completed : ' + just_completed);
 	
-	for (var i in quiz_collection) {
-		var q = quiz_collection[i];
-		var selected = true, newlyselected = false;
-		for (var needtocomplete in q.forwho.completed) {
-			if (just_completed_quiz == needtocomplete ) {
+	for (var i in event_collection) {
+		var e = event_collection[i];
+		console.log ('createEvents : checking item : ' + i);
+		
+		var event = null, 
+				results_data = null,
+				selected = true, 
+				newlyselected = false;
+				
+		for (var needtocomplete in e.forwho.completed) {
+			console.log ('createEvents: checking prereq for event, required : ' + needtocomplete + ', is it in ' + JSON.stringify(users_collection[user].completed_events) );
+			if (just_completed == needtocomplete ) {
 				newlyselected = true;
 			}
-			if (! (needtocomplete in user.completed_quiz)) {
-				seleced = false; break;
+			var hascompleted = users_collection[user].completed_events[needtocomplete];
+			if ((!hascompleted) || hascompleted.passed == false) {
+			//if (! (needtocomplete in users_collection[user].completed_events)) {
+				selected = false; break;
 			}
 		}
-		if ((!selected) || (just_completed_quiz != null && newlyselected == false)) continue;
+		if (((!selected) || (just_completed != null && newlyselected == false))) continue;
+		// 100 points for just getting a new event
+		users_collection[user].points = users_collection[user].points + 50;
+		console.log ('createEvents: points: adding ' + '50' + ', total now : ' +users_collection[user].points);
+
 		
-		var event = {
-			id: i,
-			type: "QUIZ",
-			timestamp: currentTimestamp(),
+		
+		event = {
+			index: event_index++,
+			timestamp: new Date().getTime(),
 			active: true,
-			data: q
+			item_id: i,
+			item_type: e.type,
+			item_data: e,
+			results_data: users_collection[user].completed_events[i]
 		};
-				
-		if (!events_by_user[user])
-			events_by_user[user] = [];	
+		
+			
+		if (!events_by_user[user])	events_by_user[user] = [];	
 		events_by_user[user].push(event);
-		console.log("added event " + user+ " : " +JSON.stringify(event));
+		console.log('createEvents: ADDED EVENT [' + event.index +  '] [' + event.item_id +'], results_data ' + results_data  + ', newlyselected : '+ newlyselected);
 	}
 }
 
 var maxAge = 60;
-function nextEvent(user, lasteventprocessed) {
+function nextEvent(user, lastindexprocessed) {
     if (!events_by_user[user]) return null;
-    if (!lasteventprocessed) lasteventprocessed = 0;
+    if (!lastindexprocessed) lastindexprocessed = 0;
     
+    console.log ('nextEvent: from ' + user + ', lastindexprocessed : ' +  lastindexprocessed);
     var event;
-    var minTimestamp = currentTimestamp() - (maxAge * 1000);
+    var minTimestamp = new Date().getTime() - (maxAge * 1000);
     for(var i in events_by_user[user]) {
     	var e = events_by_user[user][i];
-        // expire event (event generated, not consumed by longpoll, throu away)
-        if (e.timestamp < minTimestamp) {
-            console.log (user +  " expired " + JSON.stringify(event));
-            e.active = false;
-            continue;
-        } else if (e.timestamp > lasteventprocessed) {
-        		event = e;
-        		break;
-        }
+    	console.log ('nextEvent: found event '+ e.item_id + ', checking index : ' + e.index);
+			// expire event (event generated, not consumed by longpoll, throu away)
+			if (e.timestamp < minTimestamp) {
+				console.log ('nextEvent: timestamp check [' + e.index +  "] expired " + JSON.stringify(event));
+					e.active = false;
+					continue;
+			} else if (e.index > lastindexprocessed) {
+				console.log ('nextEvent: return ' + e.index);
+				return e;
+			}
     }
-    return event;
 }
 
 
 function notify_long_connection_by_user(user) {	
 	// started notify //
 	if (!long_connections_by_user[user]) {
-		console.log ("no longpolling requests for " + user + ", do nothing");
+		console.log ("notify_long_connection_by_user: no longpolling requests for " + user + ", do nothing");
 	} else {
 		for (var i=0; i < long_connections_by_user[user].length; i++) {
 			var req_info = long_connections_by_user[user][i];
 			if (!req_info.completed) {
 				
-				console.log ('got active connection for user ' + user + ', send event data, and clear the timeout');
+				console.log ('notify_long_connection_by_user: got active connection for user ' + user);
 				
 				var event = nextEvent(user, req_info.lasteventprocessed);
-				if (!event) {
-					req_info.request.resume();
-					req_info.response.end (JSON.stringify(event));
+				console.log ('notify_long_connection_by_user: ' + event);
+				if (event) {
+					console.log ('notify_long_connection_by_user: resume request & send event data' + event.index);
+					
 					clearTimeout(req_info.timeoutid);
 					req_info.completed = true;
+					
+					req_info.request.resume();
+					event['my_points'] = users_collection[user].points;
+					req_info.response.send (JSON.stringify(event));
+					
 				}
 			}
 		}
 	}
-	//  finished notify //
 }
 
+var PASS_SCORE = 100;
 app.post('/donequiz', function (req,res,next) {
 		
 	var user = req.session.username;
-		
-	// check the required parameters
 	if (!user) {
 		res.send ('Please Login', 400);
 		return;
 	} 
 
-	console.log ('Attempt to requester complted quiz' + user);
+	
+	var qid = req.body.id,
+			score = req.body.score,
+			quesTried = req.body.quesTried,
+			now_passed = (req.body.quesTried>0 && req.body.score>=PASS_SCORE),
+			aready_passed = false;
+			
+			console.log ('donequiz: complted quiz:' + user + ', quiz : ' + qid + ', score ' + score + ', quesTried : ' + quesTried + ', now_passed : ' + now_passed);
+	// need to of least tryed one question to register quiz attempt!
+	if ( quesTried > 0) {
+		
+		var alreadydone = users_collection[user].completed_events;
+		
+		if (!alreadydone[qid]) { // first atemmpt
+			alreadydone[qid] = { passed: now_passed, score: score, date: new Date(), attempts: 1, bestscore: score};
+			var points_award = score * event_collection[qid].points/100;
+			
+			users_collection[user].points = users_collection[user].points + points_award
+			console.log ('points: adding ' + points_award + ', total now : ' +users_collection[user].points);
+		} else { // NOT first attempt
+			aready_passed = alreadydone[qid].passed;
+			alreadydone[qid].attempts = alreadydone[qid].attempts + 1;
+			alreadydone[qid].bestscore = Math.max(alreadydone[qid].bestscore, score);
+			if (!aready_passed) alreadydone[qid].passed = now_passed;
+		} 
 
-	var qid = req.body.id;
-	var score = req.body.score;
-	users_collection[user].completed_quiz.push({ id: qid, score: score});
-	createEvents (user, qid);
-
+		console.log ('donequiz: create results event ' + JSON.stringify(alreadydone[qid]));
+		// create event to register new results of quiz
+		event = {
+			index: event_index++,
+			timestamp: new Date().getTime(),
+			active: true,
+			item_id: qid,
+			item_type: "QUIZ",
+			results_data: alreadydone[qid]
+		};
+		if (!events_by_user[user]) events_by_user[user] = [];	
+		events_by_user[user].push(event);
+	}
+	
+	// update points in response
+	res.send({my_points: users_collection[user].points});
+	
+	if (quesTried > 0) {
+		if ((!aready_passed) && now_passed) {
+			// just passwd new quiz, hunt for new unlocks!!
+			createEvents (user, qid);
+		}
+		notify_long_connection_by_user(user)
+	}
 });
 
 /**
@@ -191,7 +314,7 @@ var long_connections_by_user = {};
 app.get('/longpoll/:lasteventprocessed', function (req, res, next) {
 	var user = req.session.username,
 			lasteventprocessed = req.params.lasteventprocessed;
-
+	console.log ('longpoll: got request from ' + user);
 	// check the required parameters
 	if (!user) {
 		res.send ('Please Login', 400);
@@ -201,13 +324,13 @@ app.get('/longpoll/:lasteventprocessed', function (req, res, next) {
 
 	var event = nextEvent(user, lasteventprocessed);
 	if (!event) {
-		console.log ('got request, pause it, no event to send');
+		console.log ('longpoll: pause it, no event to send');
 
 		var req_info = { request: req, response: res, lasteventprocessed: lasteventprocessed, completed: false};
 		req_info.timeoutid = setTimeout( function () { 
-			console.log ('timeout pulse, what variables are still in scope?\n');
+			console.log ('longpoll:  timeout pulse');
 			req_info.request.resume();
-			req_info.response.end('no activity pulce');
+			req_info.response.send({type: "PULSE"});
 			req_info.completed = true;
 			 }, connectionTimeout * 1000); 
 
@@ -215,15 +338,24 @@ app.get('/longpoll/:lasteventprocessed', function (req, res, next) {
 			long_connections_by_user[user] = [];  
 		long_connections_by_user[user].push(req_info);
 		req.pause();
-		console.log ('stored and paused request');
+		console.log ('longpoll: stored and paused request');
 
 	} else {
-			res.send(JSON.stringify(event));
-			console.log (req.params.user + " : " + requestId +  " sent " + JSON.stringify(event));
+			console.log ('longpoll: got event to send to user');
+			event['my_points'] = users_collection[user].points;
+			setTimeout (function() {  // ADD A 1 SECOND DELAY - JUST FOR EFFECT!!!
+				res.send(JSON.stringify(event));
+				console.log ('longpoll sent :' + event.index);
+			}, 1000);
 	}
 });
 
+app.get ('/stream/:filename', function (req,res,next) {
+	var fn = __dirname+'/public/media/' +req.params;
+	res.sendfile (fn);
+});
 
+/*
 app.get('/post/:user/:name/:desc', function(req, res) {
 
 	var user = req.params.user,
@@ -285,28 +417,8 @@ app.get('/post/:user/:name/:desc', function(req, res) {
 		res.send(200, null);
 	}
 });
+*/
 
 app.listen(port);
 console.log ('Server started on port ' + port);
 
-
-
-
-function currentTimestamp() {
-    return new Date().getTime();
-}
-
-
-// WEB SOCKET ??
-/*
-var io = require('socket.io');
-var lio = io.listen(server)
-
-
-lio.sockets.on ('connection', function (socket) {
-	 socket.emit('news', { hello: 'world' });
-  socket.on('my other event', function (data) {
-    console.log(data);
-  });
-});
-*/

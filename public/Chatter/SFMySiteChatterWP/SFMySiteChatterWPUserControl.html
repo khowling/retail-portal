@@ -1,0 +1,758 @@
+﻿<%@ Assembly Name="$SharePoint.Project.AssemblyFullName$" %>
+<%@ Assembly Name="Microsoft.Web.CommandUI, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" %>
+<%@ Register TagPrefix="SharePoint" Namespace="Microsoft.SharePoint.WebControls"
+    Assembly="Microsoft.SharePoint, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" %>
+<%@ Register TagPrefix="Utilities" Namespace="Microsoft.SharePoint.Utilities" Assembly="Microsoft.SharePoint, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" %>
+<%@ Register TagPrefix="asp" Namespace="System.Web.UI" Assembly="System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" %>
+<%@ Import Namespace="Microsoft.SharePoint" %>
+<%@ Register TagPrefix="WebPartPages" Namespace="Microsoft.SharePoint.WebPartPages"
+    Assembly="Microsoft.SharePoint, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" %>
+<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="SFMySiteChatterWPUserControl.ascx.cs"
+    Inherits="SalesForce.ChatterWP2010.SFMySiteChatterWPUserControl" %>
+<head>
+    <link id="Link1" rel="stylesheet" type="text/css" runat="server" href="~/_layouts/STYLES/SFChatterWP/global.css" />
+</head>
+<script src="/_layouts/1033/SFChatterWP/jquery-1.6.2.js" type="text/javascript"></script>
+<script src="/_layouts/1033/SFChatterWP/jquery.expander.js" type="text/javascript"></script>
+<script src="/_layouts/1033/SFChatterWP/jquery.textarea-expander.js" type="text/javascript"></script>
+<script src="/_layouts/1033/SFChatterWP/jquery.autocomplete.js" type="text/javascript"></script>
+<script type="text/javascript">
+    function btnOnClientClick() { document.getElementById(btnChatterLoginID).style.display = 'none'; oauthpopup({ path: WebRelativeUrl + '/_layouts/SFChatterWP/oAuthLoginPage.aspx?CK=' + document.getElementById("<%=hdnCK.ClientID%>").value + '&CS=' + document.getElementById("<%=hdnCS.ClientID%>").value + '&CallBackURL=' + document.getElementById("<%=hdnCallbackURL.ClientID%>").value, callback: function () { var redirectUrl = window.location.toString(); if (redirectUrl.indexOf("?IsChild=false") == -1) redirectUrl = window.location.toString() + "?IsChild=false"; window.open(redirectUrl, '_self', 'resizable,location,menubar=no,toolbar=no,status') } }) } function oauthpopup(options) { options.callback = options.callback || function () { window.location.reload() }; var that = this; that._oauthWindow = window.open(options.path, 'ConnectWithOAuth', "location=0,menubar=0,resizable=0,toolbar=0,status=1,scrollbars=1,height=500,left=240,top=150,width=690"); that._oauthInterval = window.setInterval(function () { if (that._oauthWindow.closed) { window.clearInterval(that._oauthInterval); options.callback() } }, 1000) } function OpenDialog() { var options = SP.UI.$create_DialogOptions(); options.url = WebRelativeUrl + "/_layouts/SFChatterWP/SalesChatterFileUpload.aspx?FromWebPart=Yes"; options.width = 700; options.height = 600; options.dialogReturnValueCallback = CloseCallback; SP.UI.ModalDialog.showModalDialog(options) } var messageId; function CloseCallback(result, target) { var divAttachFile = document.getElementById("<%=divAttachFile.ClientID%>"); var divFileUpload = document.getElementById("<%=divFileUpload.ClientID%>"); if (result === SP.UI.DialogResult.OK) { divFileUpload.style.display = 'none'; document.getElementById("<%=documentDiv.ClientID%>").style.display = 'block'; var fileurl = target; var tempfile1 = fileurl.substring(fileurl.lastIndexOf('/') + 1); var tempfile2 = tempfile1.substring(tempfile1.lastIndexOf('/') + 1); var filename = tempfile2.split("#"); document.getElementById('path').innerHTML = filename[0]; document.getElementById("<%=hdnSharePointFilePath.ClientID%>").value = target + "#FromSharePoint" } else { if (document.getElementById("<%=documentDiv.ClientID%>").style.display == 'block') { divAttachFile.style.display = 'none' } else if (divAttachFile.style.display == 'block') { divFileUpload.style.display = 'none' } } } function OpenDialogForUserList(sFeedID, sUserID, sCK, sCS) { var options1 = SP.UI.$create_DialogOptions(); options1.url = WebRelativeUrl + "/_layouts/SFChatterWP/LikesUserList.aspx?FID=" + sFeedID + "&UID=" + sUserID + "&CK=" + sCK + "&CS=" + sCS + "&WebUrl=" + CurrentWebUrl; options1.width = 445; options1.height = 420; SP.UI.ModalDialog.showModalDialog(options1) } function showUploadOptions() { var fplUpload = document.getElementById("<%=fplUpload.ClientID%>"); var divFileUpload = document.getElementById("<%=divFileUpload.ClientID%>"); var divAttachFile = document.getElementById("<%=divAttachFile.ClientID%>"); var divLinkPost = document.getElementById("<%=divLinkPost.ClientID%>"); divLinkPost.style.display = 'none'; document.getElementById("<%=hdnSharePointFilePath.ClientID%>").value = ""; document.getElementById("<%=txtFileName.ClientID%>").value = ""; fplUpload.value = null; divFileUpload.style.display = 'block'; divAttachFile.style.display = 'none' } function compUploadClick() { var divFileUpload = document.getElementById("<%=divFileUpload.ClientID%>"); var compUploadDiv = document.getElementById("<%=compUploadDiv.ClientID%>"); var divImgBtnShareFrmComp = document.getElementById("<%=divImgBtnShareFrmComp.ClientID%>"); var divimagShareFrmComp = document.getElementById("<%=divimagShareFrmComp.ClientID%>"); divFileUpload.style.display = 'none'; compUploadDiv.style.display = 'block'; divImgBtnShareFrmComp.style.display = 'none'; divimagShareFrmComp.style.display = 'block' } function imgCloseClick() { var divFileUpload = document.getElementById("<%=divFileUpload.ClientID%>"); var divAttachFile = document.getElementById("<%=divAttachFile.ClientID%>"); var documentDiv = document.getElementById("<%=documentDiv.ClientID%>"); var compUploadDiv = document.getElementById("<%=compUploadDiv.ClientID%>"); var fplUpload = document.getElementById("<%=fplUpload.ClientID%>"); var txtFileName = document.getElementById("<%=txtFileName.ClientID%>"); var txtDescription = document.getElementById("<%=txtDescription.ClientID%>"); var errLabel = document.getElementById("<%=feedLengthError.ClientID%>"); var lblErrMsg = document.getElementById("<%=lblErrMsg.ClientID %>"); var descLengthError = document.getElementById("<%=descLengthError.ClientID %>"); var lblValidationMsg = document.getElementById("<%=lblValidationMsg.ClientID %>"); var lblFileCheck = document.getElementById("<%=lblFileCheck.ClientID %>"); errLabel.style.display = 'none'; lblErrMsg.style.display = 'none'; divAttachFile.style.display = 'block'; divFileUpload.style.display = 'none'; documentDiv.style.display = 'none'; compUploadDiv.style.display = 'none'; descLengthError.style.display = 'none'; lblValidationMsg.style.display = 'none'; lblFileCheck.style.display = 'none'; txtFileName.value = ""; txtDescription.value = ""; var originaFileUpload = document.getElementsByName('<%= fplUpload.UniqueID %>')[0]; originaFileUpload.value = ""; var dummyFileUpload = originaFileUpload.cloneNode(false); dummyFileUpload.onchange = originaFileUpload.onchange; originaFileUpload.parentNode.replaceChild(dummyFileUpload, originaFileUpload) } function ShowDeleteImage(imageID) { var btnDeletePost = document.getElementById(imageID); btnDeletePost.style.display = 'block' } function HideDeleteImage(imageID) { var btnDeletePost = document.getElementById(imageID); btnDeletePost.style.display = 'none' } function CnfrmPostDel() { return confirm('Are you sure you want to delete this post?') } function CnfrmCmntDel() { return confirm('Are you sure you want to delete this comment?') } function imgCloseLinkClick() { var divLinkPost = document.getElementById("<%=divLinkPost.ClientID%>"); var txtLinkUrl = document.getElementById("<%=txtLinkUrl.ClientID%>"); var txtLinkName = document.getElementById("<%=txtLinkName.ClientID%>"); var divAttachFile = document.getElementById("<%=divAttachFile.ClientID%>"); var LinkLengthError = document.getElementById("<%=LinkLengthError.ClientID%>"); var lblLinkUrlValidation = document.getElementById("<%=lblLinkUrlValidation.ClientID%>"); var LinkNameError = document.getElementById("<%=LinkNameError.ClientID%>"); var RegExpLinkValidator = document.getElementById("<%=RegExpLinkValidator.ClientID%>"); ValidatorEnable(RegExpLinkValidator, false); divLinkPost.style.display = 'none'; divAttachFile.style.display = 'block'; txtLinkUrl.value = ""; txtLinkName.value = ""; LinkLengthError.style.display = 'none'; lblLinkUrlValidation.style.display = 'none'; LinkNameError.style.display = 'none' } function pageLoad() { showMoreLink(); jQuery("textarea[class*=expand]").TextAreaExpander() } function showMoreLink() { var maxlines = 6; var lineheight = 13; var maxheight = (maxlines * lineheight); var allowedExtraLines = 3; var showText = "More"; var hdnMoreFeedId = document.getElementById("<%=hdnMoreFeedId.ClientID%>"); $(".expandmorelink").each(function () { var text = $(this); var feedID; if (text.height() > maxheight + allowedExtraLines * lineheight) { text.css({ 'overflow': 'hidden', 'line-height': lineheight + 'px', 'height': maxheight + 'px' }); var link = $('<a href="#"> ' + showText + '</a>'); var dots = $('<span>...</span>'); link.click(function (event) { event.preventDefault(); feedID = $(text).find(":input").val(); if (hdnMoreFeedId.value != "") { hdnMoreFeedId.value = hdnMoreFeedId.value + "," + feedID } else hdnMoreFeedId.value = feedID; if (text.css('height') == 'auto') { text.css('height', maxheight + 'px') } else { $(this).remove(); dots.remove(); text.css('height', 'auto') } }); var linkDiv = $('<div style="display:inline;padding-left:5px;" ></div>'); linkDiv.append(dots); linkDiv.append(link); $(this).after(linkDiv) } }) } function getNameFromPath(strFilepath, target) { var lblFileCheck = document.getElementById("<%=lblFileCheck.ClientID %>"); if (strFilepath.length == 0) { var divImgBtnShareFrmComp = document.getElementById("<%=divImgBtnShareFrmComp.ClientID%>"); var divimagShareFrmComp = document.getElementById("<%=divimagShareFrmComp.ClientID%>"); var fplUpload = document.getElementById("<%=fplUpload.ClientID%>"); var txtFileName = document.getElementById("<%=txtFileName.ClientID %>"); divImgBtnShareFrmComp.style.display = 'none'; divimagShareFrmComp.style.display = 'block'; txtFileName.value = ""; lblFileCheck.style.display = 'block'; lblFileCheck.innerHTML = "Please choose a file to upload." } else { lblFileCheck.style.display = 'none'; var objRE = new RegExp(/([^\/\\]+)$/); var strName = objRE.exec(strFilepath); if (strName == null) { return null } else { document.getElementById("<%=hdnSharePointFilePath.ClientID%>").value = "FromComputer"; var hdnFileUploadPath = document.getElementById("<%=hdnFileUploadPath.ClientID%>"); var divImgBtnShareFrmComp = document.getElementById("<%=divImgBtnShareFrmComp.ClientID%>"); var divimagShareFrmComp = document.getElementById("<%=divimagShareFrmComp.ClientID%>"); hdnFileUploadPath.value = strFilepath; var extIndex = strName[0].lastIndexOf("."); var fileName = strName[0].substring(0, extIndex); document.getElementById("<%=txtFileName.ClientID%>").value = fileName; divImgBtnShareFrmComp.style.display = 'block'; divimagShareFrmComp.style.display = 'none'; var lblErrMsg = document.getElementById("<%=lblErrMsg.ClientID %>"); lblErrMsg.style.display = 'none'; var lblValidationMsg = document.getElementById("<%=lblValidationMsg.ClientID %>"); lblValidationMsg.style.display = 'none'; return strName[0] } } } function showLinkUploadOptions() { document.getElementById("<%=hdnSharePointFilePath.ClientID%>").value = ""; var divAttachFile = document.getElementById("<%=divAttachFile.ClientID%>"); var divLinkPost = document.getElementById("<%=divLinkPost.ClientID%>"); document.getElementById("<%=txtLinkUrl.ClientID%>").value = "http://"; document.getElementById("<%=txtLinkName.ClientID%>").value = ""; divLinkPost.style.display = 'block'; divAttachFile.style.display = 'none'; var RegExpLinkValidator = document.getElementById("<%=RegExpLinkValidator.ClientID%>"); RegExpLinkValidator.enabled = true } function MouseToolTip(imgPicId, imgPicUrl, ActorId, ActorName, IsFollow, Phone, subscriptionUrl, IsChatterGuest) { var bottomPosition = $(document).height() / 2; var divID = $("#dvUserAction"); imageId = "#" + imgPicId; $("#<%=hdnPersistDiv.ClientID%>").val(imageId); $("#<%=hdnFollowUserID.ClientID%>").val(ActorId); $("#<%=hdnSubscriptionUrl.ClientID%>").val(subscriptionUrl); $("#<%=hdnFollowUserName.ClientID%>").val(ActorName); $("#<%=hdnPhotoURL.ClientID%>").val(imgPicUrl); Id = ActorId; Name = ActorName; var pos = $(imageId).offset(); setDivControls(imgPicUrl, ActorId, ActorName, IsFollow, Phone, IsChatterGuest); $("#<%=hdnPosition.ClientID%>").val(pos.top); $("#<%=hdnLeftPostion.ClientID%>").val(pos.left); setDivPosition(pos.top, pos.left, bottomPosition, ActorId); $(imageId).hover(function () { var pos = $(imageId).offset(); setDivControls(imgPicUrl, ActorId, ActorName, IsFollow, Phone, IsChatterGuest); $("#<%=hdnPosition.ClientID%>").val(pos.top); $("#<%=hdnLeftPostion.ClientID%>").val(pos.left); setDivPosition(pos.top, pos.left, bottomPosition, ActorId) }, function () { $(divID).hide() }); $(divID).hover(function () { setDivControls(imgPicUrl, ActorId, ActorName, IsFollow, Phone, IsChatterGuest) }, function () { $(divID).hide() }); $("#UnFollowImg").hover(function () { $("#UnFollowImg").attr('src', '/_layouts/images/SFChatterWP/close2.png') }, function () { $("#UnFollowImg").attr('src', '/_layouts/images/SFChatterWP/close.png') }) } function setDivControls(imgPicUrl, ActorId, ActorName, IsFollow, Phone, IsChatterGuest) { var divID = $("#dvUserAction"); $(divID).show(); lnkFollowID = $("#<%=lnkFollowUser.ClientID%>"); lnkUnFollowID = $("#<%=unfollow.ClientID%>"); lnkSendId = $("#<%=lnkSendMsg.ClientID%>"); loggedInUserId = $("#<%=hdnMyUserID.ClientID%>").val(); $("#<%=imgUserPic.ClientID%>").attr({ title: ActorName, src: imgPicUrl }); $("#<%=hUserName.ClientID%>").attr("href", sAPIEndPoint + "/" + ActorId); $("#<%=hUserName.ClientID%>").text(ActorName); if (loggedInUserId == ActorId) { $(lnkFollowID).hide(); $(lnkSendId).hide(); $(lnkUnFollowID).hide() } else { if (IsChatterGuest == 'True') { $(lnkFollowID).hide(); $(lnkUnFollowID).hide() } else if (IsFollow == 'yes') { $(lnkFollowID).show(); $(lnkUnFollowID).hide() } else { $(lnkFollowID).hide(); $(lnkUnFollowID).show() } $(lnkSendId).show() } if (Phone != '') { if (Phone.indexOf(":") == -1) { $("#<%=lblPhone1.ClientID %>").text(Phone.split("*")[0]); $("#<%=lbltype1.ClientID %>").text(Phone.split("*")[1]); $("#<%=lblPhone2.ClientID %>").text(''); $("#<%=lbltype2.ClientID %>").text('') } else { var phone1 = Phone.split(":")[0]; var phone2 = Phone.split(":")[1]; $("#<%=lblPhone1.ClientID %>").text(phone1.split("*")[0]); $("#<%=lbltype1.ClientID %>").text(phone1.split("*")[1]); $("#<%=lblPhone2.ClientID %>").text(phone2.split("*")[0]); $("#<%=lbltype2.ClientID %>").text(phone2.split("*")[1]) } } else { $("#<%=lblPhone1.ClientID %>").text(''); $("#<%=lbltype1.ClientID %>").text(''); $("#<%=lblPhone2.ClientID %>").text(''); $("#<%=lbltype2.ClientID %>").text('') } } function setDivPositionAfterClick(imgPicId, imgPicUrl, ActorId, ActorName, IsFollow, Phone, subscriptionUrl, IsChatterGuest, TopPosition, LeftPostion) { var bottomPosition = $(document).height() / 2; var divID = $("#dvUserAction"); imageId = "#" + imgPicId; $("#<%=hdnPersistDiv.ClientID%>").val(imageId); $("#<%=hdnFollowUserID.ClientID%>").val(ActorId); $("#<%=hdnSubscriptionUrl.ClientID%>").val(subscriptionUrl); $("#<%=hdnFollowUserName.ClientID%>").val(ActorName); $("#<%=hdnPhotoURL.ClientID%>").val(imgPicUrl); Id = ActorId; Name = ActorName; setDivControls(imgPicUrl, ActorId, ActorName, IsFollow, Phone, IsChatterGuest); $("#<%=hdnPosition.ClientID%>").val(TopPosition); $("#<%=hdnLeftPostion.ClientID%>").val(LeftPostion); setDivPosition(TopPosition, LeftPostion, bottomPosition, ActorId); $(imageId).hover(function () { var pos = $(imageId).offset(); setDivControls(imgPicUrl, ActorId, ActorName, IsFollow, Phone, IsChatterGuest); $("#<%=hdnPosition.ClientID%>").val(TopPosition); $("#<%=hdnLeftPostion.ClientID%>").val(LeftPostion); setDivPosition(TopPosition, LeftPostion, bottomPosition, ActorId) }, function () { $(divID).hide() }); $(divID).hover(function () { setDivControls(imgPicUrl, ActorId, ActorName, IsFollow, Phone, IsChatterGuest) }, function () { $(divID).hide() }); $("#UnFollowImg").hover(function () { $("#UnFollowImg").attr('src', '/_layouts/images/SFChatterWP/close2.png') }, function () { $("#UnFollowImg").attr('src', '/_layouts/images/SFChatterWP/close.png') }) } function setDivPosition(TopPostion, LeftPostion, bottomPosition, ActorId) { var divID = $("#dvUserAction"); $(divID).show(); arrowUp = $("#<%=arrow_up.ClientID%>"); arrowDown = $("#<%=arrow_down.ClientID%>"); loggedInUserId = $("#<%=hdnMyUserID.ClientID%>").val(); var height = ($(divID).height() - 10); height = TopPostion - height; if (bottomPosition < TopPostion) { $(divID).offset({ top: height, left: LeftPostion }); $(divID).show(); $(arrowDown).show(); $(arrowUp).hide() } else { $(divID).offset({ top: TopPostion + 5, left: LeftPostion }); $(divID).show(); $(arrowDown).hide(); $(arrowUp).show() } } function OpenSendMsgDialog() { var divID = $("#dvUserAction"); $(divID).hide(); var sendOptions = SP.UI.$create_DialogOptions(); sendOptions.url = WebRelativeUrl + "/_layouts/SFChatterWP/SendMessage.aspx?ID=" + Id + "&Name=" + Name + "&AT=" + document.getElementById("<%=hdnAccessToken.ClientID%>").value + "&IU=" + document.getElementById("<%=hdnInstanceUrl.ClientID%>").value + "&LGUSER=" + document.getElementById("<%=hdnMyUserID.ClientID%>").value + "&ACSUC=" + sAutoCompleteSearchUserCount; sendOptions.title = "Send a Message"; sendOptions.width = 550; sendOptions.height = 400; SP.UI.ModalDialog.showModalDialog(sendOptions) } BindLoadEvents(); function BindLoadEvents() { $(document).ready(function () { try { document.getElementById('s4-workspace').onscroll = function () { $(".ac_results").hide() } } catch (Exception) { } var controlID; var currentControl; var lastIndex; var currentCtrlText; $(".autoCompleteClass").autocomplete(HandlerUrl, { width: $(this).outerWidth(), extraParams: { CP: function () { id = $(this).attr('id'); var textarea = document.getElementById(id); if ($.browser.mozilla) return getCaret(textarea) + ',' + 0; else return getCaret(textarea) + ',' + 1 } }, max: sAutoCompleteSearchUserCount, formatItem: function (data, i, n, value) { if (value != "NO RESULT") { if (value.split("*")[2] == "user") { var returnText = "<div id='dvAutocompleteResult' style='padding-left:15px;vertical-align:middle;'>"; returnText += "<img alt='' src='" + value.split("*")[1] + ImgAppend + "' height='16' width='16'/>&nbsp;&nbsp;&nbsp;" + value.split("*")[0]; returnText += "</div>"; return returnText } else { var returnText = "<div id='dvAutocompleteResult' style='padding-left:10px;'>"; returnText += value.split("*")[0]; returnText += "</div>"; return returnText } } else { if ($.browser.mozilla) { $("#dvAutocompleteResult").val(''); $(".ac_results").hide(); $("#dvAutocompleteResult").hide(); $("#dvAutocompleteResult").removeAttr("style") } else { $("#dvAutocompleteResult").removeAttr("style"); return null } } }, formatResult: function (data, value) { if (value.split("*")[2] == "user") { if ($.browser.mozilla) { currentControl = document.getElementById(controlID); var position = value.split("*")[4]; var FirstVal = $(currentControl).val().substring(0, position); FirstVal = FirstVal.substring(0, (FirstVal.lastIndexOf("@") + 1)); var SecondVal = $(currentControl).val().substring(position, $(currentControl).val().length); return FirstVal + "[" + value.split("*")[0] + "]" + SecondVal } else { currentControl = document.getElementById(controlID); var position = value.split("*")[4]; var actualText = $(currentControl).val(); var FirstVal = actualText.substring(0, position); FirstVal = FirstVal.substring(0, (FirstVal.lastIndexOf("@") + 1)); var totalBreaks = FirstVal.split("\n"); var SecondVal = actualText.substring(position - (totalBreaks.length - 1), actualText.length); return FirstVal + "[" + value.split("*")[0] + "]" + SecondVal } } if (value.split("*")[1] == "msg") { currentControl = document.getElementById(controlID); currentCtrlText = $(currentControl).val(); return currentCtrlText } } }); $(".autoCompleteClass").keyup(function () { controlID = $(this).attr("id"); id = $(this).attr('id'); var textarea = document.getElementById(id); var text = $(this).val(); cursor = getCaret(textarea) }); $(".autoCompleteClass").result(function (event, data, formatted) { var hdnMentionsUserList = document.getElementById("<%=hdnMentionsUserList.ClientID%>"); var dataParts = data.toString().split("*"); var jsonObj; if (hdnMentionsUserList.value != "") { hdnMentionsUserList.value = hdnMentionsUserList.value + "," } jsonObj = hdnMentionsUserList.value + '{"UserName":"' + "@[" + dataParts[0] + "]" + '",' + '"ID":"' + dataParts[dataParts.length - 3] + '"' + '}'; hdnMentionsUserList.value = jsonObj }); function getCaret(el) { if (el.selectionStart) { return el.selectionStart } else if (document.selection) { el.focus(); var r = document.selection.createRange(); if (r == null) { return 0 } var re = el.createTextRange(), rc = re.duplicate(); re.moveToBookmark(r.getBookmark()); rc.setEndPoint('EndToStart', re); return rc.text.length } return 0 } function CheckCommentLength(txtComment) { var errLabel = txtComment.next(); var divEComment = txtComment.parent().next(); var divDComment = divEComment.next(); var $this = txtComment; var val = $this.val(); if (val.length >= 1000) { errLabel.show(); divEComment.hide(); divDComment.show() } else { errLabel.hide(); divEComment.show(); divDComment.hide() } } function CheckFeedLength(txtFeed) { var $this = txtFeed; var val = $this.val(); var errLabel = $this.next(); var divActive = $(".divActive"); var divInactive = $(".divInactive"); if (val.length >= 1000) { errLabel.show(); divActive.hide(); divInactive.show() } else { errLabel.hide(); divActive.show(); divInactive.hide() } } function CheckDescLength(txtDesc) { var $this = txtDesc; var val = $this.val(); var errLabel = $this.next().next(); var divActive = $(".divActiveShareFrmComp"); var divInactive = $(".divInactiveShareFrmComp"); var fplUpload = $(".fplUpload"); var txtFileName = $(".txtFileName"); if (val.length >= 1000) { errLabel.show(); divActive.hide(); divInactive.show() } else { errLabel.hide(); if (fplUpload.val().length > 0 && txtFileName.val().length > 0) { divActive.show(); divInactive.hide() } } } function CheckFileNameLength(txtFileName) { var $this = txtFileName; var val = $this.val(); var divActive = $(".divActiveShareFrmComp"); var divInactive = $(".divInactiveShareFrmComp"); var fplUpload = $(".fplUpload"); var lblErrMsg = $this.next().next(); var lblValidationMsg = lblErrMsg.next(); if (val.length > 0 && fplUpload.val().length > 0) { if (val.length >= 256) { divActive.hide(); divInactive.show(); $this.val(val.substring(0, 260)); lblErrMsg.show(); lblValidationMsg.hide() } else { $(".hdnSharePointFilePath").next().val("FromComputer"); divActive.show(); divInactive.hide(); lblErrMsg.hide(); lblValidationMsg.hide() } } else { if (val.length == 0) { lblValidationMsg.show(); lblErrMsg.hide() } else { lblValidationMsg.hide(); if (val.length >= 256) lblErrMsg.show(); else lblErrMsg.hide() } divActive.hide(); divInactive.show() } } function CheckLinkUrlLength(txtLinkUrl) { var $this = txtLinkUrl; var val = $this.val(); var divActiveLinkShare = $(".divActiveLinkShare"); var divInactiveLinkShare = $(".divInactiveLinkShare"); var LinkLengthError = $(".LinkLengthError"); var lblLinkUrlValidation = $(".lblLinkUrlValidation"); if (val.length > 0) { if (val.length > 1000) { $this.val(val.substring(0, 1000)); LinkLengthError.show(); divActiveLinkShare.hide(); divInactiveLinkShare.show(); lblLinkUrlValidation.hide() } if (val.length < 1000) { $(".hdnSharePointFilePath").next().val("FromLink"); LinkLengthError.hide(); divActiveLinkShare.show(); divInactiveLinkShare.hide(); lblLinkUrlValidation.hide() } } else { lblLinkUrlValidation.show(); divActiveLinkShare.hide(); divInactiveLinkShare.show() } } function CheckLinkNameLength(txtLinkName) { var $this = txtLinkName; var val = $this.val(); var txtLinkUrl = $(".txtLinkUrl"); var divActiveLinkShare = $(".divActiveLinkShare"); var divInactiveLinkShare = $(".divInactiveLinkShare"); var LinkNameError = $this.next().next(); if (val.length > 255) { txtLinkName.val(val.substring(0, 255)); LinkNameError.show(); divActiveLinkShare.hide(); divInactiveLinkShare.show() } if (val.length < 255) { if (txtLinkUrl.val().length > 0) { $(".hdnSharePointFilePath").next().val("FromLink"); divActiveLinkShare.show(); divInactiveLinkShare.hide() } LinkNameError.hide() } } $(".tbCommentClass").TextAreaExpander(30); $(".tbCommentClass").keydown(function () { CheckCommentLength($(this)) }); $(".tbCommentClass").keyup(function () { CheckCommentLength($(this)) }); $(".textfield_com2").click(function () { var divActivity = $(this).parent().parent().parent(); var dslComment = $(this).parent(); var divCBox = dslComment.next(); var tbComment = divCBox.children(".Like_box_right").children(".users_comment3").children(".tbCommentClass"); var lblLengthError = tbComment.next(); divActivity.show(); dslComment.hide(); divCBox.show(); tbComment.focus(); lblLengthError.hide() }); $(".linkComment").click(function () { var divActivity = $(this).parent().parent().parent().next(); var dslComment = divActivity.children(".comment_feddbackBox").children(".Like_box_BG"); var divCBox = dslComment.next(); var tbComment = divCBox.children(".Like_box_right").children(".users_comment3").children(".tbCommentClass"); var lblLengthError = tbComment.next(); divActivity.show(); dslComment.hide(); divCBox.show(); tbComment.focus(); lblLengthError.hide() }); $(".imgBtnComment").click(function () { var txtComment = $(this).parent().prev().children(".tbCommentClass"); var divEComment = txtComment.parent().next(); var divDComment = divEComment.next(); if (typeof (Page_ClientValidate) == 'function') { if (Page_ClientValidate() == false) { return false } } if (txtComment.val().length > 0) { txtComment.attr("disabled", "disabled"); divEComment.hide(); divDComment.show() } }); $(".txtNewFeedStyle").click(function () { var $this = $(this); var val = $this.val(); if (val == "What are you working on?") { $this.val("") } $this.css("color", "#000000") }); $(".txtNewFeedStyle").keydown(function () { CheckFeedLength($(this)) }); $(".txtNewFeedStyle").keyup(function () { CheckFeedLength($(this)) }); $(".txtDescription").keydown(function () { CheckDescLength($(this)) }); $(".txtDescription").keyup(function () { CheckDescLength($(this)) }); $(".txtFileName").keydown(function () { CheckFileNameLength($(this)) }); $(".txtFileName").keyup(function () { CheckFileNameLength($(this)) }); $(".txtLinkUrl").keydown(function () { CheckLinkUrlLength($(this)) }); $(".txtLinkUrl").keyup(function () { CheckLinkUrlLength($(this)) }); $(".txtLinkName").keydown(function () { CheckLinkNameLength($(this)) }); $(".txtLinkName").keyup(function () { CheckLinkNameLength($(this)) }); $(".txtFeedNCommentSearch").keydown(function (event) { CheckFeedNCommentSearch($(this), event) }); $(".txtFeedNCommentSearch").keyup(function (event) { CheckFeedNCommentSearch($(this), event) }) }) } function CheckFeedNCommentSearch(controlID, event) { var txtFeedNCommentSearch = controlID; var keycode = (event.keyCode ? event.keyCode : (event.which ? event.which : event.charCode)); if ($(txtFeedNCommentSearch).val().length == 0) { if (keycode == 13) { $(".imgBtnSearch").focus(); return false } else { return true } } else { if (keycode == 13) { $(".imgBtnSearch").focus(); return false } else { return true } } } function filterVisibility() { var divFilter = document.getElementById("<%=drop_down_list.ClientID%>"); if (divFilter.style.display == 'inline-block') { divFilter.style.display = 'none' } else { divFilter.style.display = 'inline-block' } }
+</script>
+<body>
+    <div>
+        <asp:Timer ID="tmrAutoRefresh" Enabled="false" runat="server" OnTick="tmrAutoRefresh_Click">
+        </asp:Timer>
+        <asp:Timer ID="tmrAccessToken" Enabled="false" runat="server" OnTick="tmrAccessToken_Tick">
+        </asp:Timer>
+    </div>
+    <div id="divLogin" visible="true" runat="server" class="divLoginBg">
+        <div class="login_bg">
+        </div>
+        <div class="login_button">
+            <div id="divChatterFstLogin" runat="server">
+                <asp:ImageButton ID="btnChatterLogin" runat="server" OnClientClick="btnOnClientClick()"
+                    Height="29" Width="85" ToolTip="Chatter Login" ImageUrl="~/_layouts/images/SFChatterWP/login_btn.png" />
+            </div>
+            <table width="60%" style="margin-left: 20%; margin-right: 20%;">
+                <tr valign="top">
+                    <td width="50%" align="center">
+                        <div id="divbtnLogin" runat="server" width="120">
+                            <div>
+                                <asp:ImageButton ID="btnLogin" runat="server" Height="62" Width="62" OnClick="btnLogin_Click"
+                                    ToolTip="Chatter Login" ImageUrl="~/_layouts/images/SFChatterWP/Existing_User.png" />
+                            </div>
+                            <asp:Label ID="lblLoggedInUser" runat="server" Width="120px" CssClass="wrap" Style="text-align: center;" />
+                        </div>
+                    </td>
+                    <td align="center">
+                        <div id="divOtherUser" runat="server">
+                            <asp:ImageButton ID="btnSwitchUser" runat="server" Height="62" Width="62" OnClick="btnSwitchUser_Click"
+                                ToolTip="Login with other user" ImageUrl="~/_layouts/images/SFChatterWP/Other_User.png" />
+                            <br />
+                            <asp:Literal ID="litOtherUser" Text="Other User" runat="server" />
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <asp:Label ID="lblConfigError" runat="server" Text="Your webpart is not configured. Please contact administrator."
+                ForeColor="Red"></asp:Label>
+        </div>
+    </div>
+    <div class="main" id="divMain" visible="false" runat="server">
+        <div class="toplinks">
+            <div class="toplinks_right">
+                <asp:LinkButton ID="lnkLogOut" ToolTip="Logout" runat="server" Text="Logout!" OnClick="lnkLogOut_Click"></asp:LinkButton>
+            </div>
+        </div>
+        <div class="title_group_mysite">
+            <table style="table-layout: fixed;" width="100%">
+                <tr>
+                    <td class="middle wrap">
+                        <strong>
+                            <asp:Label ID="lblUserStatus" runat="server" Font-Bold="true"></asp:Label>
+                        </strong>
+                        <asp:Label ID="lblUserStatusDetail" runat="server"></asp:Label>
+                        <asp:LinkButton ID="lnkStatusClear" runat="server" Text="Clear" ToolTip="Clear current status"
+                            OnClick="lnkStatusClear_Click"></asp:LinkButton>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div>
+            <hr style="color: Silver; height: 0.3px;" />
+        </div>
+        <div id="divTopSearchBox">
+            <div id="loginbox">
+                <input id="txtFeedNCommentSearch" runat="server" name="username" type="text" class="SearchBox txtFeedNCommentSearch"
+                    placeholder="Search All..." /></div>
+            <div id="input_btn">
+                <asp:ImageButton ID="imgBtnSearch" runat="server" CssClass="imgBtnSearch" ToolTip="Search" ImageUrl="~/_layouts/images/SFChatterWP/searchchatter.png"
+                    OnClick="imgBtnSearch_Click" />
+            </div>
+        </div>
+        <br />
+        <div id="divNewComment" runat="server" visible="false">
+            <div class="textfield_comment">
+                <asp:TextBox ID="txtNewFeed" runat="server" MaxLength="1000" ForeColor="GrayText"
+                    TextMode="MultiLine" CssClass="expand30-2000 textfield_com txtNewFeedStyle autoCompleteClass"> </asp:TextBox>
+                <asp:Label ID="feedLengthError" runat="server" Text="Error: Your post can't have more than 1000 characters."
+                    ForeColor="Red" Style="display: none;"></asp:Label>
+            </div>
+            <div class="attach_share" id="divAttachFile" runat="server" visible="false">
+                <div class="file_attach">
+                    <div class="attach_file">
+                        Attach
+                        <asp:Image ID="imgFileIcon" ImageUrl="~/_layouts/images/SFChatterWP/ic_file.png"
+                            CssClass="file_icon" runat="server" align="absmiddle" />
+                        <a href="javascript:showUploadOptions();" id="lnkfileUpload" style="display: inline;">
+                            File</a>
+                        <asp:Image ID="Image9" ImageUrl="~/_layouts/images/SFChatterWP/ic_link.png" CssClass="file_icon"
+                            runat="server" align="absmiddle" />
+                        <a href="javascript:showLinkUploadOptions();" id="A1" style="display: inline;">Link</a>
+                    </div>
+                </div>
+                <div class="btn_share divActive" id="divActive" style="display: block;" runat="server">
+                    <asp:ImageButton ID="imgbtnShare" ToolTip="Share" runat="server" ImageUrl="~/_layouts/images/SFChatterWP/btn_share.png"
+                        Width="64" Height="23" OnClick="imgbtnShare_Click" />
+                </div>
+                <div class="btn_share divInactive" id="divInactive" style="display: none;" runat="server">
+                    <asp:Image ID="imgBtnInactive" runat="server" ImageUrl="~/_layouts/images/SFChatterWP/btn_shareInactive.png"
+                        Width="64" Height="23" />
+                </div>
+            </div>
+        </div>
+        <div class="clear-1">
+        </div>
+        <div class="Attach_file_box" id="divFileUpload" runat="server" style="display: none;">
+            <div class="File_Attach_1">
+                <div class="File_Attach_title" runat="server" id="fileCLoseDiv">
+                    <div class="Attach_title_left">
+                        <asp:Image ID="imgFile" ToolTip="Attach a File" ImageUrl="~/_layouts/images/SFChatterWP/ic_file.png"
+                            CssClass="file_icon" runat="server" align="absmiddle" />
+                        <span class="font_title2">Attach a File</span></div>
+                    <div class="Attach_title_right">
+                        <a href="#" onclick="imgCloseClick();">
+                            <asp:Image ID="imgFileClose" ToolTip="Close the publisher" runat="server" ImageUrl="~/_layouts/images/SFChatterWP/btn_close.png"
+                                Width="17" Height="16" />
+                        </a>
+                    </div>
+                </div>
+                <div class="File_upload" id="uploadOptionDiv" runat="server">
+                    <div class="File_upload_left">
+                        <a href="javascript:OpenDialog();" title="Select a file from Sharepoint">Select a file
+                            from Sharepoint</a></div>
+                    <div class="File_upload_right">
+                        <a href="javascript:compUploadClick();" title="Upload a file from your computer">Upload
+                            a file from your computer</a></div>
+                </div>
+            </div>
+            <div class="btn_share_attach">
+                <asp:Image ID="imgFileShare" runat="server" ImageUrl="~/_layouts/images/SFChatterWP/btn_shareInactive.png"
+                    Width="64" Height="23" />
+            </div>
+        </div>
+        <div class="Attach_file_box" id="compUploadDiv" style="display: none;" runat="server">
+            <div class="File_Attach">
+                <div class="File_Attach_title">
+                    <div class="Attach_title_left">
+                        <asp:Image ID="imgAttachFile" ImageUrl="~/_layouts/images/SFChatterWP/ic_file.png"
+                            CssClass="file_icon" runat="server" align="absmiddle" ToolTip="Attach a File" />
+                        <span class="font_title2">Attach a File</span></div>
+                    <div class="Attach_title_right">
+                        <a href="#" onclick="imgCloseClick();">
+                            <asp:Image ID="imgClose2" runat="server" ImageUrl="~/_layouts/images/SFChatterWP/btn_close.png"
+                                Width="17" Height="16" ToolTip="Close the publisher" />
+                        </a>
+                    </div>
+                </div>
+                <div class="File_upload2">
+                    <div class="requiredLegendContainer">
+                        <span class="requiredLegend"><span class="requiredExampleOuter"><span class="requiredExample">
+                            &nbsp;</span> </span><span class="requiredText">= Required Information</span>
+                        </span>
+                    </div>
+                    <div class="row_box">
+                        <table class="postInput">
+                            <tbody>
+                                <tr>
+                                    <th scope="row" class="rowStyle">
+                                        <label for="chatterFile">
+                                            Select a file
+                                        </label>
+                                    </th>
+                                    <td class="rowControlStyle">
+                                        <div>
+                                            <div class="requiredInput">
+                                                <div class="requiredBlock">
+                                                </div>
+                                                <asp:FileUpload ID="fplUpload" class="fplUpload" runat="server" ToolTip="Select a file"
+                                                    onchange="getNameFromPath(this.value)" oncopy="return false" onpaste="return false"
+                                                    oncut="return false" onkeypress="javascript:return false;" onkeydown="javascript:return false;" />
+                                                <asp:Label ID="lblFileCheck" runat="server" Text="Please choose a file to upload."
+                                                    CssClass="errorMsg" Style="display: none;"></asp:Label>
+                                            </div>
+                                            <div class="uploadFileSizeLimit">
+                                                <span class="fileSize">Maximum file size is 100&nbsp;MB</span>
+                                            </div>
+                                        </div>
+                                        <div class="clear-1">
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row" class="rowStyle">
+                                        <label for="fileName">
+                                            Name
+                                        </label>
+                                    </th>
+                                    <td class="rowControlStyle">
+                                        <div id="ext-gen6" class="requiredInput">
+                                            <div class="requiredBlock">
+                                            </div>
+                                            <div>
+                                                <asp:TextBox ID="txtFileName" ToolTip="Name" CssClass="textbox_245 txtFileName" runat="server"></asp:TextBox>
+                                                <br />
+                                                <asp:Label ID="lblErrMsg" runat="server" Text="This field can't have more than 255 characters."
+                                                    CssClass="errorMsg" Style="display: none;"></asp:Label>
+                                                <asp:Label ID="lblValidationMsg" runat="server" Text="Please enter a name for your file."
+                                                    CssClass="errorMsg" Style="display: none;"></asp:Label>
+                                            </div>
+                                        </div>
+                                        <div class="clear-1">
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row" class="rowStyle">
+                                        <label for="desc">
+                                            Description</label>
+                                    </th>
+                                    <td class="rowControlStyle">
+                                        <div id="ext-gen4">
+                                            <asp:TextBox ID="txtDescription" ToolTip="Description" CssClass="textbox2_245 txtDescription"
+                                                runat="server" TextMode="MultiLine"></asp:TextBox>
+                                            <br />
+                                            <asp:Label ID="descLengthError" runat="server" Text="Description field cannot have more than 1000 characters."
+                                                ForeColor="Red" Style="display: none;"></asp:Label>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="clear-1">
+                        </div>
+                    </div>
+                    <div class="clear-1">
+                    </div>
+                </div>
+            </div>
+            <div class="btn_share_attach">
+                <div class="btn_share divActive divActiveShareFrmComp" id="divImgBtnShareFrmComp"
+                    runat="server" style="display: none;">
+                    <asp:ImageButton ID="imgBtnShareFrmComp" ToolTip="Share" runat="server" ImageUrl="~/_layouts/images/SFChatterWP/btn_share.png"
+                        Width="64" Height="23" OnClick="imgbtnShare_Click" />
+                </div>
+                <div class="btn_share divInactive divInactiveShareFrmComp" id="divimagShareFrmComp"
+                    runat="server" style="display: block;">
+                    <asp:Image ID="Image3" runat="server" ImageUrl="~/_layouts/images/SFChatterWP/btn_shareInactive.png"
+                        Width="64" Height="23" />
+                </div>
+            </div>
+            <div class="clear-1">
+            </div>
+        </div>
+        <div class="Attach_file_box" id="documentDiv" style="display: none;" runat="server">
+            <div class="File_Attach">
+                <div class="File_Attach_title">
+                    <div class="Attach_title_left">
+                        <asp:Image ID="Image2" ImageUrl="~/_layouts/images/SFChatterWP/ic_file.png" CssClass="file_icon"
+                            runat="server" align="absmiddle" ToolTip="Attach a File" />
+                        <span class="font_title2">Attach a File</span></div>
+                    <div class="Attach_title_right">
+                        <a href="#" onclick="imgCloseClick();">
+                            <asp:Image ID="imgClose4" ToolTip="Close the publisher" runat="server" ImageUrl="~/_layouts/images/SFChatterWP/btn_close.png"
+                                Width="17" Height="16" />
+                        </a>
+                    </div>
+                </div>
+                <div class="File_upload">
+                    <div class="File_info_left">
+                        <asp:Image ID="imgThumbNail" ToolTip="We can't provide a preview for this file" runat="server"
+                            ImageUrl="~/_layouts/images/SFChatterWP/img_thumbnail.png" Width="80" Height="62" />
+                    </div>
+                    <div class="File_info_right">
+                        <span id="path"></span>
+                        <div id="divDummy" style="display: none;" class="hdnSharePointFilePath">
+                        </div>
+                        <asp:HiddenField ID="hdnSharePointFilePath" runat="server" />
+                        <a href="javascript:OpenDialog();">Change File</a>
+                    </div>
+                    <asp:Label ID="errlabel" runat="server" Visible="false" />
+                    <div class="clear-1">
+                    </div>
+                </div>
+            </div>
+            <div class="btn_share_attach">
+                <div class="btn_share divActive" id="divShareBtnFrmSP" style="display: block;" runat="server">
+                    <asp:ImageButton ID="imgbtnFrmSP" ToolTip="Share" runat="server" ImageUrl="~/_layouts/images/SFChatterWP/btn_share.png"
+                        Width="64" Height="23" OnClick="imgbtnShare_Click" />
+                </div>
+                <div class="btn_share divInactive" id="divShareImgFrmSP" style="display: none;" runat="server">
+                    <asp:Image ID="Image4" runat="server" ImageUrl="~/_layouts/images/SFChatterWP/btn_shareInactive.png"
+                        Width="64" Height="23" />
+                </div>
+            </div>
+            <div class="clear-1">
+            </div>
+        </div>
+        <div class="Attach_file_box" id="divLinkPost" style="display: none;" runat="server">
+            <div class="File_Attach">
+                <div class="File_Attach_title">
+                    <div class="Attach_title_left">
+                        <asp:Image ID="Image10" ImageUrl="~/_layouts/images/SFChatterWP/ic_link.png" CssClass="file_icon"
+                            runat="server" align="absmiddle" />
+                        <span class="font_title2">Attach a Link</span></div>
+                    <div class="Attach_title_right">
+                        <a href="#" onclick="imgCloseLinkClick();">
+                            <asp:Image ID="Image11" runat="server" ImageUrl="~/_layouts/images/SFChatterWP/btn_close.png"
+                                Width="17" Height="16" />
+                        </a>
+                    </div>
+                </div>
+                <div class="File_upload2">
+                    <div class="reqInfo">
+                        <asp:Image ID="Image6" Width="3" Height="12" Style="padding-right: 5px;" align="absmiddle"
+                            ImageUrl="~/_layouts/images/SFChatterWP/img_reqField.png" runat="server" />
+                        =Required Information</div>
+                    <div class="row_box">
+                        <table class="postInput">
+                            <tbody>
+                                <tr>
+                                    <th scope="row" class="rowStyle">
+                                        <label for="chatterFile">
+                                            Link URL
+                                        </label>
+                                    </th>
+                                    <td class="rowControlStyle">
+                                        <div>
+                                            <div class="requiredInput">
+                                                <div class="requiredBlock">
+                                                </div>
+                                                <asp:TextBox ID="txtLinkUrl" runat="server" Text="http://" class="textbox_browse txtLinkUrl" />
+                                                <br />
+                                                <asp:Label ID="LinkLengthError" CssClass="LinkLengthError" runat="server" Text="This field can't have more than 1000 characters."
+                                                    ForeColor="Red" Style="display: none;"></asp:Label>
+                                                <asp:Label ID="lblLinkUrlValidation" CssClass="lblLinkUrlValidation" runat="server"
+                                                    Text="Please enter a link." ForeColor="Red" Style="display: none;"></asp:Label>
+                                            </div>
+                                            <asp:RegularExpressionValidator ID="RegExpLinkValidator" runat="server" ControlToValidate="txtLinkUrl"
+                                                ErrorMessage="This link is invalid" ForeColor="Red" ValidationGroup="valLink"
+                                                ValidationExpression="(http|ftp|https):\/\/[\w\-_]+(\.?[\w\-_]+)+([\w\-\.,@?{}()*!$^=%&amp;:/~\+#]*[\w\-\@?{}()*!$^=%&amp;/~\+#])?"></asp:RegularExpressionValidator>
+                                        </div>
+                                        <div class="clear-1">
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row" class="rowStyle">
+                                        <label for="chatterFile">
+                                            Link Name
+                                        </label>
+                                    </th>
+                                    <td class="rowControlStyle">
+                                        <div>
+                                            <div class="requiredInput">
+                                                <asp:TextBox ID="txtLinkName" runat="server" class="textbox_browse txtLinkName" />
+                                                <br />
+                                                <asp:Label ID="LinkNameError" runat="server" Text="This field can't have more than 255 characters."
+                                                    ForeColor="Red" Style="display: none;"></asp:Label>
+                                            </div>
+                                        </div>
+                                        <div class="clear-1">
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="clear-1">
+                        </div>
+                    </div>
+                    <div class="clear-1">
+                    </div>
+                </div>
+            </div>
+            <div class="btn_share_attach">
+                <div class="btn_share divActive divActiveLinkShare" id="divLinkShare" runat="server"
+                    style="display: none;">
+                    <asp:ImageButton ID="ImageButton1" runat="server" ImageUrl="~/_layouts/images/SFChatterWP/btn_share.png"
+                        Width="64" Height="23" OnClick="imgbtnShare_Click" ValidationGroup="valLink" />
+                </div>
+                <div class="btn_share divInactive divInactiveLinkShare" id="divLinkShareBlur" runat="server"
+                    style="display: block;">
+                    <asp:Image ID="Image8" runat="server" ImageUrl="~/_layouts/images/SFChatterWP/btn_shareInactive.png"
+                        Width="64" Height="23" />
+                </div>
+            </div>
+            <div class="clear-1">
+            </div>
+        </div>
+        <div class="clear-1">
+        </div>
+        <asp:Label ID="lblExceptionTop" runat="server" Visible="false" ForeColor="Red"></asp:Label>
+        <br />
+        <div class="clear-1">
+        </div>
+        <div id="divFilter" runat="server">
+            <div id="menu_parent" runat="server" style="position: relative; font-size: 12px;
+                font-weight: bold;">
+                Updates for <span onclick="filterVisibility()" class="SelectedFilter">
+                    <asp:Label ID="lblFilter" runat="server" Text="My Chatter"></asp:Label>
+                    <asp:HiddenField ID="hdnFilterUrl" runat="server" Value="/feeds/news/me/feed-items" />
+                    <img src="~/_layouts/images/SFChatterWP/triangle-down.png" width="12" height="9" />
+                </span>
+            </div>
+            <div id="drop_down_list" runat="server" class="drop_down_listMyChatter">
+                <table style="min-width: 130px;">
+                    <asp:Repeater ID="rptFeedFilter" runat="server" OnItemCommand="rptFeedFilter_ItemCommand">
+                        <ItemTemplate>
+                            <tr style="width: 100%">
+                                <td width="12px">
+                                    <img runat="server" visible="false" id="imgTick" src="~/_layouts/images/SFChatterWP/tick_16.png"
+                                        width="11" height="11">
+                                </td>
+                                <td class="menu_item">
+                                    <asp:LinkButton OnClientClick="filterVisibility();" ID="lnkFilter" runat="server"
+                                        ToolTip='<%# Eval("Label")%>' Text='<%# Eval("Label")%>' CommandArgument='<%# Eval("FeedItemsUrl") %>'></asp:LinkButton>
+                                </td>
+                            </tr>
+                        </ItemTemplate>
+                    </asp:Repeater>
+                </table>
+            </div>
+        </div>
+        <asp:UpdatePanel ID="upnlChatter" runat="server">
+            <ContentTemplate>
+                <!-- Bind events for the dynamic controls without reloading the page -->
+                <script type="text/javascript">
+                    var prm = Sys.WebForms.PageRequestManager.getInstance();
+                    prm.add_endRequest(function () {
+                        BindLoadEvents();
+                    });
+                </script>
+                <!-- Bind events for the dynamic controls without reloading the page -->
+                <div style="padding-top: 10px;">
+                    <asp:Label ID="lblFeedInfo" runat="server" Text="" Font-Bold="true" Font-Names="Verdana"
+                        Font-Size="10" Visible="false"></asp:Label></div>
+                <div id="dvUserAction">
+                    <div id="dvcontainer">
+                        <div>
+                            <img id="arrow_up" src="/_layouts/images/SFChatterWP/tooltip_up.png" style="display: block;
+                                margin-left: 11px; margin-bottom: -2px" runat="server" alt="" />
+                        </div>
+                        <div id="box">
+                            <a href="#" id="user_image_a">
+                                <img id="imgUserPic" alt="" width="45" height="45" runat="server" />
+                            </a>
+                            <div id="content">
+                                <div id="name">
+                                    <span id="userName"><a id="hUserName" target="_blank" runat="server"></a>
+                                        <br />
+                                        <div>
+                                            <asp:Label ID="lblPhone1" CssClass="lblPhone" runat="server"></asp:Label>
+                                            <asp:Label ID="lbltype1" CssClass="lbltype" Font-Size="Small" runat="server"></asp:Label>
+                                        </div>
+                                        <div>
+                                            <asp:Label ID="lblPhone2" CssClass="lblPhone" runat="server"></asp:Label>
+                                            <asp:Label ID="lbltype2" CssClass="lbltype" Font-Size="Small" runat="server"></asp:Label>
+                                        </div>
+                                    </span>
+                                </div>
+                                <div id="follow">
+                                    <asp:LinkButton ID="lnkFollowUser" runat="server" Text="Follow User" CommandArgument="None"
+                                        OnCommand="lnkFollowUnFollowUser_Click" CommandName="Follow">
+                                                            <img id="icon" src="~/_layouts/images/SFChatterWP/addbutton1.png"
+                                                                alt="Follow User" />
+                                                            <span class="spnFollow">Follow </span>
+                                    </asp:LinkButton>
+                                    <div id="unfollow" runat="server">
+                                        <img src="~/_layouts/images/SFChatterWP/correct.png" alt="UnFollow User" id="icon2" />
+                                        <span class="spnFollow">Following </span>
+                                        <asp:LinkButton ID="lnkUnFollowUser" runat="server" Text="UnFollow User" CommandArgument="None"
+                                            OnCommand="lnkFollowUnFollowUser_Click" CommandName="UnFollow">                                                            
+                                                         <img src="/_layouts/images/SFChatterWP/close.png" id="UnFollowImg" alt=""  />
+                                        </asp:LinkButton>
+                                    </div>
+                                </div>
+                                <div id="message">
+                                    <asp:LinkButton ID="lnkSendMsg" runat="server" Text="Send Message" OnClientClick="javascript:OpenSendMsgDialog();">
+                                                        <img  id="icon1" src="~/_layouts/images/SFChatterWP/chatbutton.png" 
+                                                         alt="Send Message" />
+                                                         <span>Send a message</span> 
+                                    </asp:LinkButton>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <img id="arrow_down" src="/_layouts/images/SFChatterWP/tooltip_down.png" style="margin-top: -2px;
+                                margin-left: 11px; display: none;" runat="server" alt="" />
+                        </div>
+                    </div>
+                </div>
+                <asp:GridView ID="gvFeed" runat="server" AutoGenerateColumns="False" ShowHeader="False"
+                    EnableViewState="false" OnRowDataBound="gvFeedList_RowDataBound" BorderWidth="0"
+                    BorderStyle="None" GridLines="None" Width="100%">
+                    <Columns>
+                        <asp:TemplateField>
+                            <ItemTemplate>
+                                <div class="usersFeed">
+                                    <div class="users_feed">
+                                        <div class="users_photo">
+                                            <asp:HiddenField ID="hdnRowIndex" runat="server" />
+                                            <asp:Image ID="imgPic" ToolTip='<%# Eval("Actor.Name") %>' runat="server" Width="45"
+                                                Height="45" />
+                                        </div>
+                                        <div class="users_info">
+                                            <div id="dvExpand" runat="server" class="users_comment expandmorelink">
+                                                <asp:HiddenField ID="hdnFeedId" runat="server" Value='<%# Eval("id") %>' />
+                                                <table class="fixtable">
+                                                    <tr>
+                                                        <td width="97%" class="middle wrap">
+                                                            <span class="font_title">
+                                                                <asp:HyperLink ID="lblParent" runat="server" Target="_blank"></asp:HyperLink>
+                                                                <asp:HyperLink ID="lblActor" runat="server" Target="_blank" Text='<%# Eval("Actor.Name") %>'></asp:HyperLink>
+                                                                : </span><span id="spanFeed" runat="server"></span>
+                                                        </td>
+                                                        <td class="trDelete">
+                                                            <asp:ImageButton ID="btnDeletePost" CssClass="deleteComment" runat="server" Height="16"
+                                                                Width="17" ToolTip="Delete this post" OnClick="btnDeletePost_Click" ImageUrl="~/_layouts/images/SFChatterWP/btn_close2.png" />
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                            <div class="users_comment" id="divFileInfo" runat="server" visible="false">
+                                                <div class="file_upload_icon">
+                                                    <asp:Image ID="imgFile" ToolTip="We can't a provide preview of this file" runat="server"
+                                                        ImageUrl="~/_layouts/images/SFChatterWP/File.png" Width="32" Height="32" />
+                                                </div>
+                                                <div class="file_upload_info">
+                                                    <div class="file_title">
+                                                        <table class="fixtable">
+                                                            <tr>
+                                                                <td class="middle wrap">
+                                                                    <span class="font_title">
+                                                                        <asp:Label ID="lblFileName" runat="server" Text=""></asp:Label>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div class="file_upload_info">
+                                                    <div class="file_Description">
+                                                        <table style="table-layout: fixed;" width="100%">
+                                                            <tr>
+                                                                <td class="middle wrap">
+                                                                    <asp:Label ID="lblFileDesc" runat="server" Text=""></asp:Label>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                                <div class="clear-1">
+                                                </div>
+                                            </div>
+                                            <div class="users_comment" id="divLinkInfo" runat="server" visible="false">
+                                                <div style="float: left; padding: 5px">
+                                                    <div>
+                                                        <table class="fixtable">
+                                                            <tr>
+                                                                <td class="middle wrap">
+                                                                    <span class="font_title">
+                                                                        <asp:Image ID="imgLink" runat="server" ImageUrl="~/_layouts/images/SFChatterWP/link.png"
+                                                                            Width="15" Height="15" />
+                                                                        <asp:HyperLink ID="lblLinkName" runat="server" Target="_blank">HyperLink</asp:HyperLink>
+                                                                    </span>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </div>
+                                                    <div class="lnkUrl">
+                                                        <table class="fixtable">
+                                                            <tr>
+                                                                <td class="middle wrap">
+                                                                    <asp:Label ID="lblLinkUrl" runat="server" Text="" ForeColor="GrayText"></asp:Label>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                                <div class="clear-1">
+                                                </div>
+                                            </div>
+                                            <div class="users_comment">
+                                                <ul class="ulChatter">
+                                                    <li class="font_time liChatter" style="background: none; padding-left: 0px;">
+                                                        <asp:Label ID="lblCreatedDate" runat="server" Text='<%# Eval("CreatedDate") %>'></asp:Label>
+                                                    </li>
+                                                    <li class="liChatter"><a id="linkComment" title="Comment on this post" class="linkComment">
+                                                        Comment</a> </li>
+                                                    <li class="liChatter"><a href="#">
+                                                        <asp:LinkButton bind="" ID="linkLike" ToolTip="Like this post" runat="server" OnCommand="command_Click"
+                                                            CommandArgument="Like">Like</asp:LinkButton>
+                                                        <asp:LinkButton bind="" ID="linkUnlike" ToolTip="Stop liking this post" runat="server"
+                                                            Visible="false" OnCommand="command_Click" CommandArgument="Unlike">Unlike</asp:LinkButton></a></li>
+                                                </ul>
+                                                <asp:Label ID="lblFeedError" runat="server" Text="" ForeColor="Red"></asp:Label>
+                                            </div>
+                                            <div class="comment_feddback" id="divActivity" runat="server" style="display: block;">
+                                                <div class="arrow">
+                                                    <asp:Image ImageUrl="~/_layouts/images/SFChatterWP/arrow.png" runat="server" ID="Image2"
+                                                        Width="9" Height="5" /></div>
+                                                <div class="arrow_img">
+                                                </div>
+                                                <div class="comment_feddbackBox">
+                                                    <div class="Like_box" id="divLike" runat="server">
+                                                        <asp:Image ImageUrl="~/_layouts/images/SFChatterWP/ic_like.png" runat="server" Width="16"
+                                                            Height="16" align="absmiddle" ID="imgLike" />
+                                                        <asp:Label ID="lblLikes" runat="server"></asp:Label>
+                                                    </div>
+                                                    <div class="Like_box" id="divShowAllComments" runat="server">
+                                                        <asp:LinkButton bind="" ID="linkShowAllComments" runat="server" OnCommand="command_Click"
+                                                            CommandArgument="ShowAll">Show All <%# Eval("Comments.Total")%> Comments</asp:LinkButton>
+                                                    </div>
+                                                    <div class="Like_box" id="divCommentList" runat="server" style="display: none;">
+                                                        <asp:Label ID="lblPostIndex" runat="server" Visible="false" Text='<%# Container.DataItemIndex %>'></asp:Label>
+                                                        <asp:GridView ID="gvCommentList" runat="server" AutoGenerateColumns="false" ShowHeader="false"
+                                                            EnableViewState="false" GridLines="None" Width="100%" OnRowDataBound="gvCommentList_RowDataBound">
+                                                            <Columns>
+                                                                <asp:TemplateField>
+                                                                    <ItemTemplate>
+                                                                        <table class="table_userComment" cellspacing="0" cellpadding="0">
+                                                                            <tr class="Like_box">
+                                                                                <td class="users_photo_2">
+                                                                                    <span class="Like_box_left">
+                                                                                        <asp:Label ID="lblCommentIndex" runat="server" Visible="false" Text='<%# Container.DataItemIndex %>'></asp:Label>
+                                                                                        <asp:HiddenField ID="hdnPostIndex" runat="server" />
+                                                                                        <asp:Image ID="imgComment" runat="server" Height="32" Width="32" />
+                                                                                    </span>
+                                                                                </td>
+                                                                                <td>
+                                                                                    <div class="Like_box_right_L">
+                                                                                        <div id="dvExpand" runat="server" class="users_comment2 expandmorelink">
+                                                                                            <asp:HiddenField ID="hdnCommentId" runat="server" Value='<%# Eval("id") %>' />
+                                                                                            <table class="fixtable">
+                                                                                                <tr>
+                                                                                                    <td class="middle wrap">
+                                                                                                        <span class="font_title">
+                                                                                                            <asp:HyperLink ID="lblAuthor" runat="server" Target="_blank"></asp:HyperLink>
+                                                                                                            :</span> <span id="spanComment" runat="server"></span>
+                                                                                                    </td>
+                                                                                                </tr>
+                                                                                            </table>
+                                                                                        </div>
+                                                                                        <div class="users_comment3">
+                                                                                            <ul class="ulChatter">
+                                                                                                <li class="font_time liChatter" style="background: none; padding-left: 0px;">
+                                                                                                    <asp:Literal ID="lblCreatedDate" runat="server" Text='<%#Eval("CreatedDate") %>'></asp:Literal>
+                                                                                                </li>
+                                                                                            </ul>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </td>
+                                                                                <td class="close_btn">
+                                                                                    <asp:ImageButton ID="btnDeleteComment" CssClass="deleteComment" runat="server" Height="16"
+                                                                                        Width="17" ToolTip="Delete this comment" OnClick="btnDeleteComment_Click" ImageUrl="~/_layouts/images/SFChatterWP/btn_close2.png" />
+                                                                                </td>
+                                                                            </tr>
+                                                                        </table>
+                                                                    </ItemTemplate>
+                                                                </asp:TemplateField>
+                                                            </Columns>
+                                                        </asp:GridView>
+                                                        <div class="clear-1">
+                                                        </div>
+                                                    </div>
+                                                    <div id="dslComment" class="Like_box_BG" runat="server" style="display: none;">
+                                                        <asp:TextBox ID="txtSLComment" CssClass="textfield_com2" runat="server">Write a comment...</asp:TextBox>
+                                                    </div>
+                                                    <div class="Like_box" id="divCBox" runat="server" style="display: none;">
+                                                        <div class="Like_box_left">
+                                                            <asp:Image ID="imgCommentNew" runat="server" Height="32" Width="32" /></div>
+                                                        <div class="Like_box_right">
+                                                            <div class="users_comment3">
+                                                                <asp:TextBox ID="tbComment" ToolTip="Write a comment..." runat="server" TextMode="MultiLine"
+                                                                    Width="100%" MaxLength="1000" Rows="2" CssClass="tbCommentClass autoCompleteClass"></asp:TextBox>
+                                                                <asp:Label ID="lblLengthError" runat="server" Text="Error:Your comment can't have more than 1000 characters."
+                                                                    CssClass="disp_none" ForeColor="Red"></asp:Label>
+                                                            </div>
+                                                            <div class="btn_comment" style="display: block;" id="divEComment" runat="server">
+                                                                <asp:ImageButton ID="imgBtnComment" CssClass="imgBtnComment" Style="cursor: pointer;"
+                                                                    runat="server" Height="20" Width="63" OnClick="btnComment_Click" ToolTip="Comment"
+                                                                    ImageUrl="~/_layouts/images/SFChatterWP/btn_comment.png" />
+                                                            </div>
+                                                            <div class="btn_comment" id="divDComment" runat="server" style="display: none;">
+                                                                <asp:ImageButton ID="imgdis" runat="server" Height="20" Width="63" ImageUrl="~/_layouts/images/SFChatterWP/btn_comment_dis.png"
+                                                                    Enabled="false" />
+                                                            </div>
+                                                            <div class="clear-1">
+                                                            </div>
+                                                        </div>
+                                                        <div class="clear-1">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="clear-1">
+                                        </div>
+                                    </div>
+                                </div>
+                            </ItemTemplate>
+                        </asp:TemplateField>
+                        <asp:BoundField DataField="ID" HeaderText="ID" Visible="false" />
+                    </Columns>
+                </asp:GridView>
+            </ContentTemplate>
+            <Triggers>
+                <asp:PostBackTrigger ControlID="tmrAutoRefresh" />
+                <asp:PostBackTrigger ControlID="tmrAccessToken" />
+            </Triggers>
+        </asp:UpdatePanel>
+        <div class="showMore" id="divShowMoreFeeds" runat="server" visible="false">
+            <asp:LinkButton ID="lnkbtnShowMoreFeeds" runat="server" Text="Show More" OnClick="btnShowMoreFeeds_Click"
+                Width="98%" Height="98%" Style="color: #333333; text-align: center; vertical-align: middle;
+                text-decoration: none;" />
+        </div>
+    </div>
+    <div style="width: 100%; text-align: center;">
+        <asp:Label ID="lblExceptions" Style="text-align: center;" runat="server" Visible="false"
+            ForeColor="Red"></asp:Label>
+    </div>
+    <asp:Panel ID="pnlBlank" runat="server">
+    </asp:Panel>
+</body>
+<asp:HiddenField ID="hdnMyImageUrl" runat="server" />
+<asp:HiddenField ID="hdnMyUserID" runat="server" />
+<asp:HiddenField ID="hdnFileUploadPath" runat="server" />
+<asp:HiddenField ID="hdnNextPageFeedURL" runat="server" />
+<asp:HiddenField ID="hdnCK" runat="server" />
+<asp:HiddenField ID="hdnCS" runat="server" />
+<asp:HiddenField ID="hdnCallbackURL" runat="server" />
+<asp:HiddenField ID="hdnFromChildPage" runat="server" />
+<asp:HiddenField ID="hdnMyEmailID" runat="server" />
+<asp:HiddenField ID="hdnSearchFlag" runat="server" />
+<asp:HiddenField ID="hdnMentionsUserList" runat="server" />
+<asp:HiddenField ID="hdnRowId" runat="server" />
+<asp:HiddenField ID="hdnPersistDiv" runat="server" />
+<asp:HiddenField ID="hdnPosition" runat="server" />
+<asp:HiddenField ID="hdnLeftPostion" runat="server" />
+<asp:HiddenField ID="hdnInstanceUrl" runat="server" />
+<asp:HiddenField ID="hdnAccessToken" runat="server" />
+<asp:HiddenField ID="hdnFollowUserID" runat="server" />
+<asp:HiddenField ID="hdnSubscriptionUrl" runat="server" />
+<asp:HiddenField ID="hdnFollowUserName" runat="server" />
+<asp:HiddenField ID="hdnMyChatterUrl" runat="server" />
+<asp:HiddenField ID="hdnPhotoURL" runat="server" />
+<asp:HiddenField ID="hdnShowFeedID" runat="server" EnableViewState="true" />
+<asp:HiddenField ID="hdnMoreFeedId" runat="server" />

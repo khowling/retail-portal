@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<webParts>
+  <webPart xmlns="http://schemas.microsoft.com/WebPart/v3">
+    <metaData>
+      <type name="SalesForce.ChatterWP2010.SFMySiteChatterWP, $SharePoint.Project.AssemblyFullName$" />
+      <importErrorMessage>$Resources:core,ImportErrorMessage;</importErrorMessage>
+    </metaData>
+    <data>
+      <properties>
+        <property name="Title" type="string">Chatter My Site Web Part</property>
+        <property name="Description" type="string">This is Salesforce Chatter Web Part for SharePoint My Site.</property>
+      </properties>
+    </data>
+  </webPart>
+</webParts>

@@ -26,217 +26,153 @@
 	<script type="text/javascript" src="js/libs/jQuizMe-2.2.js"></script>
 	<script type="text/javascript" src="js/libs/gauge.min.js"></script>
 	<script type="text/javascript" src="js/libs/jquery.gauge.min.js"></script>
+	<script type="text/javascript" src="js/libs/jquery.bxSlider.js"></script>
+	
+	<link rel="stylesheet" type="text/css" href="css/jRating.jquery.css" media="screen" />
+	<script type="text/javascript" src="js/libs/jRating.jquery.js"></script>
+
 	<style>
-			ul#quizList {
-					-moz-column-count: 2;
-					-moz-column-gap: 20px;
-					-webkit-column-count: 2; 
-					-webkit-column-gap:20px; 
-					height: 3in; 
-			    font-family: "Lucida Grande", sans-serif;
-			    font-size: 14px;
-			    line-height: 16px;
-			    list-style-type: none;
-			    background-color: #FFFFFF;
-			}
-			.myboarder {
-				padding: 5px;
-				border-radius: 6px;
-				border: 3px solid #2276BB;
-				margin: 0px;
-			}
-			#Logo {
-				margin-bottom: 5px;
-				color: red;
-			}
-			
-			li {
-			  display: list-item;
-			}		
-			
-			li.quiz {
-			    position: relative;
-			    min-height: 48px;
-			    min-width: 48px;
-			    -o-break-inside: avoid;         /* multicolumn */
-			    -webkit-break-inside: avoid;    /* multicolumn */
-			    -moz-break-inside: avoid;       /* multicolumn */
-			    break-inside: avoid;            /* multicolumn */
-			    padding: 4px 4px 4px 45px;  /* 35px is the left padding for the pic */
-			    margin-bottom: 8px;
-			    border-radius: 4px;
-			    border-bottom: 1px solid #ececec;
-			    font-size: 9pt;
-			}
-			li:hover {
-				cursor: pointer;
-			  background: #888;
-			}
-			
-			img.quizImage {
-				position: absolute;
-				top: 0px;
-				left: 0px;
-				width : 38px;
-				border: none;
-				margin-top: 2px;
-				margin-bottom: 2px;
-				margin-left: 2px;
+		#header-container{ border-bottom: 10px solid #DFDBCB; }
+		#footer-container{ border-top:    10px solid #DFDBCB; }
+		#header-container,
+		#footer-container,
+		#main aside{
+			background:#6CA128;
+		}
+		#header-container,
+		#main aside{
+			-webkit-box-shadow:0 5px 10px #aaa;
+				 -moz-box-shadow:0 5px 10px #aaa;
+							box-shadow:0 5px 10px #aaa;
+		}
+		#main{
+			padding:10px 0;
+		}
+		
+		#main article h1{
+			font-size:2em;
+		}
+		#footer-container footer{
+			color:white;
+			padding:20px 0;
+		}
+		nav a{
+			display:block;
+			margin-top:15px;
+			margin-bottom:10px;
+			padding:15px 0;
+		
+			background:#DFDBCB;
+			color:white;
+		
+			text-align:center;
+			text-decoration:none;
+			font-weight:bold;
+		}
+		nav a:hover, nav a:visited{
+			color:black;
+		}
+		
+		nav a:hover{
+			text-decoration:underline;
+		}
+		ul.quizList_3in_2col {
+				-moz-column-count: 2;
+				-moz-column-gap: 20px;
+				-webkit-column-count: 2; 
+				-webkit-column-gap:20px; 
+				height: 3in; 
+		}
+		ul.peopleList_2in_3col {
+				-moz-column-count: 4;
+				-moz-column-gap: 5px;
+				-webkit-column-count: 4; 
+				-webkit-column-gap:5px; 
+				height: 3in; 
+		}
+		.myboarder {
+			border-top: 10px solid #DFDBCB; 
+			color: white; 
+			box-shadow: 0 5px 10px #AAAAAA; 
+			padding: 0 2px 2px; 
+			background: none repeat scroll 0 0 #6CA128;
+		}
+		.myboarder-inside {
+			background-color: white;
+			color: black:
+			padding: 2px;
+			border-radius: 4px;
+			border: 2px solid transparent;
+			font-family: "Lucida Grande", sans-serif;
+			font-size: 14px;
+			line-height: 16px;
+			list-style-type: none;
+		}
+		h3 {
+			margin: 5px;
+		}
+		li {
+			display: list-item;
+		}		
+		
+		li.itemList {
+				position: relative;
+				min-height: 48px;
+				min-width: 48px;
+				-o-break-inside: avoid;         /* multicolumn */
+				-webkit-break-inside: avoid;    /* multicolumn */
+				-moz-break-inside: avoid;       /* multicolumn */
+				break-inside: avoid;            /* multicolumn */
+				padding: 4px 4px 4px 45px;  /* 35px is the left padding for the pic */
+				margin-bottom: 8px;
 				border-radius: 4px;
-				text-overflow: ellipsis;
-			}
-
-			li.quiz div {
-				color: #2276BB;
-				text-decoration: none;
-			}
-			li.quiz div.quizName {
-				font-weight: bold;
-				margin-right: 0.5em;
-				text-overflow: ellipsis;
-			}
-			li.quiz span.quizHtml {
-				color: black;
-				padding: 0px;
-			}
-			
-			li.quiz div.quizResults {
-				font-size: 11px;
-				color: #999;
-				line-height: 16px;
-				text-overflow: ellipsis;
-			}
-	</style>
-
-	<script>
-
-		$(document).ready (function(){
-				$('#login-content').modal( { close : false});
-				$('#points-guage').gauge('init', {
-						value: 0,
-						valueFormat: function(a,b){return '';},
-						label: 'Newbie',
-						unitsLabel: '',
-						min: 0,
-						max: 20000,
-						majorTicks: 4,
-						minorTicks: 3, // small ticks inside each major tick
-						yellowFrom: 5000,
-						yellowTo: 15000,
-						greenFrom: 15000,
-						greenTo: 20000
-					});
-				return false;
-		});
-
-		function launchknowledge (kid, kdata) {
-			$("#event-container").empty();
-			
-			
-			var _vLayOut = $("<video/>").attr({"id": "video-container", "width": "100%", "height": "100%", "controls": "controls", "autoplay": "autoplay"}).append( 
-				$("<source/>").attr({"src": "/stream", "type": "video/mp4"}),
-				$("<span/>").text("Your browser does not support the video tag."));
-
-			$("#event-container").append(_vLayOut);
-			$('#basic-modal-content').modal({ 
-					close : true,
-					onClose: function() {
-						$("#video-container")[0].pause();
-						$("#event-container").empty();
-						$.modal.close();
-				}});
-			return true;
-			
+				border-bottom: 1px solid #ececec;
+				font-size: 9pt;
 		}
-		function launchquiz (quizid, itemdata) {
-			var options = {
-				title: itemdata.name,
-				intro: '<p>' + itemdata.desc + '</p><p>You receive ' + itemdata.desc + ' points for getting 100% in this Quiz REMEBER - its your 1st attempt that get you the points,</p>' + itemdata.intro, 
-				disableDelete: false,
-				disableRestart: true,
-				statusUpdate: function( quizInfo, currQuiz ){
-						if (quizInfo.deleted == true) {
-							$.post( '/donequiz', { id: quizid,  score: quizInfo.score},
-								function( data ) {
-										$.modal.close();
-								});
-						}
-			}};
-			$("#event-container").empty();
-			$("#event-container").jQuizMe( itemdata.quizdata, options );
-			$('#basic-modal-content').modal({ close : false});
-			return true;
-		};
+		
+		li:hover {
+			cursor: pointer;
+			background: #888;
+		}
+		
+		img.quizImage {
+			position: absolute;
+			top: 0px;
+			left: 0px;
+			width : 38px;
+			border: none;
+			margin-top: 2px;
+			margin-bottom: 2px;
+			margin-left: 2px;
+			border-radius: 4px;
+			text-overflow: ellipsis;
+		}
+		div.quizPass {
+			float: right;
+		}
 		
 		
-		var mypoints = 0;
-		var lasteventprocessed = 0;		
-		var poll_err = false;		
-		function poll(){
-			if (!poll_err) {
-				console.log("creating longpoll request");
-				$.ajax({ 
-					url: "/longpoll/" + lasteventprocessed, 
-					success: function(res){
-						if (res.item_type == 'QUIZ' || res.item_type == 'KNOWLEDGE') {
-							lasteventprocessed = res.index;
-
-							var itemid = $('#' + res.item_id);
-							if (itemid.length == 0) {
-								if (res.item_type == 'QUIZ') {
-									itemid = $('#quiz-template').clone().attr({"id": res.item_id }).removeAttr("style").appendTo("#quizList").on('click', function(e) {
-										launchquiz (res.item_id, res.item_data);
-										 return false;
-									}).find(".quizName").text(res.item_data.name).end().find(".quizHtml").text(res.item_data.desc).end();
-
-								} else if (res.item_type == 'KNOWLEDGE') {
-									itemid = $('#knowledge-template').clone().attr({"id": res.item_id }).removeAttr("style").appendTo("#knowledgeList").on('click', function(e) {
-										launchknowledge (res.item_id, res.item_data);
-										 return false;
-									}).find(".quizName").text(res.item_data.name).end().find(".quizHtml").text(res.item_data.desc).end();									
-								}
-							}
-							
-							if (res.results_data) {
-								$(itemid).find(".quizResults").text('attp: ' + res.results_data.attempts + ' | first attempt (best) '+res.results_data.score+'% ('+res.results_data.bestscore+'%)').end();
-							} else {
-								$(itemid).find(".quizResults").text(res.item_data.points + ' points for top marks in this quiz!').end();
-							}
-					
-							
-							$.jGrowl("<p>New " + res.item_type + " for you<\p>" + res.item_data.name);
-							
-							jQuery(function($) {
-									$('.timer').countTo({
-											from: mypoints,
-											to: res.my_points,
-											speed: 1000,
-											refreshInterval: 10,
-											onComplete: function(value) {
-													console.debug(this);
-											}
-									});
-							});
-							mypoints = res.my_points;
-							$('#points-guage').gauge('setValue', mypoints); 
-						}
-					}, 
-					error: function(XMLHttpRequest, textStatus, errorThrown){
-							poll_err = true;
-							$.jGrowl("error: connection with server lost  (" + JSON.stringify(errorThrown) + ")");
-						}, 
-					dataType: "json", 
-					complete: poll, 
-					timeout: 60000 
-				});
-			}
+		div.itemName {
+		//	font-weight: bold;
+			margin-right: 0.5em;
+			text-overflow: ellipsis;
+			color: #2276BB;
+			text-decoration: none;
+			font-size: 9pt;
 		}
-	</script>
-	
-	
-</head>
-<body>
-	<style>
+		span.itemDesc {
+			color: black;
+			padding: 0px;
+			font-size: 9pt;
+		}
+		
+		div.itemResults {
+			font-size: 11px;
+			color: #999;
+			line-height: 16px;
+			text-overflow: ellipsis;
+		}
+			
 		#basic-modal-content {display:none;}
 		#login-content {display:none;}
 	
@@ -267,7 +203,7 @@
 		}
 		input.modal-text-input {
 				background: none repeat scroll 0 0 #FFFFFF;
-				border: 1px solid transparent;
+				border: 2px solid transparent;
 				border-radius: 4px 4px 4px 4px;
 				color: #555555;
 				float: right;
@@ -299,22 +235,205 @@
 				text-shadow: 0 -1px 0 #050505;
 		}
 	</style>
+
+	<script>
+
+		$(document).ready (function(){
+				var slider = $('#slider1').bxSlider({
+						controls: false,
+						auto: true,
+						pager: true
+					});
+				
+				$('#login-content').modal( { close : false});
+				$('#points-guage').gauge('init', {
+						value: 0,
+						valueFormat: function(a,b){return '';},
+						label: 'Newbie',
+						unitsLabel: '',
+						min: 0,
+						max: 20000,
+						majorTicks: 4,
+						minorTicks: 3, // small ticks inside each major tick
+						yellowFrom: 5000,
+						yellowTo: 15000,
+						greenFrom: 15000,
+						greenTo: 20000
+					});
+				return false;
+		});
+
+		function launchknowledge (kid, kdata) {
+			$("#event-container").empty();
+			
+			if (kdata.knowledgedata.type == 'EMBEDDED_IFRAME') {
+				var _utLayOut = $("<iframe/>").attr({ "width": "100%", "height": "400px", "src": kdata.knowledgedata.url, "frameborder":"0", "allowfullscreen":""});
+				$("#event-container").append(_utLayOut);
+				$('#basic-modal-content').modal({ 
+						close : true,
+						onClose: function() {
+							$("#event-container").empty();
+							$.modal.close();
+					}});
+				return true;
+			}
+			
+			if (kdata.knowledgedata.type == 'HTML5_VIDEO') {
+				var _vLayOut = $("<video/>").attr({"id": "video-container", "width": "100%", "height": "100%", "controls": "controls"}).append( 
+					$("<source/>").attr({"src": kdata.knowledgedata.url, "type": "video/mp4"}),
+					$("<span/>").text("Your browser does not support the video tag."));
 	
+				$("#event-container").append(_vLayOut);
+				$('#basic-modal-content').modal({ 
+						close : true,
+						onClose: function() {
+							$("#video-container")[0].pause();
+							$("#event-container").empty();
+							$.modal.close();
+					}});
+				return true;
+			}
+			
+		}
+		function launchquiz (quizid, itemdata) {
+			var options = {
+				title: itemdata.name,
+				intro: '<p>' + itemdata.desc + '</p>' +
+				'<p>You receive ' + itemdata.desc + ' points for getting 100% in this Quiz</p>' +
+				'<p>REMEBER - Its ONLY your <bold>1st</bold> attempt that get you the points</p>' + 
+				'<p>REMEBER - You will still need to get 100% in the quiz to unlock more content (have as many attempts as you need)</p>' + 
+				'<p>' + itemdata.intro + '</p>', 
+				disableDelete: false,
+				disableRestart: true,
+				statusUpdate: function( quizInfo, currQuiz ){
+						if (quizInfo.deleted == true) {
+							$.post( '/donequiz', { id: quizid,  score: quizInfo.score, quesTried: quizInfo.quesTried},
+								function( data ) {
+										$.modal.close();
+								});
+						}
+			}};
+			$("#event-container").empty();
+			$("#event-container").jQuizMe( itemdata.quizdata, options );
+			$('#basic-modal-content').modal({ close : false});
+			return true;
+		};
+		
+		
+		var mypoints = 0;
+		var lasteventprocessed = 0;		
+		var poll_err = false;		
+		function poll(){
+			if (!poll_err) {
+				console.log("creating longpoll request");
+				$.ajax({ 
+					url: "/longpoll/" + lasteventprocessed, 
+					success: function(res){
+						if (res.item_type == 'QUIZ' || res.item_type == 'KNOWLEDGE') {
+							lasteventprocessed = res.index;
+
+							var itemid = $('#' + res.item_id);
+							if (itemid.length == 0) {
+								// not on the page, create!
+								if (res.item_type == 'QUIZ') {
+									itemid = $('#quiz-template').clone().attr({"id": res.item_id }).removeAttr("style").appendTo("#quizList").on('click', function(e) {
+										launchquiz (res.item_id, res.item_data);
+										 return false;
+									}).find(".itemName").text(res.item_data.name).end().find(".itemDesc").text(res.item_data.desc).end();
+
+								} else if (res.item_type == 'KNOWLEDGE') {
+									
+									if (!res.item_data.icon)  res.item_data.icon = '/image/icons/knowledge-icon.gif';
+									itemid = $('#knowledge-template').clone().attr({"id": res.item_id }).removeAttr("style").appendTo("#knowledgeList").on('click', function(e) {
+										launchknowledge (res.item_id, res.item_data);
+										 return false;
+									}).find(".itemName").text(res.item_data.name).end().find(".itemDesc").text(res.item_data.desc).end()
+										.find(".itemResults").text(res.item_data.info).end()
+										.find(".quizImage").attr({"src": res.item_data.icon}).end()
+										.find(".knowRating").jRating({type: "small", isDisabled: true, defaultscore: 40});								
+								}
+								$.jGrowl("<p>New " + res.item_type + " for you<\p>" + res.item_data.name);
+							}
+							if (res.item_type == 'QUIZ') {
+								if (res.results_data) {
+									$(itemid).find(".itemResults").text('attp: ' + res.results_data.attempts + ' | first attempt (best) '+res.results_data.score+'% ('+res.results_data.bestscore+'%)').end();
+									if (res.results_data.passed) {
+										$(itemid).find(".quizPass").removeAttr("style");
+									}
+								} else {
+									$(itemid).find(".itemResults").text(res.item_data.points + ' points available!').end();
+								}
+							}
+					
+
+							jQuery(function($) {
+									$('.timer').countTo({
+											from: mypoints,
+											to: res.my_points,
+											speed: 1000,
+											refreshInterval: 10,
+											onComplete: function(value) {
+													console.debug(this);
+											}
+									});
+							});
+							mypoints = res.my_points;
+							$('#points-guage').gauge('setValue', mypoints); 
+							
+						}
+					}, 
+					error: function(XMLHttpRequest, textStatus, errorThrown){
+							poll_err = true;
+							$.jGrowl("error: connection with server lost  (" + JSON.stringify(errorThrown) + ")");
+						}, 
+					dataType: "json", 
+					complete: poll, 
+					timeout: 60000 
+				});
+			}
+		}
+	</script>
+	
+	
+</head>
+<body>
 	
 	<div id="login-content" class="popup-login">
 		<script>
 			$("#logmein").submit(function(event) {
-				/* stop form from submitting normally */
+			
 				event.preventDefault(); 
 						
 				/* get some values from elements on the page: */
 				var $form = $( this ),
 						un = $form.find( 'input[name="username"]' ).val(),
 						url = $form.attr( 'action' );
-				if (!un) alert ('Please enter username');
+						if (!un) {
+							//alert ('Please enter username');
+							 un = 'keith';
+						}
 				/* Send the data using post and put the results in a div */
 				$.post( url, { username: un },
 					function( data ) {
+						
+						
+							var _userOut = $("<div/>").append(
+								$("<img/>").attr({"src": data.userdata.picture_url, "width": "70%", "height": "70%"}), 
+								$("<div/>").attr({"style": "color: black;"}).text(data.username + ' ('+ data.userdata.points +')'));
+				
+							$("#top-performer").append(_userOut);
+			
+
+													
+							var _userOut = $("<div/>").append(
+								$("<img/>").attr({"src": "/image/carphone_warehouse.jpg", "width": "70%", "height": "70%"}), 
+								$("<div/>").attr({"style": "color: black;"}).text("Carphone" + ' '+ "23000" +''));
+				
+							$("#outlet-leader").append(_userOut);
+							
+							
+							
+							
 							$.modal.close();
 							poll();
 					});
@@ -346,39 +465,9 @@
 			
 	<!-- modal content -->
 	<div id="basic-modal-content">
-		
 		<div id="eventArea">
 			<div id="event-container"></div>
 		</div>
-		
-		<div id="resultsArea"  style="display:none;" class="popup-login">
-		<h3>Here are your results, press 'Finish' when your done.</h3>	
-			<p>
-				<label>number Of Right Answers</label>
-				<div id="numOfRight" class="modal-results"></div>
-			</p>
-			<br style="clear: both;">
-			<p>
-				<label>number Of Wrong Answers</label>
-				<div id="numOfWrong" class="modal-results"></div>
-			</p>
-			<br style="clear: both;">
-			<p>
-				<label>Score</label>
-				<div id="score" class="modal-results"></div>
-			</p>
-			<br style="clear: both;">
-			<p>
-				<label>Total</label>
-				<div id="total" class="modal-results"></div>
-			</p>
-			<br style="clear: both;">
-			<br/>
-			<p>
-				<input id="quiz-return" type="button" value="Return" class="modal-button">
-			</p>
-		</div>
-
 	</div>
 
 	<!-- preload the images -->
@@ -390,12 +479,12 @@
 
 	<div id="header-container">
 		<header class="wrapper clearfix">
-			<h1 id="title">making learning more engaging</h1>
+			<h1 id="title"><img src="/image/NokiaLogo.gif" class="myboarder-inside" style="margin-right: 15px;"/>more engaging learning</h1>
 			<nav>
 				<ul>
-					<li><a href="#">how to use</a></li>
+					<li><a href="#">Scan QR</a></li>
+					<li><a href="#">Enter Code</a></li>
 					<li><a href="#">log issue</a></li>
-					<li><a href="#">new feature</a></li>
 				</ul>
 			</nav>
 		</header>
@@ -404,67 +493,204 @@
 		<div id="main" class="wrapper clearfix">
 			
 			<article>
-			
-				<header id="quiz">
-				</header>
+
 				
 				<section>
-					<div style="overflow: auto;	width: 100%; margin-bottom : 10px;">
-						<div style="float : left; width : 74%;"><spam style="font-weight:bold;">My Quiz</spam> quizzes appear when something important occures, for example, a new product launches, you visit a store, your manager thinks you need to learn a new skill, the good thing, you get points for just getting the quiz</div>
-						<div class="myboarder" style="float : right; width : 22%; min-width: 120px;">
-							My Score <div style="font-weight:bold; float: right;" class="timer"></div>
-							<canvas id="points-guage" width="120" height="120"></canvas>
+					<div style="width:100%; margin-bottom : 10px;">
+						<div class="myboarder" style="width:50%; float: left; margin: 5px;  ">
+							<div>
+								<div style="float:left; margin-top: 6px; margin-bottom: 6px;"><h3>My Team</h3></div>
+								<div style="float: right;margin-top: 5px; margin-bottom: 5px;">Carephone warehouse</div>
+								<div style="clear: both;"></div>
+							</div>
+
+							<ul class="myboarder-inside peopleList_2in_3col">
+							
+										<li>
+											<div style="text-align: center; width: 65px;">
+												<img style="margin: 5px;" width="45px" src="/image/people/kimmo.jpeg"></img>
+												<div class="itemName">Kimmo</div>
+												<div class="itemResults">23,422</div>
+											</div>
+										</li>
+										
+																				<li>
+											<div style="text-align: center; width: 65px;">
+												<img style="margin: 5px;" width="45px" src="/image/people/matt.jpeg"></img>
+												<div class="itemName">Matt</div>
+												<div class="itemResults">21,422</div>
+											</div>
+										</li>
+										
+										<li>
+											<div style="text-align: center; width: 65px;">
+												<img style="margin: 5px;" width="45px" src="/image/people/rich.png"></img>
+												<div class="itemName">Rich</div>
+												<div class="itemResults">6,422</div>
+											</div>
+										</li>
+										
+										<li>
+											<div style="text-align: center; width: 65px;">
+												<img style="margin: 5px;" width="45px" src="/image/people/rich.png"></img>
+												<div class="itemName">Jim</div>
+												<div class="itemResults">45,422</div>
+											</div>
+										</li>
+							</ul>
+							
 						</div>
+						<div class="myboarder" style="width:45%; float: right; margin: 5px;">
+							<div>
+								<div style="float:left; margin-top: 6px; margin-bottom: 6px;"><h3>Keith Howling</h3><div>Carphone Warehouse - Slough</div></div>
+								<div style="float: right;margin: 5px;"><img width="55" src="/image/carphone_warehouse.jpg"/></div>
+								<div style="clear: both;"></div>
+							</div>
+							<div class="myboarder-inside" style="text-align: center; height: 120px;">
+									<div style="float:left; text-align: center; width: 50%;">
+											<img style="margin: 5px;" width="65px" src="/image/people/keith.jpg"></img>
+											<div class="itemName">Keith</div>
+									</div>
+									<div style="float:left; text-align: center; width: 45%; margin-top: -5px;">
+										<canvas id="points-guage" width="110" height="100"></canvas>
+									</div>
+									<div style="clear:both; color: black; font-weight:bold;" >My Points <span class="timer">0</span></div>
+							</div>
+						</div>
+						
+						<div class="myboarder" style="width:45%; float: right; margin: 5px;">
+							<div>
+								<div style="float:left; margin-top: 6px; margin-bottom: 6px;"><h3>Recommended</h3></div>
+								<div style="float: right;margin-top: 5px; margin-bottom: 5px;"></div>
+								<div style="clear: both;"></div>
+							</div>
+							<style>
+									.bx-prev {
+											background: url("/image/setup-sprite-ver.png") no-repeat scroll -7px -780px transparent;
+											left: 0;
+											right: auto;
+											 bottom: auto;
+											display: block;
+											height: 23px;
+											left: auto;
+											margin: 0;
+											outline: medium none;
+											padding: 0;
+											position: relative;
+											right: 0;
+											text-decoration: none;
+											top: 30px;
+											width: 12px
+									}
+							</style>
+							<!-- <a class="bx-prev" href="" id="prev">&nbsp;</a> -->
+							
+							<ul id="slider1" class="myboarder-inside" style="text-align: center; height: 60px;">
+
+							
+<li class="itemList" >
+									<img src="/image/icons/knowledge-icon.gif" class="quizImage">
+									<div style="font-weight: bold;" class="itemName">The Basics</div> 
+									<span class="itemDesc">Portal Training</span>
+									<div style="float: right;">
+										<div style="margin: 2px; height: 10px; width: 60px; overflow: hidden; z-index: 1; position: relative;" class="knowRating" id="whydoineedaid"><div class="jRatingColor"></div><div class="jRatingAverage" style="width: 40px; top: -10px;"></div><div class="jStar" style="width: 60px; height: 10px; top: -20px; background: url(&quot;/image/jrating/small.png&quot;) repeat-x scroll 0% 0% transparent;"></div></div>
+										<div style="margin: 2px;">(4234 ratings)</div>
+									</div>
+									<br>
+									<div class="itemResults">HTML5 Video Stream</div>
+									
+</li>
+							
+<li class="itemList" >
+									<img src="/image/icons/WP7.jpg" class="quizImage">
+									<div style="font-weight: bold;" class="itemName">Windows Phone 7</div> 
+									<span class="itemDesc">Presenting Training</span>
+									<div style="float: right;">
+										<div style="margin: 2px; height: 10px; width: 60px; overflow: hidden; z-index: 1; position: relative;" class="knowRating" id="whydoineedaid"><div class="jRatingColor"></div><div class="jRatingAverage" style="width: 40px; top: -10px;"></div><div class="jStar" style="width: 60px; height: 10px; top: -20px; background: url(&quot;/image/jrating/small.png&quot;) repeat-x scroll 0% 0% transparent;"></div></div>
+										<div style="margin: 2px;">(4234 ratings)</div>
+									</div>
+									<br>
+									<div class="itemResults">HTML5 Video Stream</div>
+									
+</li>							
+							
+							</ul>
+						</div>
+						<div style="clear: both;"></div>
 					</div>
 					
-					<div id="quiz-container">
 
-          	<ul id="quizList" class="myboarder">
-          		<div id="Logo">click to take the exam</div>
+					
+					<div id="quiz-container" class="myboarder">
+						<div>
+							<div style="float:left; margin-top: 6px; margin-bottom: 6px;"><h3>Quiz</h3></div>
+							<div style="float: right;margin-top: 5px; margin-bottom: 5px;">quizzes appear when something important occures</div>
+							<div style="clear: both;"></div>
+						</div>
+          	<ul id="quizList" class="myboarder-inside quizList_3in_2col">
           		
-							<li id="quiz-template" style="display : none;" class="quiz">
-								<img class="quizImage" src="/image/quiz_icon.gif"/>
-								<div class="quizName"></div> 
-								<span class="quizHtml"></span>
+          		
+							<li id="quiz-template" style="display : none;" class="itemList">
+								<img class="quizImage" src="/image/icons/quiz_icon.gif"/>
+								
+								<div class="quizPass" style="display : none;">
+									<img style="margin: 10px;" height="40px;" src="/image/pass.gif"></img>
+								</div>
+								
+								<div class="itemName" style="font-weight: bold;"></div> 
+								<span class="itemDesc"></span>
 								<br/>
-								<div class="quizResults"></div>
+								<div class="itemResults"></div>
 							</li>
           	
 		        </ul>
 		     </div>
 		    </section>
-				<section>
-					<div style="overflow: auto;	width: 100%; margin-bottom : 10px;margin-top : 15px;">
-						<div style="float : left; width : 100%;"><spam style="font-weight:bold;">My Trophies</spam> take training - then - complete quizzez. get spot trophies for overachieving.  Thophies means points, points mean ... (we all know what points mean)</div>
-					</div>
-					
-					<div id="trophy-container">
 
-          	<ul id="trophyList" class="myboarder" style="height: 2in; ">
-          		
-          	</ul>
-          </div>
-				</section>
-				
 				<footer>
-					
 					<p>powered by heroku, nodejs, jquery, mongodb, long polling, and many more</p>
 				</footer>
 			</article>
 			
 			<aside>
-				<h3>Knowedge (hint: helps with quiz)</h3>
-				<ul id="knowledgeList" class="myboarder" style="background: white; height: 2in; ">
 				
-						<li id="knowledge-template"  style="display : none;" class="quiz">
-								<img class="quizImage" src="/image/knowledge-icon.gif"/>
-								<div class="quizName"></div> 
-								<span class="quizHtml"></span>
-								<br/>
-								<div class="quizResults"></div>
+			 	<div class="myboarder">
+					<div>
+								<div style="float:left; margin-top: 6px; margin-bottom: 6px;"><h3>Knowedge</h3></div>
+								<div style="float: right; margin-top: 5px; margin-bottom: 5px;"><input type="text" placeholder="search knowledge" class="modal-text-input" name="username" value=""></div>
+								<div style="clear: both;"/>
+					</div>
+					
+					<ul id="knowledgeList" class="myboarder-inside" style="background: white; height: 4in; ">
+					
+							<li id="knowledge-template"  style="display : none;" class="itemList">
+									<img class="quizImage" src=""/>
+									<div class="itemName" style="font-weight: bold;"></div> 
+									<span class="itemDesc"></span>
+									<div style="float: right;">
+										<div id="whydoineedaid" class="knowRating" style="margin: 2px;"></div>
+										<div style="margin: 2px;">(4234 ratings)</div>
+									</div>
+									<br/>
+									<div class="itemResults"></div>
+									
 							</li>
+					
+					</ul>
+				</div>
 				
-        </ul>
+					<div class="myboarder">
+					<div>
+								<div style="float:left; margin-top: 6px; margin-bottom: 6px;"><h3>Chatter</h3></div>
+								<div style="float: right; margin-top: 5px; margin-bottom: 5px;"><input type="text" placeholder="search knowledge" class="modal-text-input" name="username" value=""></div>
+								<div style="clear: both;"/>
+					</div>
+					
+					<ul class="myboarder-inside" style="background: white; height: 4in; ">
+					</ul>
+				</div>
+				
+				
 			</aside>
 			
 		</div> <!-- #main -->

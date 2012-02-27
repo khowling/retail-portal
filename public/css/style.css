@@ -8,11 +8,11 @@ audio:not([controls]) { display: none; }
 [hidden] { display: none; }
 
 html { font-size: 100%; overflow-y: scroll; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
-body { margin: 0; font-size: 13px; line-height: 1.231; }
-body, button, input, select, textarea { font-family: sans-serif; color: #222; }
+body { margin: 0; font-size: 13px;  }
+body, button, input, select, textarea { font-family: sans-serif; color: white; }
 
-::-moz-selection { background: #2276BB; color: #fff; text-shadow: none; }
-::selection { background: #2276BB; color: #fff; text-shadow: none; }
+::-moz-selection { background: #6CA128; color: #fff; text-shadow: none; }
+::selection { background: #6CA128; color: #fff; text-shadow: none; }
 
 a { color: #00e; }
 a:visited { color: #551a8b; }
@@ -35,9 +35,9 @@ small { font-size: 85%; }
 sub, sup { font-size: 75%; line-height: 0; position: relative; vertical-align: baseline; }
 sup { top: -0.5em; }
 sub { bottom: -0.25em; }
-ul, ol { margin: 1em 0; padding: 0 0 0 40px; }
+/* ul, ol { margin: 1em 0; padding: 0 0 0 40px; } */
 dd { margin: 0 0 0 40px; }
-nav ul, nav ol { list-style: none; list-style-image: none; margin: 0; padding: 0; }
+ul, ol { list-style: none; list-style-image: none; margin: 0; padding: 0; }
 img { border: 0; -ms-interpolation-mode: bicubic; vertical-align: middle; }
 svg:not(:root) { overflow: hidden; }
 figure { margin: 0; }
@@ -77,33 +77,33 @@ body{ font:16px/24px Helvetica, Helvetica Neue, Arial, sans-serif; }
 
 /* ===================
     ALL: Orange Theme
-   =================== */
+   =================== 
 
-#header-container{ border-bottom: 20px solid #1798C1; }
-#footer-container{ border-top:    20px solid #1798C1; }
-#main aside      { border-top:    20px solid #1798C1; }
+#header-container{ border-bottom: 10px solid #DFDBCB; }
+#footer-container{ border-top:    10px solid #DFDBCB; }
+#main aside      { border-top:    10px solid #DFDBCB; }
 
 #header-container,
 #footer-container,
 #main aside{
-	background:#2276BB;
+	background:#6CA128;
 }
 
 #title{ color:white; }
 
-::-moz-selection { background: #2276BB; color: #fff; text-shadow: none; }
-::selection      { background: #2276BB; color: #fff; text-shadow: none; }
-
+::-moz-selection { background: #6CA128; color: #fff; text-shadow: none; }
+::selection      { background: #6CA128; color: #fff; text-shadow: none; }
+*/
 /* ==============
     MOBILE: Menu
    ============== */
-
+/*
 nav a{
 	display:block;
 	margin-bottom:10px;
 	padding:15px 0;
 
-	background:#1798C1;
+	background:#DFDBCB;
 	color:white;
 
 	text-align:center;
@@ -112,34 +112,25 @@ nav a{
 }
 
 nav a:hover, nav a:visited{
-	color:white;
+	color:black;
 }
 
 nav a:hover{
 	text-decoration:underline;
 }
-
+*/
 /* ==============
     MOBILE: Main
    ============== */
 
-#main{
-	padding:30px 0;
-}
 
-#main article h1{
-	font-size:2em;
-}
-
+/*
 #main aside{
 	color:white;
-	padding:0px 10px 10px;
+	padding:0px 5px 5px;
 }
+*/
 
-#footer-container footer{
-	color:white;
-	padding:20px 0;
-}
 
 /* ===============
     ALL: IE Fixes
@@ -196,14 +187,14 @@ nav a:hover{
 /* ====================
     WIDE: CSS3 Effects
    ==================== */
-
+/*
 	#header-container,
 	#main aside{
 		-webkit-box-shadow:0 5px 10px #aaa;
 		   -moz-box-shadow:0 5px 10px #aaa;
 		        box-shadow:0 5px 10px #aaa;
 	}
-
+*/
 /* ============
     WIDE: Menu
    ============ */
@@ -228,7 +219,7 @@ nav a:hover{
 		
 	#main aside{
 		float:right;
-		width:28%;
+		width:42%;
 	}
 }
 
