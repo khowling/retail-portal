@@ -16,39 +16,39 @@
 		$("<div/>").addClass( "q-help q-innerArea").append( 
 			$("<div/>").addClass( "q-help-menu" ).append(
 				$( "<span/>" ).addClass( "q-quit-area" ).append(
-					$( "<input type ='button'/>" ).addClass( "q-quit-btn" ),
-					$( "<input type='button'/>" ).addClass( "q-quitYes-btn q-quit-confirm" ).hide(),
-					$( "<input type='button'/>" ).addClass( "q-quitNo-btn q-quit-confirm" ).hide()
+					$( "<input type ='button'/>" ).addClass( "q-quit-btn q-button" ),
+					$( "<input type='button'/>" ).addClass( "q-quitYes-btn q-quit-confirm q-button" ).hide(),
+					$( "<input type='button'/>" ).addClass( "q-quitNo-btn q-quit-confirm q-button" ).hide()
 				),
-				$("<input type='button'/>").addClass( "q-help-btn" ),									
+				$("<input type='button'/>").addClass( "q-help-btn q-button" ),									
 				$( "<span/>" ).addClass( "q-timer-area" ),
 				$("<div/>").addClass( "q-help-info" ).hide()
 			)
 		),
 		$("<div/>").addClass( "q-review-menu q-innerArea").append( 
-			$("<input type='button'/>").addClass( "q-details-btn q-reviewBar-btns" ),
-			$("<input type='button'/>").addClass( "q-review-btn q-reviewBar-btns" ),
+			$("<input type='button'/>").addClass( "q-details-btn q-reviewBar-btns q-button" ),
+			$("<input type='button'/>").addClass( "q-review-btn q-reviewBar-btns q-button" ),
 			$("<div/>").addClass( "q-reviewBar q-innerArea").append(
-				$("<input type='button'/>").attr({ "class": "q-leftArrow q-review-arrows", "value": "<-" }),
-				$("<input type='button'/>").attr({ "class": "q-rightArrow q-review-arrows", "value": "->" }),
+				$("<input type='button'/>").attr({ "class": "q-leftArrow q-review-arrows q-button", "value": "<-" }),
+				$("<input type='button'/>").attr({ "class": "q-rightArrow q-review-arrows q-button", "value": "->" }),
 				$( "<span/>" ).addClass( "q-review-nav" ).append(
 					$("<select/>").addClass( "q-review-index-all q-review-index"),
 					$("<select/>").addClass( "q-review-index-missed q-review-index").hide(),
 					$("<span/>").addClass( "q-missMarker" ).show(),
-					$("<input type='checkbox'/>").addClass( "q-showOnlyMissed-btn")
+					$("<input type='checkbox'/>").addClass( "q-showOnlyMissed-btn q-button")
 				)
 			).hide()
 		),
 		$("<div/>").addClass( "q-intro q-innerArea" ).append(
 			$( '<p/>' ).addClass( "q-intro-info" ),
-			$( '<input type="button"/>' ).addClass( "q-begin-btn" )
+			$( '<input type="button"/>' ).addClass( "q-begin-btn q-button"  )
 		).hide(),
 		$("<div/>").addClass( "q-prob q-innerArea" ).append( 
 			$("<div/>").addClass( "q-ques q-probArea"),
 			$("<div/>").addClass( "q-ans q-probArea").append(
 					$( "<div/>" ).addClass( "q-ansSel" ),
-					$( "<input type='button'/>" ).addClass( "q-check-btn" ),
-					$( "<input type='button'/>" ).addClass( "q-next-btn" )
+					$( "<input type='button'/>" ).addClass( "q-check-btn q-button" ),
+					$( "<input type='button'/>" ).addClass( "q-next-btn q-button" )
 				),
 			$("<div/>").addClass( "q-result q-probArea" ).hide() 
 		),
@@ -60,8 +60,8 @@
 					$("<div/>").addClass( "q-extraStat" )	
 			),
 			$("<div/>").addClass( "q-options q-probArea q-center").append( 
-				$("<input type='button'/>").addClass( "q-restart-btn" ),
-				$("<input type='button'/>").addClass( "q-del-btn" ) 
+				$("<input type='button'/>").addClass( "q-restart-btn q-button" ),
+				$("<input type='button'/>").addClass( "q-del-btn q-button" ) 
 			)
 		).hide()
 	);

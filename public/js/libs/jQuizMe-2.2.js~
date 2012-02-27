@@ -1099,6 +1099,7 @@
 						"numOfRight":stats.numOfRight,
 						"numOfWrong":stats.numOfWrong,
 						"score": stats.perc(),
+						"quesTried":stats.quesTried,
 						"total": stats.totalQues} , currQuiz );
 			},
 			setToBeginningView = function(){

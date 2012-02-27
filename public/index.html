@@ -298,11 +298,10 @@
 		function launchquiz (quizid, itemdata) {
 			var options = {
 				title: itemdata.name,
-				intro: '<p>' + itemdata.desc + '</p>' +
-				'<p>You receive ' + itemdata.desc + ' points for getting 100% in this Quiz</p>' +
+				intro: '<p>' + itemdata.desc + ', ' + itemdata.intro  +
+				', You receive ' + itemdata.desc + ' points for getting 100% in this Quiz</p>' +
 				'<p>REMEBER - Its ONLY your <bold>1st</bold> attempt that get you the points</p>' + 
-				'<p>REMEBER - You will still need to get 100% in the quiz to unlock more content (have as many attempts as you need)</p>' + 
-				'<p>' + itemdata.intro + '</p>', 
+				'<p>REMEBER - You will still need to get 100% in the quiz to unlock more content (have as many attempts as you need)</p>', 
 				disableDelete: false,
 				disableRestart: true,
 				statusUpdate: function( quizInfo, currQuiz ){
