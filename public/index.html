@@ -277,10 +277,10 @@
 				
 				// job queue so points are adding smoothly
 				displaypoints = function  () {
-					console.log ('incrementpoints: running with index : ' + incrementpoints_idx);
+					//console.log ('incrementpoints: running with index : ' + incrementpoints_idx);
 					var incit = incrementpoints[incrementpoints_idx];
 					if (incit) {
-						console.log ('incrementpoints: from : ' +incit.from+ ' to : ' + incit.to);
+						//console.log ('incrementpoints: from : ' +incit.from+ ' to : ' + incit.to);
 						incrementpoints_idx++;
 						jQuery(function($) {
 											$('.timer').countTo({
@@ -289,7 +289,7 @@
 													speed: 1000,
 													refreshInterval: 10,
 													onComplete: function(value) {
-															console.debug(this);
+															//console.debug(this);
 													}
 											});
 									});
@@ -369,7 +369,7 @@
 		
 		function poll(){
 			if (!poll_err) {
-				console.log("creating longpoll request");
+				//console.log("creating longpoll request");
 				$.ajax({ 
 					url: "/longpoll/" + lasteventprocessed, 
 					success: function(res){
