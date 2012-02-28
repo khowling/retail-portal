@@ -358,6 +358,7 @@ app.get('/longpoll/:lasteventprocessed', function (req, res, next) {
 
 app.get ('/stream/:filename', function (req,res,next) {
 	var fn = __dirname+'/public/media/' +req.params;
+	console.log ('stream: filename ' + fn);
 	res.sendfile (fn);
 });
 
