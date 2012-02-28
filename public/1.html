@@ -775,39 +775,6 @@ function filterVisibility() {
 }</script>
 <body>
 
-    <div id="divLogin" visible="true" runat="server" class="divLoginBg">
-        <div class="login_bg">
-        </div>
-        <div class="login_button">
-            <div id="divChatterFstLogin" runat="server">
-                <input type="image" ID="btnChatterLogin" runat="server" OnClientClick="btnOnClientClick()"
-                    Height="29" Width="85" ToolTip="Chatter Login" src="/_layouts/images/SFChatterWP/login_btn.png" />
-            </div>
-            <table width="60%" style="margin-left: 20%; margin-right: 20%;">
-                <tr valign="top">
-                    <td width="50%" align="center">
-                        <div id="divbtnLogin" runat="server" width="120">
-                            <div>
-                                <input type="image" ID="btnLogin" runat="server" Height="62" Width="62" OnClick="btnLogin_Click"
-                                    ToolTip="Chatter Login" src="/_layouts/images/SFChatterWP/Existing_User.png" />
-                            </div>
-                            <asp:Label ID="lblLoggedInUser" runat="server" Width="120px" CssClass="wrap" Style="text-align: center;" />
-                        </div>
-                    </td>
-                    <td align="center">
-                        <div id="divOtherUser" runat="server">
-                            <input type="image" ID="btnSwitchUser" runat="server" Height="62" Width="62" OnClick="btnSwitchUser_Click"
-                                ToolTip="Login with other user" src="/_layouts/images/SFChatterWP/Other_User.png" />
-                            <br />
-                            <asp:Literal ID="litOtherUser" Text="Other User" runat="server" />
-                        </div>
-                    </td>
-                </tr>
-            </table>
-            <asp:Label ID="lblConfigError" runat="server" Text="Your webpart is not configured. Please contact administrator."
-                ForeColor="Red"></asp:Label>
-        </div>
-    </div>
     <div class="main" id="divMain" visible="false" runat="server">
         <div class="toplinks">
             <div class="toplinks_right">
