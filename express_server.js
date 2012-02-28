@@ -144,7 +144,7 @@ app.post('/login', function (req,res,next) {
 		var sess = req.session;
 		//Properties on req.session are automatically saved on a response
 		sess.username = req.body.username;
-		users_collection[sess.username] = {points: 0, department: 'IT', picture_url: '/image/keith.jpg', completed_events: {}};
+		users_collection[sess.username] = {points: 0, department: 'IT', picture_url: '/image/people/keith.jpg', completed_events: {}};
 
 		createEvents(req.body.username, null);
 		res.send({username: sess.username, userdata: users_collection[sess.username]});
@@ -357,7 +357,7 @@ app.get('/longpoll/:lasteventprocessed', function (req, res, next) {
 });
 
 app.get ('/stream/:filename', function (req,res,next) {
-	var fn = __dirname+'/public/media/' +req.params;
+	var fn = __dirname+'/public/media/' +req.params.filename;
 	console.log ('stream: filename ' + fn);
 	res.sendfile (fn);
 });

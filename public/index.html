@@ -448,22 +448,18 @@
 				$.post( url, { username: un },
 					function( data ) {
 						
+						// data.userdata.points
+						// data.username
 						
-							var _userOut = $("<div/>").append(
-								$("<img/>").attr({"src": data.userdata.picture_url, "width": "70%", "height": "70%"}), 
-								$("<div/>").attr({"style": "color: black;"}).text(data.username + ' ('+ data.userdata.points +')'));
-				
-							$("#top-performer").append(_userOut);
-			
-
-													
-							var _userOut = $("<div/>").append(
-								$("<img/>").attr({"src": "/image/carphone_warehouse.jpg", "width": "70%", "height": "70%"}), 
-								$("<div/>").attr({"style": "color: black;"}).text("Carphone" + ' '+ "23000" +''));
-				
-							$("#outlet-leader").append(_userOut);
+							var _userOut = $("<img/>").attr({"src": data.userdata.picture_url, "width": "75", "style": "margin: 5px;"});
+							$("#userImage").append(_userOut);
+							$("#userName").text(data.username);
+												
+							$("#userOrg1").text("Carphone Warehouse - Slough");
+							$("#userOrg2").text("Carphone Warehouse - Slough");
 							
-							
+							var _orgOut = $("<img/>").attr({"src": "/image/carphone_warehouse.jpg", "width": "55"});
+							$("#orgImage").append(_orgOut);
 							
 							
 							$.modal.close();
@@ -532,7 +528,7 @@
 						<div class="myboarder" style="width:50%; float: left; margin: 5px;  ">
 							<div>
 								<div style="float:left; margin-top: 6px; margin-bottom: 6px;"><h3>My Team</h3></div>
-								<div style="float: right;margin-top: 15px; margin-bottom: 5px; color: #EBA555;">Carephone warehouse</div>
+								<div id="userOrg2" style="float: right;margin-top: 15px; margin-bottom: 5px; color: #EBA555;">Carephone warehouse</div>
 								<div style="clear: both;"></div>
 							</div>
 
@@ -574,15 +570,12 @@
 						</div>
 						<div class="myboarder" style="width:45%; float: right; margin: 5px;">
 							<div>
-								<div style="float:left; margin-top: 6px; margin-bottom: 6px;"><h3>Keith Howling</h3><div style="color: #EBA555;">Carphone Warehouse - Slough</div></div>
-								<div style="float: right;margin: 5px;"><img width="55" src="/image/carphone_warehouse.jpg"/></div>
+								<div style="float:left; margin-top: 6px; margin-bottom: 6px;"><h3><div id="userName"></div></h3><div id="userOrg1" style="color: #EBA555;"></div></div>
+								<div id="orgImage" style="float: right;margin: 5px;"></div>
 								<div style="clear: both;"></div>
 							</div>
 							<div class="myboarder-inside" style="text-align: center; height: 120px;">
-									<div style="float:left; text-align: center; width: 50%;">
-											<img style="margin: 5px;" width="65px" src="/image/people/keith.jpg"></img>
-											<div class="itemName">Keith</div>
-									</div>
+									<div id="userImage" style="float:left; text-align: center; width: 50%;"></div>
 									<div style="float:left; text-align: center; width: 45%; margin-top: -5px;">
 										<canvas id="points-guage" width="110" height="100"></canvas>
 									</div>
