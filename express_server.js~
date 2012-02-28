@@ -24,7 +24,7 @@ var event_collection = {
 			name: "Nokia Lumia 710",
 			desc: "Basic Phone Demo Training",
 			info: "YouTube Embedded Video",
-			icon: "/image/nokia-710.png",
+			icon: "/image/icons/nokia-710.png",
 			forwho: { completed : { 'Q001':true}},
 			points: 50,
 			knowledgedata: {
@@ -37,7 +37,7 @@ var event_collection = {
 			name: "Windows Phone 7",
 			desc: "Presenting Training",
 			info: "HTML5 Video Stream",
-			icon: "/image/WP7.jpg",
+			icon: "/image/icons/WP7.jpg",
 			forwho: { completed : {}},
 			points: 50,
 			knowledgedata: {

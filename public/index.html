@@ -274,6 +274,31 @@
 						greenFrom: 15000,
 						greenTo: 20000
 					});
+				
+				// job queue so points are adding smoothly
+				displaypoints = function  () {
+					console.log ('incrementpoints: running with index : ' + incrementpoints_idx);
+					var incit = incrementpoints[incrementpoints_idx];
+					if (incit) {
+						console.log ('incrementpoints: from : ' +incit.from+ ' to : ' + incit.to);
+						incrementpoints_idx++;
+						jQuery(function($) {
+											$('.timer').countTo({
+													from: incit.from,
+													to: incit.to,
+													speed: 1000,
+													refreshInterval: 10,
+													onComplete: function(value) {
+															console.debug(this);
+													}
+											});
+									});
+						$('#points-guage').gauge('setValue', incit.to); 
+					}
+				}
+				setInterval(displaypoints, 3000);
+				
+		
 				return false;
 		});
 
@@ -334,8 +359,14 @@
 		
 		
 		var mypoints = 0;
+		var incrementpoints = [];
+		var incrementpoints_idx = 0;
+		
+
+		
 		var lasteventprocessed = 0;		
 		var poll_err = false;		
+		
 		function poll(){
 			if (!poll_err) {
 				console.log("creating longpoll request");
@@ -378,21 +409,9 @@
 								}
 							}
 					
-
-							jQuery(function($) {
-									$('.timer').countTo({
-											from: mypoints,
-											to: res.my_points,
-											speed: 1000,
-											refreshInterval: 10,
-											onComplete: function(value) {
-													console.debug(this);
-											}
-									});
-							});
+							incrementpoints.push( { from: mypoints, to: res.my_points });
 							mypoints = res.my_points;
-							$('#points-guage').gauge('setValue', mypoints); 
-							
+
 						}
 					}, 
 					error: function(XMLHttpRequest, textStatus, errorThrown){

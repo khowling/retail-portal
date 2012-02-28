@@ -55,17 +55,17 @@ var event_collection = {
 			quizdata: {
 						"multiList":[
 							{ 
-								ques: "This portal is build on salesforce, but which platform?",
-								ans: "heroku",
-								ansInfo: "<a href='http://heroku.com'>heroku</a> PaaS.",
-								ansSel: [ "force.com", "chatter.com", "mini.com" ],
+								ques: "What mobile operating system does the Nokia Lumia 800 run?",
+								ans: "Windows",
+								//ansInfo: "<a href='http://heroku.com'>heroku</a> PaaS.",
+								ansSel: [ "iOS", "Android", "webos" ],
 								retry: 0 	// The question can only be tried twice. Otherwise the user's answer is wrong.
 							},
 							{ 
-								ques: "What is not a heroku language?", 
-								ans: "C#.NET",
-								ansInfo: "<a href='http://en.wikipedia.org/wiki/Ottawa'>The City of Ottawa</a> is where the capital of Canada.",
-								ansSel: [ "NODE.JS", "RUBY" ],
+								ques: "Which country is Nokia based?", 
+								ans: "Finland",
+								//ansInfo: "<a href='http://en.wikipedia.org/wiki/Ottawa'>The City of Ottawa</a> is where the capital of Canada.",
+								ansSel: [ "England", "Germany", "America" ]
 						//		ansSelInfo: [
 						//			"Hanoi is the capital of Vietnam", 
 						//			"Washington, D.C. is the capital of the USA"
@@ -76,50 +76,56 @@ var event_collection = {
 			},
 		'Q002': {
 			type: "QUIZ",
-			name: "Blackberry 9900",
+			name: "Nokia Lumia 800",
 			desc: "Sales assistant general (level1)",
 			forwho: { completed : {'Q001':true}},
 			points: 5000,
 			quizdata: {
 					"multiList":[
 						{ 
-							ques: "When was the Blackberry 9900 launched?",
-							ans: "Jan 2011",
-							ansSel: [ "Jan 2012", "Dec 2010", "March 2010" ],
+							ques: "Can you pre-order the Nokia Lumia 800 in White?",
+							ans: "Yes",
+							ansSel: [ "No" ],
 							retry: 0
 						},
 						{ 
-							ques: "What is the killed feature of the 9900 over the previous model?", 
-							ans: "All of the above",
-							ansInfo: "<a href='http://en.wikipedia.org/wiki/Ottawa'>The City of Ottawa</a> is where the capital of Canada.",
-							ansSel: [ "Touch Screen", "1GHh Processer", "Thinner" ],
+							ques: "What Camera does the 800 feature?", 
+							ans: "8 MP Auto Focus with Carl Zeiss Optics,",
+							ansInfo: "8 MP Auto Focus with Carl Zeiss Optics, 2x LED Flash and HD Video",
+							ansSel: [ "No Camera", "2 MP webcam", "12 MP, x30 Optical zoom" ]
+						},
+						{ 
+							ques: "What display size does the 800 feature?", 
+							ans: '3.7" 480x800 pixels',
+							ansInfo: "Corning® Gorilla® Glass, AMOLED, ClearBlack, Curved glass",
+							ansSel: [ '3.5" 960x640  pixels', '10.1" 1080x800 pixels' ]
 						}
 					]
 				}
 			},
 		Q003: {
 			type: "QUIZ",
-			name: "Nokia Lumia 800",
-			desc: "Technical Specification (level5)",
+			name: "Windows Mobile OS",
+			desc: "Business Specification (level5)",
 			forwho: { completed : {'Q001':true}},
 			points: 5000,
 			quizdata: {
 				"multiList":[
 					{ 
-						ques: "Let 2x = 10. <br/>What is x?",
-						ans: 5,
-						ansSel: [ 10, 20, 0 ],
-						retry: 2 	// The question can only be tried twice. Otherwise the user's answer is wrong.
+						ques: "What office applications comes with Windows Mobile",
+						ans: 'Word & Excel & OneNote & PowerPoint',
+						ansSel: [ 'Word', 'Word & Excel', 'Word & Excel & OneNote' ],
+						retry: 0 	// The question can only be tried twice. Otherwise the user's answer is wrong.
 					},
 					{ 
-						ques: "What is the capital of Canada?", 
-						ans: "Ottawa, Ontario",
-						ansInfo: "<a href='http://en.wikipedia.org/wiki/Ottawa'>The City of Ottawa</a> is where the capital of Canada.",
-						ansSel: [ "Hanoi", "Washington, D.C." ],
-						ansSelInfo: [
-							"Hanoi is the capital of Vietnam", 
-							"Washington, D.C. is the capital of the USA"
-						]
+						ques: "Can you create linked inboxes with Outlook Mobile?", 
+						ans: "Yes",
+						ansInfo: "If you have lots of accounts, you can create linked inboxes to streamline things, for example one for personal emails and one for work (the accounts stay separate)",
+						ansSel: [ "No" ]
+						//ansSelInfo: [
+						//	"Hanoi is the capital of Vietnam", 
+						//	"Washington, D.C. is the capital of the USA"
+						//]
 					}
 				]
 			}
@@ -343,10 +349,10 @@ app.get('/longpoll/:lasteventprocessed', function (req, res, next) {
 	} else {
 			console.log ('longpoll: got event to send to user');
 			event['my_points'] = users_collection[user].points;
-			setTimeout (function() {  // ADD A 1 SECOND DELAY - JUST FOR EFFECT!!!
+			//setTimeout (function() {  // ADD A 1 SECOND DELAY - JUST FOR EFFECT!!!
 				res.send(JSON.stringify(event));
 				console.log ('longpoll sent :' + event.index);
-			}, 1000);
+			//}, 1000);
 	}
 });
 
