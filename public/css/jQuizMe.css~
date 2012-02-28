@@ -10,6 +10,24 @@ jQuizMe 2.2 - 12/30/10 Programmed and CopyWrited by Larry Battle 2008 - 2010
 	width: 100%;
 	font:16px/24px Helvetica, Helvetica Neue, Arial, sans-serif;
 }
+
+input.q-button {
+				background-color: #459300;
+				border: 1px solid transparent;
+				border-radius: 4px 4px 4px 4px;
+				color: #FFFFFF;
+				cursor: pointer;
+				font-size: 14px;
+				//font-weight: bold;
+				margin: 10px;
+				letter-spacing: 1px;
+				padding: 6px 10px;
+				text-shadow: 0 -1px 0 #050505;
+}
+input[disabled].q-button { 
+		color: #459300;
+	}
+
 .quiz-el div{
 	padding: 0.2em;
 }
@@ -119,7 +137,7 @@ jQuizMe 2.2 - 12/30/10 Programmed and CopyWrited by Larry Battle 2008 - 2010
 .q-reviewBar-btns{
 	position: relative;
 	display: inline-block;
-	width: 49%;
+	width: 40%;
 }
 .q-rightArrow{
 	float:right;

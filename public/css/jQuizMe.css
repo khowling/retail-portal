@@ -23,6 +23,7 @@ input.q-button {
 				letter-spacing: 1px;
 				padding: 6px 10px;
 				text-shadow: 0 -1px 0 #050505;
+				font-weight: bold;
 }
 input[disabled].q-button { 
 		color: #459300;
