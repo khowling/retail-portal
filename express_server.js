@@ -7,10 +7,24 @@ var connectionTimeout = 25; // always send a empty '200' reponse to each open re
 
 var users_collection = {};
 var event_collection = {
+	'K000': {
+			type: "KNOWLEDGE",
+			name: "Start Here  *** The Basics  ***",
+			desc: "Portal Training",
+			info: "HTML5 Video Stream",
+			icon: "/image/icons/gettingstarted.jpg",
+			forwho: { completed : {}},
+			points: 50,
+			knowledgedata: {
+				url: '/stream/myvid.mp4',
+				type: 'HTML5_VIDEO'
+			}
+	},
+	
 	'K001': {
 			type: "KNOWLEDGE",
-			name: "The Basics",
-			desc: "Portal Training",
+			name: "Just a Test",
+			desc: "HTML5 streaming from node",
 			info: "HTML5 Video Stream",
 			forwho: { completed : {}},
 			points: 50,
@@ -36,7 +50,7 @@ var event_collection = {
 			type: "KNOWLEDGE",
 			name: "Windows Phone 7",
 			desc: "Presenting Training",
-			info: "HTML5 Video Stream",
+			info: "YouTube Embedded Video",
 			icon: "/image/icons/WP7.jpg",
 			forwho: { completed : {}},
 			points: 50,
@@ -113,8 +127,8 @@ var event_collection = {
 				"multiList":[
 					{ 
 						ques: "What office applications comes with Windows Mobile",
-						ans: 'Word & Excel & OneNote & PowerPoint',
-						ansSel: [ 'Word', 'Word & Excel', 'Word & Excel & OneNote' ],
+						ans: 'Word, Excel, OneNote and PowerPoint',
+						ansSel: [ 'Word', 'Word and Excel', 'Word, Excel and OneNote' ],
 						retry: 0 	// The question can only be tried twice. Otherwise the user's answer is wrong.
 					},
 					{ 
