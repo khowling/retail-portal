@@ -3,7 +3,7 @@ var app = express.createServer();
 var port = process.env.PORT || 3000;
 
 var lastRequestId = 0;
-var connectionTimeout = 30; // always send a empty '200' reponse to each open request after 60seconds.
+var connectionTimeout = 25; // always send a empty '200' reponse to each open request after 60seconds.
 
 var users_collection = {};
 var event_collection = {
