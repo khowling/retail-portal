@@ -32,12 +32,14 @@
 	<script type="text/javascript" src="js/libs/jRating.jquery.js"></script>
 
 	<style>
-		#header-container{ border-bottom: 10px solid #DFDBCB; }
-		#footer-container{ border-top:    10px solid #DFDBCB; }
-		#header-container,
-		#footer-container,
-		#main aside{
-			background:#6CA128;
+		#header-container{ border-bottom: 10px solid #333; }
+		#footer-container, .myboarder { border-top:    10px solid lightGrey; }
+		
+		#header-container,		#footer-container,	#main aside, .myboarder {
+			//background: #2561A6;
+			//background: #789DC7;
+			background: #4472A7;
+			
 		}
 		#header-container,
 		#main aside{
@@ -88,14 +90,14 @@
 				-moz-column-gap: 5px;
 				-webkit-column-count: 4; 
 				-webkit-column-gap:5px; 
-				height: 3in; 
+				height: 2.8in; 
 		}
 		.myboarder {
-			border-top: 10px solid #DFDBCB; 
+			//border-top: 10px solid #DFDBCB; 
 			color: white; 
 			box-shadow: 0 5px 10px #AAAAAA; 
 			padding: 0 2px 2px; 
-			background: none repeat scroll 0 0 #6CA128;
+			//background: none repeat scroll 0 0 #6CA128;
 		}
 		.myboarder-inside {
 			background-color: white;
@@ -123,8 +125,8 @@
 				-webkit-break-inside: avoid;    /* multicolumn */
 				-moz-break-inside: avoid;       /* multicolumn */
 				break-inside: avoid;            /* multicolumn */
-				padding: 4px 4px 4px 45px;  /* 35px is the left padding for the pic */
-				margin-bottom: 8px;
+				padding: 4px 4px 4px 55px;  /* 35px is the left padding for the pic */
+				margin-bottom: 2px;
 				border-radius: 4px;
 				border-bottom: 1px solid #ececec;
 				font-size: 9pt;
@@ -132,7 +134,7 @@
 		
 		li:hover {
 			cursor: pointer;
-			background: #888;
+			background: lightGrey;
 		}
 		
 		img.quizImage {
@@ -160,7 +162,7 @@
 			text-decoration: none;
 			font-size: 9pt;
 		}
-		span.itemDesc {
+		span.itemDesc, div.itemRate {
 			color: black;
 			padding: 0px;
 			font-size: 9pt;
@@ -242,7 +244,19 @@
 				var slider = $('#slider1').bxSlider({
 						controls: false,
 						auto: true,
-						pager: true
+						pager: true,
+						pagerSelector: $('#carousel_items_items'),
+						buildPager: function(slideIndex){
+								switch (slideIndex){
+									case 0:
+										return '<li style="cursor: pointer; " rel="0" class="carousel_itemList"><span class="hide">1</span></li>';
+									case 1:
+										return '<li style="cursor: pointer; " rel="1" class="carousel_itemList"><span class="hide">1</span></li>';
+									case 2:
+										return '<li style="cursor: pointer; " rel="2" class="carousel_itemList"><span class="hide">1</span></li>';
+
+								}
+						}
 					});
 				
 				$('#login-content').modal( { close : false});
@@ -260,6 +274,31 @@
 						greenFrom: 15000,
 						greenTo: 20000
 					});
+				
+				// job queue so points are adding smoothly
+				displaypoints = function  () {
+					//console.log ('incrementpoints: running with index : ' + incrementpoints_idx);
+					var incit = incrementpoints[incrementpoints_idx];
+					if (incit) {
+						//console.log ('incrementpoints: from : ' +incit.from+ ' to : ' + incit.to);
+						incrementpoints_idx++;
+						jQuery(function($) {
+											$('.timer').countTo({
+													from: incit.from,
+													to: incit.to,
+													speed: 1000,
+													refreshInterval: 10,
+													onComplete: function(value) {
+															//console.debug(this);
+													}
+											});
+									});
+						$('#points-guage').gauge('setValue', incit.to); 
+					}
+				}
+				setInterval(displaypoints, 3000);
+				
+		
 				return false;
 		});
 
@@ -320,11 +359,17 @@
 		
 		
 		var mypoints = 0;
+		var incrementpoints = [];
+		var incrementpoints_idx = 0;
+		
+
+		
 		var lasteventprocessed = 0;		
 		var poll_err = false;		
+		
 		function poll(){
 			if (!poll_err) {
-				console.log("creating longpoll request");
+				//console.log("creating longpoll request");
 				$.ajax({ 
 					url: "/longpoll/" + lasteventprocessed, 
 					success: function(res){
@@ -364,21 +409,9 @@
 								}
 							}
 					
-
-							jQuery(function($) {
-									$('.timer').countTo({
-											from: mypoints,
-											to: res.my_points,
-											speed: 1000,
-											refreshInterval: 10,
-											onComplete: function(value) {
-													console.debug(this);
-											}
-									});
-							});
+							incrementpoints.push( { from: mypoints, to: res.my_points });
 							mypoints = res.my_points;
-							$('#points-guage').gauge('setValue', mypoints); 
-							
+
 						}
 					}, 
 					error: function(XMLHttpRequest, textStatus, errorThrown){
@@ -415,22 +448,18 @@
 				$.post( url, { username: un },
 					function( data ) {
 						
+						// data.userdata.points
+						// data.username
 						
-							var _userOut = $("<div/>").append(
-								$("<img/>").attr({"src": data.userdata.picture_url, "width": "70%", "height": "70%"}), 
-								$("<div/>").attr({"style": "color: black;"}).text(data.username + ' ('+ data.userdata.points +')'));
-				
-							$("#top-performer").append(_userOut);
-			
-
-													
-							var _userOut = $("<div/>").append(
-								$("<img/>").attr({"src": "/image/carphone_warehouse.jpg", "width": "70%", "height": "70%"}), 
-								$("<div/>").attr({"style": "color: black;"}).text("Carphone" + ' '+ "23000" +''));
-				
-							$("#outlet-leader").append(_userOut);
+							var _userOut = $("<img/>").attr({"src": data.userdata.picture_url, "width": "75", "style": "margin: 5px;"});
+							$("#userImage").append(_userOut);
+							$("#userName").text(data.username);
+												
+							$("#userOrg1").text("Carphone Warehouse - Slough");
+							$("#userOrg2").text("Carphone Warehouse - Slough");
 							
-							
+							var _orgOut = $("<img/>").attr({"src": "/image/carphone_warehouse.jpg", "width": "55"});
+							$("#orgImage").append(_orgOut);
 							
 							
 							$.modal.close();
@@ -478,7 +507,7 @@
 
 	<div id="header-container">
 		<header class="wrapper clearfix">
-			<h1 id="title"><img src="/image/NokiaLogo.gif" class="myboarder-inside" style="margin-right: 15px;"/>more engaging learning</h1>
+			<h1 id="title"><img src="/image/nk_nokia_logo.png" class="myboarder-inside" style="background: #4472A7; margin-right: 15px;"/>more engaging learning</h1>
 			<nav>
 				<ul>
 					<li><a href="#">Scan QR</a></li>
@@ -494,12 +523,12 @@
 			<article>
 
 				
-				<section>
+				<section >
 					<div style="width:100%; margin-bottom : 10px;">
 						<div class="myboarder" style="width:50%; float: left; margin: 5px;  ">
 							<div>
 								<div style="float:left; margin-top: 6px; margin-bottom: 6px;"><h3>My Team</h3></div>
-								<div style="float: right;margin-top: 5px; margin-bottom: 5px;">Carephone warehouse</div>
+								<div id="userOrg2" style="float: right;margin-top: 15px; margin-bottom: 5px; color: #EBA555;">Carephone warehouse</div>
 								<div style="clear: both;"></div>
 							</div>
 
@@ -541,15 +570,12 @@
 						</div>
 						<div class="myboarder" style="width:45%; float: right; margin: 5px;">
 							<div>
-								<div style="float:left; margin-top: 6px; margin-bottom: 6px;"><h3>Keith Howling</h3><div>Carphone Warehouse - Slough</div></div>
-								<div style="float: right;margin: 5px;"><img width="55" src="/image/carphone_warehouse.jpg"/></div>
+								<div style="float:left; margin-top: 6px; margin-bottom: 6px;"><h3><div id="userName"></div></h3><div id="userOrg1" style="color: #EBA555;"></div></div>
+								<div id="orgImage" style="float: right;margin: 5px;"></div>
 								<div style="clear: both;"></div>
 							</div>
 							<div class="myboarder-inside" style="text-align: center; height: 120px;">
-									<div style="float:left; text-align: center; width: 50%;">
-											<img style="margin: 5px;" width="65px" src="/image/people/keith.jpg"></img>
-											<div class="itemName">Keith</div>
-									</div>
+									<div id="userImage" style="float:left; text-align: center; width: 50%;"></div>
 									<div style="float:left; text-align: center; width: 45%; margin-top: -5px;">
 										<canvas id="points-guage" width="110" height="100"></canvas>
 									</div>
@@ -560,29 +586,62 @@
 						<div class="myboarder" style="width:45%; float: right; margin: 5px;">
 							<div>
 								<div style="float:left; margin-top: 6px; margin-bottom: 6px;"><h3>Recommended</h3></div>
-								<div style="float: right;margin-top: 5px; margin-bottom: 5px;"></div>
+								
+								
+<style>
+ol {
+	display: block;
+	list-style-type: decimal;
+	-webkit-margin-before: 1em;
+	-webkit-margin-after: 1em;
+	-webkit-margin-start: 0px;
+	-webkit-margin-end: 0px;
+	-webkit-padding-start: 40px;
+}
+.carousel {
+	color: white;
+}
+.carousel .carousel_itemList {
+	//position: absolute;
+	//top: -26px;
+	//right: 18px;
+}
+.carousel .carousel_itemList li {
+	position: relative;
+	float: left;
+	width: 9px;
+	height: 9px;
+	background-color: #505050;
+	margin: 0 2px;
+	padding: 0;
+	border: 0;
+}
+.hide {
+	display: none !important;
+}
+li {
+	display: list-item;
+	text-align: -webkit-match-parent;
+}
+ol, ul {
+	list-style: none;
+}
+.carousel .carousel_itemList li.pager-active {
+	background-color: #EB7515;
+}
+</style>
+								<div class="carousel" style="float: right; margin: 5px;">
+									<ol id="carousel_items_items" class="carousel_itemList">
+									<!--
+										<li class="carousel_itemList" rel="0" style="cursor: pointer; "><span class="hide">1</span></li>
+										<li class="carousel_itemList pager-active" rel="1" style="cursor: pointer; "><span class="hide">2</span></li>
+										<li class="carousel_itemList" rel="2" style="cursor: pointer; "><span class="hide">3</span></li>
+									-->
+									</ol>
+								</div>
 								<div style="clear: both;"></div>
 							</div>
-							<style>
-									.bx-prev {
-											background: url("/image/setup-sprite-ver.png") no-repeat scroll -7px -780px transparent;
-											left: 0;
-											right: auto;
-											 bottom: auto;
-											display: block;
-											height: 23px;
-											left: auto;
-											margin: 0;
-											outline: medium none;
-											padding: 0;
-											position: relative;
-											right: 0;
-											text-decoration: none;
-											top: 30px;
-											width: 12px
-									}
-							</style>
-							<!-- <a class="bx-prev" href="" id="prev">&nbsp;</a> -->
+							
 							
 							<ul id="slider1" class="myboarder-inside" style="text-align: center; height: 60px;">
 
@@ -623,7 +682,7 @@
 					<div id="quiz-container" class="myboarder">
 						<div>
 							<div style="float:left; margin-top: 6px; margin-bottom: 6px;"><h3>Quiz</h3></div>
-							<div style="float: right;margin-top: 5px; margin-bottom: 5px;">quizzes appear when something important occures</div>
+							<div style="float: right;margin-top: 15px; margin-bottom: 5px; color: #EBA555;">quizzes appear when something important occures</div>
 							<div style="clear: both;"></div>
 						</div>
           	<ul id="quizList" class="myboarder-inside quizList_3in_2col">
@@ -657,18 +716,18 @@
 					<div>
 								<div style="float:left; margin-top: 6px; margin-bottom: 6px;"><h3>Knowedge</h3></div>
 								<div style="float: right; margin-top: 5px; margin-bottom: 5px;"><input type="text" placeholder="search knowledge" class="modal-text-input" name="username" value=""></div>
-								<div style="clear: both;"/>
+								<div style="clear: both;"></div>
 					</div>
 					
 					<ul id="knowledgeList" class="myboarder-inside" style="background: white; height: 4in; ">
 					
-							<li id="knowledge-template"  style="display : none;" class="itemList">
-									<img class="quizImage" src=""/>
+							<li id="knowledge-template"  style="display : none; " class="itemList">
+									<img class="quizImage" style="width: 50px;" src=""/>
 									<div class="itemName" style="font-weight: bold;"></div> 
 									<span class="itemDesc"></span>
 									<div style="float: right;">
 										<div id="whydoineedaid" class="knowRating" style="margin: 2px;"></div>
-										<div style="margin: 2px;">(4234 ratings)</div>
+										<div class="itemRate" style="margin: 2px;">(4234 ratings)</div>
 									</div>
 									<br/>
 									<div class="itemResults"></div>
@@ -678,16 +737,16 @@
 					</ul>
 				</div>
 				
-					<div class="myboarder">
-					<div>
-								<div style="float:left; margin-top: 6px; margin-bottom: 6px;"><h3>Chatter</h3></div>
-								<div style="float: right; margin-top: 5px; margin-bottom: 5px;"><input type="text" placeholder="search knowledge" class="modal-text-input" name="username" value=""></div>
-								<div style="clear: both;"/>
-					</div>
-					
-					<ul class="myboarder-inside" style="background: white; height: 4in; ">
-					</ul>
+				<div class="myboarder">
+				<div>
+							<div style="float:left; margin-top: 6px; margin-bottom: 6px;"><h3>Chatter</h3></div>
+							<div style="float: right; margin-top: 5px; margin-bottom: 5px;"><input type="text" placeholder="search Chatter" class="modal-text-input" name="username" value=""></div>
+							<div style="clear: both;"/>
 				</div>
+					
+				<ul class="myboarder-inside" style="background: white; height: 4in; ">
+				</ul>
+			</div>
 				
 				
 			</aside>
