@@ -2,10 +2,13 @@
 <head>
     <link id="Link1" rel="stylesheet" type="text/css" runat="server" href="/_layouts/STYLES/SFChatterWP/global.css" />
 </head>
-<script src="/_layouts/1033/SFChatterWP/jquery-1.6.2.js" type="text/javascript"></script>
+<!--
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+-->
 <script src="/_layouts/1033/SFChatterWP/jquery.expander.js" type="text/javascript"></script>
 <script src="/_layouts/1033/SFChatterWP/jquery.textarea-expander.js" type="text/javascript"></script>
 <script src="/_layouts/1033/SFChatterWP/jquery.autocomplete.js" type="text/javascript"></script>
+
 <script type="text/javascript">
     function btnOnClientClick() {
         document.getElementById(btnChatterLoginID).style.display = 'none';
@@ -32,7 +35,7 @@
             var tempfile2 = tempfile1.substring(tempfile1.lastIndexOf('/') + 1);
             var filename = tempfile2.split("#");
             document.getElementById('path').innerHTML = filename[0];
-            document.getElementById("<%=hdnSharePointFilePath.ClientID%>").value = target + "#FromSharePoint"
+            document.getElementById("hdnSharePointFilePath").value = target + "#FromSharePoint"
         } else {
             if (document.getElementById("<%=documentDiv.ClientID%>").style.display == 'block') {
                 divAttachFile.style.display = 'none'
@@ -49,22 +52,22 @@
         SP.UI.ModalDialog.showModalDialog(options1)
     }
     function showUploadOptions() {
-        var fplUpload = document.getElementById("<%=fplUpload.ClientID%>");
-        var divFileUpload = document.getElementById("<%=divFileUpload.ClientID%>");
-        var divAttachFile = document.getElementById("<%=divAttachFile.ClientID%>");
-        var divLinkPost = document.getElementById("<%=divLinkPost.ClientID%>");
+        var fplUpload = document.getElementById("fplUpload");
+        var divFileUpload = document.getElementById("divFileUpload");
+        var divAttachFile = document.getElementById("divAttachFile");
+        var divLinkPost = document.getElementById("divLinkPost");
         divLinkPost.style.display = 'none';
-        document.getElementById("<%=hdnSharePointFilePath.ClientID%>").value = "";
-        document.getElementById("<%=txtFileName.ClientID%>").value = "";
+        document.getElementById("hdnSharePointFilePath").value = "";
+        document.getElementById("txtFileName").value = "";
         fplUpload.value = null;
         divFileUpload.style.display = 'block';
         divAttachFile.style.display = 'none'
     }
     function compUploadClick() {
-        var divFileUpload = document.getElementById("<%=divFileUpload.ClientID%>");
-        var compUploadDiv = document.getElementById("<%=compUploadDiv.ClientID%>");
-        var divImgBtnShareFrmComp = document.getElementById("<%=divImgBtnShareFrmComp.ClientID%>");
-        var divimagShareFrmComp = document.getElementById("<%=divimagShareFrmComp.ClientID%>");
+        var divFileUpload = document.getElementById("divFileUpload");
+        var compUploadDiv = document.getElementById("compUploadDiv");
+        var divImgBtnShareFrmComp = document.getElementById("divImgBtnShareFrmComp");
+        var divimagShareFrmComp = document.getElementById("divimagShareFrmComp");
         divFileUpload.style.display = 'none';
         compUploadDiv.style.display = 'block';
         divImgBtnShareFrmComp.style.display = 'none';
@@ -385,16 +388,40 @@
 
     function BindLoadEvents() {
         $(document).ready(function () {
+        		
+        		$.ajax({ 
+								url: "/myfeed", 
+								success: function(res){
+									alert ('got 11 ' + JSON.stringify(res["items"]));
+									for (var itm in res["items"]) {
+										alert ('got ' + itm.body.text);
+										$('#feed-post').clone().removeAttr('style').end().find('.spanFeed').text(itm.body.text).end().find('tr.Like_box').attr({'style': 'display: none;'}).end()
+											.find('.linkComment').click(function () {
+												var divActivity = $(this).parent().parent().parent().next();
+												var dslComment = divActivity.children('.comment_feddbackBox').children('.Like_box_BG');
+												var divCBox = dslComment.next();
+												var tbComment = divCBox.children('.Like_box_right').children('.users_comment3').children('.tbCommentClass');
+												var lblLengthError = tbComment.next();
+												divActivity.show();
+												dslComment.hide();
+												divCBox.show();
+												tbComment.focus();
+												lblLengthError.hide()
+										}).end().prependTo('#feed-table');
+									}
+								}
+						});
+						
             try {
-            //    document.getElementById('s4-workspace').onscroll = function () {
-            //        $(".ac_results").hide()
+                document.getElementById('chatterdiv').onscroll = function () {
+                    $(".ac_results").hide()
                 }
             } catch (Exception) {}
             var controlID;
             var currentControl;
             var lastIndex;
             var currentCtrlText;
-            $(".autoCompleteClass").autocomplete(HandlerUrl, {
+            $(".autoCompleteClass").autocomplete('/handleURL', {
                 width: $(this).outerWidth(),
                 extraParams: {
                     CP: function () {
@@ -404,7 +431,7 @@
                         else return getCaret(textarea) + ',' + 1
                     }
                 },
-                max: sAutoCompleteSearchUserCount,
+                max: 5,
                 formatItem: function (data, i, n, value) {
                     if (value != "NO RESULT") {
                         if (value.split("*")[2] == "user") {
@@ -741,7 +768,7 @@
         }
     }
     function filterVisibility() {
-        var divFilter = document.getElementById("<%=drop_down_list.ClientID%>");
+        var divFilter = document.getElementById("drop_down_list");
         if (divFilter.style.display == 'inline-block') {
             divFilter.style.display = 'none'
         } else {
@@ -751,6 +778,8 @@
 </script>
 <body>
     <div class="main" id="divMain" visible="false" runat="server">
+    
+    <!--
         <div class="toplinks">
             <div class="toplinks_right">
                 <a ID="lnkLogOut" ToolTip="Logout" runat="server" Text="Logout!" OnClick="lnkLogOut_Click"></a>
@@ -783,14 +812,17 @@
             </div>
         </div>
         <br />
-        <div id="divNewComment" runat="server" visible="false">
+     -->
+        
+        <!-- ENTER A NEW POST -->
+        <div id="divNewComment">
             <div class="textfield_comment">
-                <asp:TextBox ID="txtNewFeed" runat="server" MaxLength="1000" ForeColor="GrayText"
-                    TextMode="MultiLine" CssClass="expand30-2000 textfield_com txtNewFeedStyle autoCompleteClass"> </asp:TextBox>
+                <textarea ID="txtNewFeed" maxLength="1000" ForeColor="GrayText" placeholder="what are you working on..."
+                    TextMode="MultiLine" class="expand30-2000 textfield_com txtNewFeedStyle autoCompleteClass"> </textarea>
                 <label ID="feedLengthError" runat="server" Text="Error: Your post can't have more than 1000 characters."
                     ForeColor="Red" Style="display: none;"></label>
             </div>
-            <div class="attach_share" id="divAttachFile" runat="server" visible="false">
+            <div class="attach_share" id="divAttachFile" >
                 <div class="file_attach">
                     <div class="attach_file">
                         Attach
@@ -803,11 +835,38 @@
                         <a href="javascript:showLinkUploadOptions();" id="A1" style="display: inline;">Link</a>
                     </div>
                 </div>
-                <div class="btn_share divActive" id="divActive" style="display: block;" runat="server">
+                <div class="btn_share divActive" id="divActive" style="display: block;">
                     <input type="image" ID="imgbtnShare" ToolTip="Share" runat="server" src="/_layouts/images/SFChatterWP/btn_share.png"
-                        Width="64" Height="23" OnClick="imgbtnShare_Click" />
+                        Width="64" Height="23" onClick=" 	
+                        
+                        	$('#divActive').attr({'style': 'display: none;'});
+                        	$('#divInactive').attr({'style': 'display: block;'});
+                        	
+                        	var upfeed = function(){
+                        		var ptxt = $('#txtNewFeed').val();
+                        		$('#feed-post').clone().find('.spanFeed').text(ptxt).end().find('tr.Like_box').attr({'style': 'display: none;'}).end()
+                        			.find('.linkComment').click(function () {
+																var divActivity = $(this).parent().parent().parent().next();
+																var dslComment = divActivity.children('.comment_feddbackBox').children('.Like_box_BG');
+																var divCBox = dslComment.next();
+																var tbComment = divCBox.children('.Like_box_right').children('.users_comment3').children('.tbCommentClass');
+																var lblLengthError = tbComment.next();
+																divActivity.show();
+																dslComment.hide();
+																divCBox.show();
+																tbComment.focus();
+																lblLengthError.hide()
+														}).end().removeAttr('style').prependTo('#feed-table');
+            
+            
+                        		$('#txtNewFeed').val('');
+                        		$('#divActive').attr({'style': 'display: block;'});
+                        		$('#divInactive').attr({'style': 'display: none;'});
+                        		}
+                        		
+                        	setTimeout (upfeed, 1000);" />
                 </div>
-                <div class="btn_share divInactive" id="divInactive" style="display: none;" runat="server">
+                <div class="btn_share divInactive" id="divInactive" style="display: none;">
                     <img ID="imgBtnInactive" runat="server" src="/_layouts/images/SFChatterWP/btn_shareInactive.png"
                         Width="64" Height="23" />
                 </div>
@@ -815,6 +874,7 @@
         </div>
         <div class="clear-1">
         </div>
+        
         <div class="Attach_file_box" id="divFileUpload" runat="server" style="display: none;">
             <div class="File_Attach_1">
                 <div class="File_Attach_title" runat="server" id="fileCLoseDiv">
@@ -902,7 +962,7 @@
                                             <div class="requiredBlock">
                                             </div>
                                             <div>
-                                                <asp:TextBox ID="txtFileName" ToolTip="Name" CssClass="textbox_245 txtFileName" runat="server"></asp:TextBox>
+                                                <input type="text" ID="txtFileName" ToolTip="Name" class="textbox_245 txtFileName" runat="server"></input>
                                                 <br />
                                                 <label ID="lblErrMsg" runat="server" Text="This field can't have more than 255 characters."
                                                     CssClass="errorMsg" Style="display: none;"></label>
@@ -921,8 +981,8 @@
                                     </th>
                                     <td class="rowControlStyle">
                                         <div id="ext-gen4">
-                                            <asp:TextBox ID="txtDescription" ToolTip="Description" CssClass="textbox2_245 txtDescription"
-                                                runat="server" TextMode="MultiLine"></asp:TextBox>
+                                            <input type="text" ID="txtDescription" ToolTip="Description" class="textbox2_245 txtDescription"
+                                                runat="server" TextMode="MultiLine"></input>
                                             <br />
                                             <label ID="descLengthError" runat="server" Text="Description field cannot have more than 1000 characters."
                                                 ForeColor="Red" Style="display: none;"></label>
@@ -1030,7 +1090,7 @@
                                             <div class="requiredInput">
                                                 <div class="requiredBlock">
                                                 </div>
-                                                <asp:TextBox ID="txtLinkUrl" runat="server" Text="http://" class="textbox_browse txtLinkUrl" />
+                                                <input type="text" ID="txtLinkUrl" runat="server" Text="http://" class="textbox_browse txtLinkUrl" />
                                                 <br />
                                                 <label ID="LinkLengthError" CssClass="LinkLengthError" runat="server" Text="This field can't have more than 1000 characters."
                                                     ForeColor="Red" Style="display: none;"></label>
@@ -1054,7 +1114,7 @@
                                     <td class="rowControlStyle">
                                         <div>
                                             <div class="requiredInput">
-                                                <asp:TextBox ID="txtLinkName" runat="server" class="textbox_browse txtLinkName" />
+                                                <input type="text" ID="txtLinkName" runat="server" class="textbox_browse txtLinkName" />
                                                 <br />
                                                 <label ID="LinkNameError" runat="server" Text="This field can't have more than 255 characters."
                                                     ForeColor="Red" Style="display: none;"></label>
@@ -1094,36 +1154,54 @@
         <br />
         <div class="clear-1">
         </div>
+        
+        <!-- UPDATES FOR DROPDOWN --> 
         <div id="divFilter" runat="server">
             <div id="menu_parent" runat="server" style="position: relative; font-size: 12px;
                 font-weight: bold;">
-                Updates for <span onclick="filterVisibility()" class="SelectedFilter">
-                    <label ID="lblFilter" runat="server">My Chatter</label>
-                    <asp:HiddenField ID="hdnFilterUrl" runat="server" Value="/feeds/news/me/feed-items" />
+                Updates for 
+                <span onclick="filterVisibility()" class="SelectedFilter">
+                    <span>TMobile Slough</span>
                     <img src="/_layouts/images/SFChatterWP/triangle-down.png" width="12" height="9" />
                 </span>
             </div>
             <div id="drop_down_list" runat="server" class="drop_down_listMyChatter">
                 <table style="min-width: 130px;">
-                    <asp:Repeater ID="rptFeedFilter" runat="server" OnItemCommand="rptFeedFilter_ItemCommand">
+                   <!--
+                <asp:Repeater ID="rptFeedFilter" runat="server" OnItemCommand="rptFeedFilter_ItemCommand">
                         <ItemTemplate>
+                        -->
+                        <table>
                             <tr style="width: 100%">
                                 <td width="12px">
                                     <img runat="server" visible="false" id="imgTick" src="/_layouts/images/SFChatterWP/tick_16.png"
                                         width="11" height="11">
                                 </td>
                                 <td class="menu_item">
-                                    <a OnClientClick="filterVisibility();" ID="lnkFilter" runat="server"
-                                        ToolTip='<%# Eval("Label")%>' Text='<%# Eval("Label")%>' CommandArgument='<%# Eval("FeedItemsUrl") %>'></a>
+                                    <a onclick="filterVisibility();" ID="lnkFilter">TMobile Slough</a>
                                 </td>
                             </tr>
+                            <tr style="width: 100%">
+                                <td width="12px">
+
+                                </td>
+                                <td class="menu_item">
+                                    <a onclick="filterVisibility();" ID="lnkFilter">TMobile UK</a>
+                                </td>
+                            </tr>
+                           
+                            <!--
                         </ItemTemplate>
                     </asp:Repeater>
+                    -->
                 </table>
             </div>
         </div>
+        <!--
         <asp:UpdatePanel ID="upnlChatter" runat="server">
             <ContentTemplate>
+        -->
+        <div ID="upnlChatter">
                 <!-- Bind events for the dynamic controls without reloading the page -->
                 <script type="text/javascript">
                     //var prm = Sys.WebForms.PageRequestManager.getInstance();
@@ -1132,7 +1210,7 @@
                     //});
                 </script>
                 <!-- Bind events for the dynamic controls without reloading the page -->
-                <div style="padding-top: 10px;">
+                <div style="padding-top: 5px;">
                     <label ID="lblFeedInfo" runat="server" Text="" Font-Bold="true" Font-Names="Verdana"
                         Font-Size="10" Visible="false"></label></div>
                 <div id="dvUserAction">
@@ -1143,19 +1221,19 @@
                         </div>
                         <div id="box">
                             <a href="#" id="user_image_a">
-                                <img id="imgUserPic" alt="" width="45" height="45" runat="server" />
+                                <img id="imgUserPic" alt="" width="45" height="45" src="/image/people/keith.jpg" />
                             </a>
                             <div id="content">
                                 <div id="name">
-                                    <span id="userName"><a id="hUserName" target="_blank" runat="server"></a>
+                                    <span id="userName"><a id="hUserName" target="_blank" runat="server">Bob Smith</a>
                                         <br />
                                         <div>
-                                            <label ID="lblPhone1" CssClass="lblPhone" runat="server"></label>
-                                            <label ID="lbltype1" CssClass="lbltype" Font-Size="Small" runat="server"></label>
+                                            <label ID="lblPhone1" CssClass="lblPhone" runat="server">0234 234 234</label>
+                                            <label ID="lbltype1" CssClass="lbltype" Font-Size="Small" runat="server">label11</label>
                                         </div>
                                         <div>
-                                            <label ID="lblPhone2" CssClass="lblPhone" runat="server"></label>
-                                            <label ID="lbltype2" CssClass="lbltype" Font-Size="Small" runat="server"></label>
+                                            <label ID="lblPhone2" CssClass="lblPhone" runat="server">phone 2</label>
+                                            <label ID="lbltype2" CssClass="lbltype" Font-Size="Small" runat="server">789</label>
                                         </div>
                                     </span>
                                 </div>
@@ -1190,29 +1268,34 @@
                         </div>
                     </div>
                 </div>
+                <!--
                 <asp:GridView ID="gvFeed" runat="server" AutoGenerateColumns="False" ShowHeader="False"
+                
                     EnableViewState="false" OnRowDataBound="gvFeedList_RowDataBound" BorderWidth="0"
                     BorderStyle="None" GridLines="None" Width="100%">
                     <Columns>
                         <asp:TemplateField>
                             <ItemTemplate>
+                -->
+                <table id="feed-table" style="width: 100%;">
+                	<tr id="feed-post" style="display: none;"><td>
+                	
                                 <div class="usersFeed">
                                     <div class="users_feed">
                                         <div class="users_photo">
-                                            <asp:HiddenField ID="hdnRowIndex" runat="server" />
-                                            <img ID="imgPic" ToolTip='<%# Eval("Actor.Name") %>' runat="server" Width="45"
-                                                Height="45" />
+                                            <img ID="imgPic" ToolTip='<%# Eval("Actor.Name") %>' Width="45"
+                                                Height="45" src="/image/people/keith.jpg"/>
                                         </div>
                                         <div class="users_info">
                                             <div id="dvExpand" runat="server" class="users_comment expandmorelink">
-                                                <asp:HiddenField ID="hdnFeedId" runat="server" Value='<%# Eval("id") %>' />
+                                                
                                                 <table class="fixtable">
                                                     <tr>
                                                         <td width="97%" class="middle wrap">
                                                             <span class="font_title">
-                                                                <asp:HyperLink ID="lblParent" runat="server" Target="_blank"></asp:HyperLink>
-                                                                <asp:HyperLink ID="lblActor" runat="server" Target="_blank" Text='<%# Eval("Actor.Name") %>'></asp:HyperLink>
-                                                                : </span><span id="spanFeed" runat="server"></span>
+                                                                <a ID="lblParent" runat="server" Target="_blank"></a>
+                                                                <a ID="lblActor" runat="server" Target="_blank" Text='<%# Eval("Actor.Name") %>'>Keith Howling</a>
+                                                                : </span><span class="spanFeed">this is me</span>
                                                         </td>
                                                         <td class="trDelete">
                                                             <input type="image" ID="btnDeletePost" class="deleteComment" runat="server" Height="16"
@@ -1222,7 +1305,8 @@
                                                 </table>
                                             </div>
                                             <div class="users_comment" id="divFileInfo" runat="server" visible="false">
-                                                <div class="file_upload_icon">
+                                              <!--  
+                                            	<div class="file_upload_icon">
                                                     <img ID="imgFile" ToolTip="We can't a provide preview of this file" runat="server"
                                                         src="/_layouts/images/SFChatterWP/File.png" Width="32" Height="32" />
                                                 </div>
@@ -1239,6 +1323,7 @@
                                                         </span>
                                                     </div>
                                                 </div>
+                                                
                                                 <div class="file_upload_info">
                                                     <div class="file_Description">
                                                         <table style="table-layout: fixed;" width="100%">
@@ -1253,7 +1338,9 @@
                                                 <div class="clear-1">
                                                 </div>
                                             </div>
-                                            <div class="users_comment" id="divLinkInfo" runat="server" visible="false">
+                                            -->
+                                            <!--
+                                            <div class="users_comment" id="divLinkInfo">
                                                 <div style="float: left; padding: 5px">
                                                     <div>
                                                         <table class="fixtable">
@@ -1262,7 +1349,7 @@
                                                                     <span class="font_title">
                                                                         <img ID="imgLink" runat="server" src="/_layouts/images/SFChatterWP/link.png"
                                                                             Width="15" Height="15" />
-                                                                        <asp:HyperLink ID="lblLinkName" runat="server" Target="_blank">HyperLink</asp:HyperLink>
+                                                                        <a ID="lblLinkName" runat="server" Target="_blank">HyperLink</a>
                                                                     </span>
                                                                 </td>
                                                             </tr>
@@ -1281,18 +1368,21 @@
                                                 <div class="clear-1">
                                                 </div>
                                             </div>
+                                            -->
                                             <div class="users_comment">
                                                 <ul class="ulChatter">
                                                     <li class="font_time liChatter" style="background: none; padding-left: 0px;">
-                                                        <label ID="lblCreatedDate" runat="server" Text='<%# Eval("CreatedDate") %>'></label>
+                                                        <label ID="lblCreatedDate" runat="server" Text='<%# Eval("CreatedDate") %>'>Today 7:32pm</label>
                                                     </li>
                                                     <li class="liChatter"><a id="linkComment" title="Comment on this post" class="linkComment">
                                                         Comment</a> </li>
                                                     <li class="liChatter"><a href="#">
                                                         <a bind="" ID="linkLike" ToolTip="Like this post" runat="server" OnCommand="command_Click"
                                                             CommandArgument="Like">Like</a>
+                                                            <!--
                                                         <a bind="" ID="linkUnlike" ToolTip="Stop liking this post" runat="server"
                                                             Visible="false" OnCommand="command_Click" CommandArgument="Unlike">Unlike</a></a></li>
+                                                            -->
                                                 </ul>
                                                 <label ID="lblFeedError" runat="server" Text="" ForeColor="Red"></label>
                                             </div>
@@ -1303,41 +1393,49 @@
                                                 <div class="arrow_img">
                                                 </div>
                                                 <div class="comment_feddbackBox">
-                                                    <div class="Like_box" id="divLike" runat="server">
+                                                    <!--
+                                                		<div class="Like_box" id="divLike" runat="server">
                                                         <img src="/_layouts/images/SFChatterWP/ic_like.png" runat="server" Width="16"
                                                             Height="16" align="absmiddle" ID="imgLike" />
                                                         <label ID="lblLikes" runat="server"></label>
                                                     </div>
                                                     <div class="Like_box" id="divShowAllComments" runat="server">
                                                         <a bind="" ID="linkShowAllComments" runat="server" OnCommand="command_Click"
-                                                            CommandArgument="ShowAll">Show All <%# Eval("Comments.Total")%> Comments</a>
+                                                            CommandArgument="ShowAll">Show All 50 Comments</a>
                                                     </div>
-                                                    <div class="Like_box" id="divCommentList" runat="server" style="display: none;">
+                                                    -->
+                                                    <div class="Like_box" id="divCommentList" >
+                                                    		<!--
                                                         <label ID="lblPostIndex" runat="server" Visible="false" Text='<%# Container.DataItemIndex %>'></label>
+                                                        -->
+                                                        
+                                                        <!--
                                                         <asp:GridView ID="gvCommentList" runat="server" AutoGenerateColumns="false" ShowHeader="false"
                                                             EnableViewState="false" GridLines="None" Width="100%" OnRowDataBound="gvCommentList_RowDataBound">
                                                             <Columns>
                                                                 <asp:TemplateField>
                                                                     <ItemTemplate>
+                                                          -->          
                                                                         <table class="table_userComment" cellspacing="0" cellpadding="0">
+                                                                        
+                                                                        
                                                                             <tr class="Like_box">
                                                                                 <td class="users_photo_2">
                                                                                     <span class="Like_box_left">
-                                                                                        <label ID="lblCommentIndex" runat="server" Visible="false" Text='<%# Container.DataItemIndex %>'></label>
-                                                                                        <asp:HiddenField ID="hdnPostIndex" runat="server" />
-                                                                                        <img ID="imgComment" runat="server" Height="32" Width="32" />
+
+                                                                                        <img ID="imgComment" runat="server" Height="32" Width="32" src="/image/people/keith.jpg"/>
                                                                                     </span>
                                                                                 </td>
                                                                                 <td>
                                                                                     <div class="Like_box_right_L">
                                                                                         <div id="dvExpand" runat="server" class="users_comment2 expandmorelink">
-                                                                                            <asp:HiddenField ID="hdnCommentId" runat="server" Value='<%# Eval("id") %>' />
+                                                                                            
                                                                                             <table class="fixtable">
                                                                                                 <tr>
                                                                                                     <td class="middle wrap">
                                                                                                         <span class="font_title">
-                                                                                                            <asp:HyperLink ID="lblAuthor" runat="server" Target="_blank"></asp:HyperLink>
-                                                                                                            :</span> <span id="spanComment" runat="server"></span>
+                                                                                                            <a ID="lblAuthor" runat="server" Target="_blank">Jonnie</a>
+                                                                                                            :</span> <span id="spanComment" runat="server">This is my followup</span>
                                                                                                     </td>
                                                                                                 </tr>
                                                                                             </table>
@@ -1345,35 +1443,38 @@
                                                                                         <div class="users_comment3">
                                                                                             <ul class="ulChatter">
                                                                                                 <li class="font_time liChatter" style="background: none; padding-left: 0px;">
-                                                                                                    <asp:Literal ID="lblCreatedDate" runat="server" Text='<%#Eval("CreatedDate") %>'></asp:Literal>
+                                                                                                    <div ID="lblCreatedDate">Today 7:80pm</div>
                                                                                                 </li>
                                                                                             </ul>
                                                                                         </div>
                                                                                     </div>
                                                                                 </td>
                                                                                 <td class="close_btn">
-                                                                                    <input type="image" ID="btnDeleteComment" class="deleteComment" runat="server" Height="16"
-                                                                                        Width="17" ToolTip="Delete this comment" OnClick="btnDeleteComment_Click" src="/_layouts/images/SFChatterWP/btn_close2.png" />
+                                                                                    <input type="image" ID="btnDeleteComment" class="deleteComment" height="16"
+                                                                                        width="17" onClick="btnDeleteComment_Click" src="/_layouts/images/SFChatterWP/btn_close2.png" />
                                                                                 </td>
                                                                             </tr>
+                                                                            
                                                                         </table>
+                                                        <!--                
                                                                     </ItemTemplate>
                                                                 </asp:TemplateField>
                                                             </Columns>
                                                         </asp:GridView>
+                                                        -->
                                                         <div class="clear-1">
                                                         </div>
                                                     </div>
                                                     <div id="dslComment" class="Like_box_BG" runat="server" style="display: none;">
-                                                        <asp:TextBox ID="txtSLComment" CssClass="textfield_com2" runat="server">Write a comment...</asp:TextBox>
+                                                        <input type="text" ID="txtSLComment" class="textfield_com2" runat="server">Write a comment...</input>
                                                     </div>
                                                     <div class="Like_box" id="divCBox" runat="server" style="display: none;">
                                                         <div class="Like_box_left">
-                                                            <img ID="imgCommentNew" runat="server" Height="32" Width="32" /></div>
+                                                            <img ID="imgCommentNew" runat="server" Height="32" Width="32" src="/image/people/keith.jpg"/></div>
                                                         <div class="Like_box_right">
                                                             <div class="users_comment3">
-                                                                <asp:TextBox ID="tbComment" ToolTip="Write a comment..." runat="server" TextMode="MultiLine"
-                                                                    Width="100%" MaxLength="1000" Rows="2" CssClass="tbCommentClass autoCompleteClass"></asp:TextBox>
+                                                                <textarea ID="tbComment" ToolTip="Write a comment..." runat="server" TextMode="MultiLine"
+                                                                    Width="100%" MaxLength="1000" Rows="2" class="tbCommentClass autoCompleteClass"></textarea>
                                                                 <label ID="lblLengthError" runat="server" Text="Error:Your comment can't have more than 1000 characters."
                                                                     CssClass="disp_none" ForeColor="Red"></label>
                                                             </div>
@@ -1399,21 +1500,28 @@
                                         </div>
                                     </div>
                                 </div>
+                </td></tr></table>
+                <!--
                             </ItemTemplate>
                         </asp:TemplateField>
                         <asp:BoundField DataField="ID" HeaderText="ID" Visible="false" />
                     </Columns>
                 </asp:GridView>
+                -->
+           </div>     
+             <!--   
             </ContentTemplate>
             <Triggers>
                 <asp:PostBackTrigger ControlID="tmrAutoRefresh" />
                 <asp:PostBackTrigger ControlID="tmrAccessToken" />
             </Triggers>
         </asp:UpdatePanel>
+        -->
+        
         <div class="showMore" id="divShowMoreFeeds" runat="server" visible="false">
-            <a ID="lnkbtnShowMoreFeeds" runat="server" Text="Show More" OnClick="btnShowMoreFeeds_Click"
-                Width="98%" Height="98%" Style="color: #333333; text-align: center; vertical-align: middle;
-                text-decoration: none;" />
+            <a ID="lnkbtnShowMoreFeeds" runat="server" onClick="btnShowMoreFeeds_Click"
+                Width="98%" Height="98%" style="color: #333333; text-align: center; vertical-align: middle;
+                text-decoration: none;">Show More...</a>
         </div>
     </div>
     <div style="width: 100%; text-align: center;">
@@ -1423,27 +1531,3 @@
     <asp:Panel ID="pnlBlank" runat="server">
     </asp:Panel>
 </body>
-<asp:HiddenField ID="hdnMyImageUrl" runat="server" />
-<asp:HiddenField ID="hdnMyUserID" runat="server" />
-<asp:HiddenField ID="hdnFileUploadPath" runat="server" />
-<asp:HiddenField ID="hdnNextPageFeedURL" runat="server" />
-<asp:HiddenField ID="hdnCK" runat="server" />
-<asp:HiddenField ID="hdnCS" runat="server" />
-<asp:HiddenField ID="hdnCallbackURL" runat="server" />
-<asp:HiddenField ID="hdnFromChildPage" runat="server" />
-<asp:HiddenField ID="hdnMyEmailID" runat="server" />
-<asp:HiddenField ID="hdnSearchFlag" runat="server" />
-<asp:HiddenField ID="hdnMentionsUserList" runat="server" />
-<asp:HiddenField ID="hdnRowId" runat="server" />
-<asp:HiddenField ID="hdnPersistDiv" runat="server" />
-<asp:HiddenField ID="hdnPosition" runat="server" />
-<asp:HiddenField ID="hdnLeftPostion" runat="server" />
-<asp:HiddenField ID="hdnInstanceUrl" runat="server" />
-<asp:HiddenField ID="hdnAccessToken" runat="server" />
-<asp:HiddenField ID="hdnFollowUserID" runat="server" />
-<asp:HiddenField ID="hdnSubscriptionUrl" runat="server" />
-<asp:HiddenField ID="hdnFollowUserName" runat="server" />
-<asp:HiddenField ID="hdnMyChatterUrl" runat="server" />
-<asp:HiddenField ID="hdnPhotoURL" runat="server" />
-<asp:HiddenField ID="hdnShowFeedID" runat="server" EnableViewState="true" />
-<asp:HiddenField ID="hdnMoreFeedId" runat="server" />

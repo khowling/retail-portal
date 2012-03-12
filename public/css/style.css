@@ -219,11 +219,12 @@ nav a:hover{
 
 	#main article{
 		float:left;
+		margin-right:5px;
 		width:57%;
 	}
 		
 	#main aside{
-		float:right;
+		float:left;
 		width:42%;
 	}
 }

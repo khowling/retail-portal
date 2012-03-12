@@ -2,7 +2,7 @@
 jQuizMe 2.2 - 12/30/10 Programmed and CopyWrited by Larry Battle 2008 - 2010 
 */	
 .quiz-el{
-	background: #1798C1;
+	//background: #1798C1;
 	font-size: 1.1em;
 	//font-family: Arial, Verdana, Helvetica, sans-serif;
 	position: relative;
@@ -12,19 +12,20 @@ jQuizMe 2.2 - 12/30/10 Programmed and CopyWrited by Larry Battle 2008 - 2010
 }
 
 input.q-button {
-				background-color: #459300;
-				border: 1px solid transparent;
-				border-radius: 4px 4px 4px 4px;
-				color: #FFFFFF;
-				cursor: pointer;
-				font-size: 14px;
-				//font-weight: bold;
-				margin: 10px;
-				letter-spacing: 1px;
-				padding: 6px 10px;
-				text-shadow: 0 -1px 0 #050505;
-				font-weight: bold;
+    background-color: #459300;
+	border: 1px solid transparent;
+	border-radius: 4px 4px 4px 4px;
+	color: #FFFFFF;
+	cursor: pointer;
+	font-size: 14px;
+	font-weight: bold;
+	letter-spacing: 1px;
+	padding: 3px 6px;
+	text-shadow: 0 -1px 0 #050505;
+    margin-left: 5px;
+    margin-right: 5px;
 }
+
 input[disabled].q-button { 
 		color: #459300;
 	}
@@ -34,7 +35,7 @@ input[disabled].q-button {
 }
 /* .q-innerArea = .q-header, .q-help, .q-prob, .q-intro, .q-gameOver */
 .q-innerArea{
-	background: #2276BB;
+	//background: #2276BB;
 	position:relative;
 	clear: both;
 	color: black;

@@ -3,14 +3,65 @@ var app = express.createServer();
 var port = process.env.PORT || 3000;
 
 var lastRequestId = 0;
-var connectionTimeout = 30; // always send a empty '200' reponse to each open request after 60seconds.
+var connectionTimeout = 25; // always send a empty '200' reponse to each open request after 60seconds.
 
+var my_feed = {
+"items":[
+	{
+	"parent":{
+		"name":"Matthew Evens",
+		"id":"0032000000s8MiCAAU",
+		"type":"Contact"
+		},
+	"id":"0D52000000Wtkh4CAB",
+	"body":{"text":"created this contact."},
+	"createdDate":"2012-02-20T11:21:45.000Z",
+	"modifiedDate":"2012-02-29T12:39:39.000Z",
+	"photoUrl":"https://c.eu0.content.force.com/profilephoto/72920000000CmDj/T",
+	"comments":{
+		"total":1,
+		"comments":[
+			{
+				"parent":{
+					"id":"0032000000s8MiCAAU",
+					"url":"/services/data/v24.0/chatter/records/0032000000s8MiCAAU"
+					},
+				"id":"0D7200000000peiCAA",
+				"type":"TextComment",
+				"user":{
+					"name":"Keith Howling",					
+					"photo":{"largePhotoUrl":"https://c.eu0.content.force.com/profilephoto/72920000000CmDj/F","photoVersionId":"72920000000CmDjAAK","smallPhotoUrl":"https://c.eu0.content.force.com/profilephoto/72920000000CmDj/T"},
+					"id":"00520000001q8kmAAA",
+					"type":"User"
+					},
+				"body":{	"text":"jiopjij"	},
+				"createdDate":"2012-02-29T12:39:39.000+0000",
+				"likes":{"total":0,"likes":[] }
+			}]
+		}
+}]
+
+};
 var users_collection = {};
 var event_collection = {
+	'K000': {
+			type: "KNOWLEDGE",
+			name: "Start Here  *** The Basics  ***",
+			desc: "Portal Training",
+			info: "HTML5 Video Stream",
+			icon: "/image/icons/gettingstarted.jpg",
+			forwho: { completed : {}},
+			points: 50,
+			knowledgedata: {
+				url: '/stream/myvid.mp4',
+				type: 'HTML5_VIDEO'
+			}
+	},
+	
 	'K001': {
 			type: "KNOWLEDGE",
-			name: "The Basics",
-			desc: "Portal Training",
+			name: "Just a Test",
+			desc: "HTML5 streaming from node",
 			info: "HTML5 Video Stream",
 			forwho: { completed : {}},
 			points: 50,
@@ -36,7 +87,7 @@ var event_collection = {
 			type: "KNOWLEDGE",
 			name: "Windows Phone 7",
 			desc: "Presenting Training",
-			info: "HTML5 Video Stream",
+			info: "YouTube Embedded Video",
 			icon: "/image/icons/WP7.jpg",
 			forwho: { completed : {}},
 			points: 50,
@@ -55,17 +106,17 @@ var event_collection = {
 			quizdata: {
 						"multiList":[
 							{ 
-								ques: "This portal is build on salesforce, but which platform?",
-								ans: "heroku",
-								ansInfo: "<a href='http://heroku.com'>heroku</a> PaaS.",
-								ansSel: [ "force.com", "chatter.com", "mini.com" ],
+								ques: "What mobile operating system does the Nokia Lumia 800 run?",
+								ans: "Windows",
+								//ansInfo: "<a href='http://heroku.com'>heroku</a> PaaS.",
+								ansSel: [ "iOS", "Android", "webos" ],
 								retry: 0 	// The question can only be tried twice. Otherwise the user's answer is wrong.
 							},
 							{ 
-								ques: "What is not a heroku language?", 
-								ans: "C#.NET",
-								ansInfo: "<a href='http://en.wikipedia.org/wiki/Ottawa'>The City of Ottawa</a> is where the capital of Canada.",
-								ansSel: [ "NODE.JS", "RUBY" ],
+								ques: "Which country is Nokia based?", 
+								ans: "Finland",
+								//ansInfo: "<a href='http://en.wikipedia.org/wiki/Ottawa'>The City of Ottawa</a> is where the capital of Canada.",
+								ansSel: [ "England", "Germany", "America" ]
 						//		ansSelInfo: [
 						//			"Hanoi is the capital of Vietnam", 
 						//			"Washington, D.C. is the capital of the USA"
@@ -76,50 +127,56 @@ var event_collection = {
 			},
 		'Q002': {
 			type: "QUIZ",
-			name: "Blackberry 9900",
+			name: "Nokia Lumia 800",
 			desc: "Sales assistant general (level1)",
 			forwho: { completed : {'Q001':true}},
 			points: 5000,
 			quizdata: {
 					"multiList":[
 						{ 
-							ques: "When was the Blackberry 9900 launched?",
-							ans: "Jan 2011",
-							ansSel: [ "Jan 2012", "Dec 2010", "March 2010" ],
+							ques: "Can you pre-order the Nokia Lumia 800 in White?",
+							ans: "Yes",
+							ansSel: [ "No" ],
 							retry: 0
 						},
 						{ 
-							ques: "What is the killed feature of the 9900 over the previous model?", 
-							ans: "All of the above",
-							ansInfo: "<a href='http://en.wikipedia.org/wiki/Ottawa'>The City of Ottawa</a> is where the capital of Canada.",
-							ansSel: [ "Touch Screen", "1GHh Processer", "Thinner" ],
+							ques: "What Camera does the 800 feature?", 
+							ans: "8 MP Auto Focus with Carl Zeiss Optics,",
+							ansInfo: "8 MP Auto Focus with Carl Zeiss Optics, 2x LED Flash and HD Video",
+							ansSel: [ "No Camera", "2 MP webcam", "12 MP, x30 Optical zoom" ]
+						},
+						{ 
+							ques: "What display size does the 800 feature?", 
+							ans: '3.7" 480x800 pixels',
+							ansInfo: "Corning® Gorilla® Glass, AMOLED, ClearBlack, Curved glass",
+							ansSel: [ '3.5" 960x640  pixels', '10.1" 1080x800 pixels' ]
 						}
 					]
 				}
 			},
 		Q003: {
 			type: "QUIZ",
-			name: "Nokia Lumia 800",
-			desc: "Technical Specification (level5)",
+			name: "Windows Mobile OS",
+			desc: "Business Specification (level5)",
 			forwho: { completed : {'Q001':true}},
 			points: 5000,
 			quizdata: {
 				"multiList":[
 					{ 
-						ques: "Let 2x = 10. <br/>What is x?",
-						ans: 5,
-						ansSel: [ 10, 20, 0 ],
-						retry: 2 	// The question can only be tried twice. Otherwise the user's answer is wrong.
+						ques: "What office applications comes with Windows Mobile",
+						ans: 'Word, Excel, OneNote and PowerPoint',
+						ansSel: [ 'Word', 'Word and Excel', 'Word, Excel and OneNote' ],
+						retry: 0 	// The question can only be tried twice. Otherwise the user's answer is wrong.
 					},
 					{ 
-						ques: "What is the capital of Canada?", 
-						ans: "Ottawa, Ontario",
-						ansInfo: "<a href='http://en.wikipedia.org/wiki/Ottawa'>The City of Ottawa</a> is where the capital of Canada.",
-						ansSel: [ "Hanoi", "Washington, D.C." ],
-						ansSelInfo: [
-							"Hanoi is the capital of Vietnam", 
-							"Washington, D.C. is the capital of the USA"
-						]
+						ques: "Can you create linked inboxes with Outlook Mobile?", 
+						ans: "Yes",
+						ansInfo: "If you have lots of accounts, you can create linked inboxes to streamline things, for example one for personal emails and one for work (the accounts stay separate)",
+						ansSel: [ "No" ]
+						//ansSelInfo: [
+						//	"Hanoi is the capital of Vietnam", 
+						//	"Washington, D.C. is the capital of the USA"
+						//]
 					}
 				]
 			}
@@ -138,7 +195,7 @@ app.post('/login', function (req,res,next) {
 		var sess = req.session;
 		//Properties on req.session are automatically saved on a response
 		sess.username = req.body.username;
-		users_collection[sess.username] = {points: 0, department: 'IT', picture_url: '/image/keith.jpg', completed_events: {}};
+		users_collection[sess.username] = {points: 0, department: 'IT', picture_url: '/image/people/keith.jpg', completed_events: {}};
 
 		createEvents(req.body.username, null);
 		res.send({username: sess.username, userdata: users_collection[sess.username]});
@@ -343,17 +400,24 @@ app.get('/longpoll/:lasteventprocessed', function (req, res, next) {
 	} else {
 			console.log ('longpoll: got event to send to user');
 			event['my_points'] = users_collection[user].points;
-			setTimeout (function() {  // ADD A 1 SECOND DELAY - JUST FOR EFFECT!!!
+			//setTimeout (function() {  // ADD A 1 SECOND DELAY - JUST FOR EFFECT!!!
 				res.send(JSON.stringify(event));
 				console.log ('longpoll sent :' + event.index);
-			}, 1000);
+			//}, 1000);
 	}
 });
 
 app.get ('/stream/:filename', function (req,res,next) {
-	var fn = __dirname+'/public/media/' +req.params;
+	var fn = __dirname+'/public/media/' +req.params.filename;
+	console.log ('stream: filename ' + fn);
 	res.sendfile (fn);
 });
+
+app.get ('/myfeed', function (req,res,next) {
+	console.log ('myfeed: sendit ');
+	res.send(JSON.stringify(my_feed));
+});
+
 
 /*
 app.get('/post/:user/:name/:desc', function(req, res) {

@@ -527,7 +527,7 @@
 	<div id="main-container">
 		<div id="main" class="wrapper clearfix">
 			
-			<article>
+			<article style="min-width: 540px;">
 
 				
 				<section >
@@ -720,7 +720,7 @@ ol, ul {
 				</footer>
 			</article>
 			
-			<aside>
+			<aside style="min-width: 400px;">
 				
 			 	<div class="myboarder">
 					<div>

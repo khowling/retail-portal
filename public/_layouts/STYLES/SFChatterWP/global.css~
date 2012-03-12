@@ -1293,7 +1293,7 @@ textarea
     height: 12px;
     line-height: 12px;
     white-space: nowrap;
-    margin-bottom: 20px;
+    margin-bottom: 5px;
     color: #222222;
 }
 

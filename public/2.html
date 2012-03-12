@@ -1,4 +1,4 @@
-﻿
+
 <head>
     <link id="Link1" rel="stylesheet" type="text/css" runat="server" href="/_layouts/STYLES/SFChatterWP/global.css" />
 </head>
@@ -35,7 +35,7 @@
             var tempfile2 = tempfile1.substring(tempfile1.lastIndexOf('/') + 1);
             var filename = tempfile2.split("#");
             document.getElementById('path').innerHTML = filename[0];
-            document.getElementById("<%=hdnSharePointFilePath.ClientID%>").value = target + "#FromSharePoint"
+            document.getElementById("hdnSharePointFilePath").value = target + "#FromSharePoint"
         } else {
             if (document.getElementById("<%=documentDiv.ClientID%>").style.display == 'block') {
                 divAttachFile.style.display = 'none'
@@ -52,22 +52,22 @@
         SP.UI.ModalDialog.showModalDialog(options1)
     }
     function showUploadOptions() {
-        var fplUpload = document.getElementById("<%=fplUpload.ClientID%>");
-        var divFileUpload = document.getElementById("<%=divFileUpload.ClientID%>");
-        var divAttachFile = document.getElementById("<%=divAttachFile.ClientID%>");
-        var divLinkPost = document.getElementById("<%=divLinkPost.ClientID%>");
+        var fplUpload = document.getElementById("fplUpload");
+        var divFileUpload = document.getElementById("divFileUpload");
+        var divAttachFile = document.getElementById("divAttachFile");
+        var divLinkPost = document.getElementById("divLinkPost");
         divLinkPost.style.display = 'none';
-        document.getElementById("<%=hdnSharePointFilePath.ClientID%>").value = "";
-        document.getElementById("<%=txtFileName.ClientID%>").value = "";
+        document.getElementById("hdnSharePointFilePath").value = "";
+        document.getElementById("txtFileName").value = "";
         fplUpload.value = null;
         divFileUpload.style.display = 'block';
         divAttachFile.style.display = 'none'
     }
     function compUploadClick() {
-        var divFileUpload = document.getElementById("<%=divFileUpload.ClientID%>");
-        var compUploadDiv = document.getElementById("<%=compUploadDiv.ClientID%>");
-        var divImgBtnShareFrmComp = document.getElementById("<%=divImgBtnShareFrmComp.ClientID%>");
-        var divimagShareFrmComp = document.getElementById("<%=divimagShareFrmComp.ClientID%>");
+        var divFileUpload = document.getElementById("divFileUpload");
+        var compUploadDiv = document.getElementById("compUploadDiv");
+        var divImgBtnShareFrmComp = document.getElementById("divImgBtnShareFrmComp");
+        var divimagShareFrmComp = document.getElementById("divimagShareFrmComp");
         divFileUpload.style.display = 'none';
         compUploadDiv.style.display = 'block';
         divImgBtnShareFrmComp.style.display = 'none';
@@ -388,6 +388,52 @@
 
     function BindLoadEvents() {
         $(document).ready(function () {
+        		
+        		$.ajax({ 
+								url: "/myfeed", 
+								success: function(res){
+									
+									for (var idx in res.items) {
+										var itm = res.items[idx];
+		
+										var newpost = $('#feed-post').clone();
+										newpost = newpost.attr({"id": itm.id }).removeAttr('style')
+											.find('.spanFeed').text(itm.body.text).end()
+											.find('tr.Like_box').attr({'style': 'display: none;'}).end()
+											.find('.aFeedAuthor').text(itm.parent.name).end()
+											.find('.postCreatedDate').text(itm.createdDate).end()
+											.find('.linkComment').click(function () {
+												var divActivity = $(this).parent().parent().parent().next();
+												var dslComment = divActivity.children('.comment_feddbackBox').children('.Like_box_BG');
+												var divCBox = dslComment.next();
+												var tbComment = divCBox.children('.Like_box_right').children('.users_comment3').children('.tbCommentClass');
+												var lblLengthError = tbComment.next();
+												divActivity.show();
+												dslComment.hide();
+												divCBox.show();
+												tbComment.focus();
+												lblLengthError.hide()
+										}).end()
+										
+										var comments = itm.comments.comments;
+										if (comments){
+											for (var cidx in comments) {
+												var cmt = comments[cidx];
+												var commenttr = newpost.find('tr.Like_box').clone();
+											//	alert ('comment ' + JSON.stringify(commenttr) + ' val ' + cmt.user.name);
+												commenttr = commenttr.attr({"id": cmt.id }).removeAttr('style')
+													.find('.commentAuthor').text(cmt.user.name).end()
+													.find('.spanComment').text(cmt.body.text).end()
+													.find('.commentCreatedDate').text(cmt.createdDate).end();
+												commenttr.prependTo(newpost.find('.table_userComment'));
+											}
+										}
+										
+										newpost.prependTo('#feed-table');
+									}
+								}
+						});
+						
             try {
                 document.getElementById('chatterdiv').onscroll = function () {
                     $(".ac_results").hide()
@@ -744,7 +790,7 @@
         }
     }
     function filterVisibility() {
-        var divFilter = document.getElementById("<%=drop_down_list.ClientID%>");
+        var divFilter = document.getElementById("drop_down_list");
         if (divFilter.style.display == 'inline-block') {
             divFilter.style.display = 'none'
         } else {
@@ -793,7 +839,7 @@
         <!-- ENTER A NEW POST -->
         <div id="divNewComment">
             <div class="textfield_comment">
-                <textarea ID="txtNewFeed" runat="server" MaxLength="1000" ForeColor="GrayText"
+                <textarea ID="txtNewFeed" maxLength="1000" ForeColor="GrayText" placeholder="what are you working on..."
                     TextMode="MultiLine" class="expand30-2000 textfield_com txtNewFeedStyle autoCompleteClass"> </textarea>
                 <label ID="feedLengthError" runat="server" Text="Error: Your post can't have more than 1000 characters."
                     ForeColor="Red" Style="display: none;"></label>
@@ -811,11 +857,38 @@
                         <a href="javascript:showLinkUploadOptions();" id="A1" style="display: inline;">Link</a>
                     </div>
                 </div>
-                <div class="btn_share divActive" id="divActive" style="display: block;" runat="server">
+                <div class="btn_share divActive" id="divActive" style="display: block;">
                     <input type="image" ID="imgbtnShare" ToolTip="Share" runat="server" src="/_layouts/images/SFChatterWP/btn_share.png"
-                        Width="64" Height="23" OnClick="imgbtnShare_Click" />
+                        Width="64" Height="23" onClick=" 	
+                        
+                        	$('#divActive').attr({'style': 'display: none;'});
+                        	$('#divInactive').attr({'style': 'display: block;'});
+                        	
+                        	var upfeed = function(){
+                        		var ptxt = $('#txtNewFeed').val();
+                        		$('#feed-post').clone().find('.spanFeed').text(ptxt).end().find('tr.Like_box').attr({'style': 'display: none;'}).end()
+                        			.find('.linkComment').click(function () {
+																var divActivity = $(this).parent().parent().parent().next();
+																var dslComment = divActivity.children('.comment_feddbackBox').children('.Like_box_BG');
+																var divCBox = dslComment.next();
+																var tbComment = divCBox.children('.Like_box_right').children('.users_comment3').children('.tbCommentClass');
+																var lblLengthError = tbComment.next();
+																divActivity.show();
+																dslComment.hide();
+																divCBox.show();
+																tbComment.focus();
+																lblLengthError.hide()
+														}).end().removeAttr('style').prependTo('#feed-table');
+            
+            
+                        		$('#txtNewFeed').val('');
+                        		$('#divActive').attr({'style': 'display: block;'});
+                        		$('#divInactive').attr({'style': 'display: none;'});
+                        		}
+                        		
+                        	setTimeout (upfeed, 1000);" />
                 </div>
-                <div class="btn_share divInactive" id="divInactive" style="display: none;" runat="server">
+                <div class="btn_share divInactive" id="divInactive" style="display: none;">
                     <img ID="imgBtnInactive" runat="server" src="/_layouts/images/SFChatterWP/btn_shareInactive.png"
                         Width="64" Height="23" />
                 </div>
@@ -1110,26 +1183,39 @@
                 font-weight: bold;">
                 Updates for 
                 <span onclick="filterVisibility()" class="SelectedFilter">
-                    <span>My Chatter</span>
+                    <span>TMobile Slough</span>
                     <img src="/_layouts/images/SFChatterWP/triangle-down.png" width="12" height="9" />
                 </span>
             </div>
             <div id="drop_down_list" runat="server" class="drop_down_listMyChatter">
                 <table style="min-width: 130px;">
-                    <asp:Repeater ID="rptFeedFilter" runat="server" OnItemCommand="rptFeedFilter_ItemCommand">
+                   <!--
+                <asp:Repeater ID="rptFeedFilter" runat="server" OnItemCommand="rptFeedFilter_ItemCommand">
                         <ItemTemplate>
+                        -->
+                        <table>
                             <tr style="width: 100%">
                                 <td width="12px">
                                     <img runat="server" visible="false" id="imgTick" src="/_layouts/images/SFChatterWP/tick_16.png"
                                         width="11" height="11">
                                 </td>
                                 <td class="menu_item">
-                                    <a OnClientClick="filterVisibility();" ID="lnkFilter" runat="server"
-                                        ToolTip='<%# Eval("Label")%>' Text='<%# Eval("Label")%>' CommandArgument='<%# Eval("FeedItemsUrl") %>'></a>
+                                    <a onclick="filterVisibility();" ID="lnkFilter">TMobile Slough</a>
                                 </td>
                             </tr>
+                            <tr style="width: 100%">
+                                <td width="12px">
+
+                                </td>
+                                <td class="menu_item">
+                                    <a onclick="filterVisibility();" ID="lnkFilter">TMobile UK</a>
+                                </td>
+                            </tr>
+                           
+                            <!--
                         </ItemTemplate>
                     </asp:Repeater>
+                    -->
                 </table>
             </div>
         </div>
@@ -1206,19 +1292,19 @@
                 </div>
                 <!--
                 <asp:GridView ID="gvFeed" runat="server" AutoGenerateColumns="False" ShowHeader="False"
+                
                     EnableViewState="false" OnRowDataBound="gvFeedList_RowDataBound" BorderWidth="0"
                     BorderStyle="None" GridLines="None" Width="100%">
                     <Columns>
                         <asp:TemplateField>
                             <ItemTemplate>
                 -->
-                <table style="width: 100%;">
-                	<tr><td>
+                <table id="feed-table" style="width: 100%;">
+                	<tr id="feed-post" style="display: none;"><td>
                 	
                                 <div class="usersFeed">
                                     <div class="users_feed">
                                         <div class="users_photo">
-                                            <asp:HiddenField ID="hdnRowIndex" runat="server" />
                                             <img ID="imgPic" ToolTip='<%# Eval("Actor.Name") %>' Width="45"
                                                 Height="45" src="/image/people/keith.jpg"/>
                                         </div>
@@ -1229,12 +1315,12 @@
                                                     <tr>
                                                         <td width="97%" class="middle wrap">
                                                             <span class="font_title">
-                                                                <a ID="lblParent" runat="server" Target="_blank"></a>
-                                                                <a ID="lblActor" runat="server" Target="_blank" Text='<%# Eval("Actor.Name") %>'>Keith Howling</a>
-                                                                : </span><span id="spanFeed" runat="server">this is me</span>
+                                                                <a ID="lblParent" target="_blank"></a>
+                                                                <a ID="lblActor" class="aFeedAuthor" target="_blank"></a>
+                                                                : </span><span class="spanFeed"></span>
                                                         </td>
                                                         <td class="trDelete">
-                                                            <input type="image" ID="btnDeletePost" class="deleteComment" runat="server" Height="16"
+                                                            <input type="image" ID="btnDeletePost" class="deleteComment" height="16"
                                                                 Width="17" ToolTip="Delete this post" OnClick="btnDeletePost_Click" src="/_layouts/images/SFChatterWP/btn_close2.png" />
                                                         </td>
                                                     </tr>
@@ -1308,7 +1394,7 @@
                                             <div class="users_comment">
                                                 <ul class="ulChatter">
                                                     <li class="font_time liChatter" style="background: none; padding-left: 0px;">
-                                                        <label ID="lblCreatedDate" runat="server" Text='<%# Eval("CreatedDate") %>'>Today 7:32pm</label>
+                                                        <label class="postCreatedDate"></label>
                                                     </li>
                                                     <li class="liChatter"><a id="linkComment" title="Comment on this post" class="linkComment">
                                                         Comment</a> </li>
@@ -1353,12 +1439,12 @@
                                                                     <ItemTemplate>
                                                           -->          
                                                                         <table class="table_userComment" cellspacing="0" cellpadding="0">
+                                                                        
+                                                                        
                                                                             <tr class="Like_box">
                                                                                 <td class="users_photo_2">
                                                                                     <span class="Like_box_left">
-                                                                                    		<!--
-                                                                                        <label ID="lblCommentIndex" runat="server" Visible="false" Text='<%# Container.DataItemIndex %>'></label>
-                                                                                        -->
+
                                                                                         <img ID="imgComment" runat="server" Height="32" Width="32" src="/image/people/keith.jpg"/>
                                                                                     </span>
                                                                                 </td>
@@ -1370,8 +1456,8 @@
                                                                                                 <tr>
                                                                                                     <td class="middle wrap">
                                                                                                         <span class="font_title">
-                                                                                                            <a ID="lblAuthor" runat="server" Target="_blank">Jonnie</a>
-                                                                                                            :</span> <span id="spanComment" runat="server">This is my followup</span>
+                                                                                                            <a class="commentAuthor" target="_blank"></a>
+                                                                                                            :</span> <span class="spanComment" ></span>
                                                                                                     </td>
                                                                                                 </tr>
                                                                                             </table>
@@ -1379,7 +1465,7 @@
                                                                                         <div class="users_comment3">
                                                                                             <ul class="ulChatter">
                                                                                                 <li class="font_time liChatter" style="background: none; padding-left: 0px;">
-                                                                                                    <div ID="lblCreatedDate">Today 7:80pm</div>
+                                                                                                    <div class="commentCreatedDate"></div>
                                                                                                 </li>
                                                                                             </ul>
                                                                                         </div>
@@ -1390,6 +1476,7 @@
                                                                                         width="17" onClick="btnDeleteComment_Click" src="/_layouts/images/SFChatterWP/btn_close2.png" />
                                                                                 </td>
                                                                             </tr>
+                                                                            
                                                                         </table>
                                                         <!--                
                                                                     </ItemTemplate>

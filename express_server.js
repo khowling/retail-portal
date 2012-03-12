@@ -1,11 +1,60 @@
 var express = require('express');
 var app = express.createServer();
-var port = process.env.PORT || 3000;
+var port = process.env.PORT || 3001;
 
 var lastRequestId = 0;
 var connectionTimeout = 25; // always send a empty '200' reponse to each open request after 60seconds.
 
-var users_collection = {};
+var my_feed = {
+"items":[
+	{
+	"parent":{
+		"name":"Matthew Evens",
+		"id":"0032000000s8MiCAAU",
+		"type":"Contact"
+		},
+	"id":"0D52000000Wtkh4CAB",
+	"body":{"text":"created this contact."},
+	"createdDate":"2012-02-20T11:21:45.000Z",
+	"modifiedDate":"2012-02-29T12:39:39.000Z",
+	"photoUrl":"https://c.eu0.content.force.com/profilephoto/72920000000CmDj/T",
+	"comments":{
+		"total":1,
+		"comments":[
+			{
+				"parent":{
+					"id":"0032000000s8MiCAAU",
+					"url":"/services/data/v24.0/chatter/records/0032000000s8MiCAAU"
+					},
+				"id":"0D7200000000peiCAA",
+				"type":"TextComment",
+				"user":{
+					"name":"Keith Howling",					
+					"photo":{"largePhotoUrl":"https://c.eu0.content.force.com/profilephoto/72920000000CmDj/F","photoVersionId":"72920000000CmDjAAK","smallPhotoUrl":"https://c.eu0.content.force.com/profilephoto/72920000000CmDj/T"},
+					"id":"00520000001q8kmAAA",
+					"type":"User"
+					},
+				"body":{	"text":"jiopjij"	},
+				"createdDate":"2012-02-29T12:39:39.000+0000",
+				"likes":{"total":0,"likes":[] }
+			}]
+		}
+}]
+
+};
+var users_collection = {
+    'keith'  :  {
+        fullname: 'Keith Howling',
+        points: 0, 
+        outlet : {
+            name: 'Carphone Warehouse - Slough',
+            picture_url: '/image/carphone_warehouse.jpg'
+        },
+        department: 'IT', 
+        picture_url: '/image/people/keith.jpg', 
+        completed_events: {}
+    }
+};
 var event_collection = {
 	'K000': {
 			type: "KNOWLEDGE",
@@ -111,7 +160,7 @@ var event_collection = {
 						{ 
 							ques: "What display size does the 800 feature?", 
 							ans: '3.7" 480x800 pixels',
-							ansInfo: "Corning® Gorilla® Glass, AMOLED, ClearBlack, Curved glass",
+							ansInfo: "Corningï¿½ Gorillaï¿½ Glass, AMOLED, ClearBlack, Curved glass",
 							ansSel: [ '3.5" 960x640  pixels', '10.1" 1080x800 pixels' ]
 						}
 					]
@@ -151,17 +200,56 @@ app.use(express.logger());
 app.use(express.cookieParser());
 app.use(express.session({secret: "genhashfromthis"}));  // middleware for session management
 app.use(express.bodyParser());  // middleware for parsing a POST body into 'req.body'
+app.set('views', __dirname + '/views');
 
+
+app.get('/', function(req, res){
+    res.render('logon.ejs', { locals: {  message: '' } });
+});
+//app.get('/:urlpage', function(req, res){
+//    console.log ('/:urlpage + ' + req.params.urlpage);
+//    res.render(req.params.urlpage + '.ejs', { locals: { } });
+//});
+
+// LOGIN POST
+app.post('/home', function (req,res,next) {
+        var uid = req.body.username;
+		console.log ('login: Attempt to login as ' + uid);
 		
-app.post('/login', function (req,res,next) {
-		console.log ('login: Attempt to login as ' + req.body.username);
-		var sess = req.session;
-		//Properties on req.session are automatically saved on a response
-		sess.username = req.body.username;
-		users_collection[sess.username] = {points: 0, department: 'IT', picture_url: '/image/people/keith.jpg', completed_events: {}};
+        if (uid) {
+            var udata = users_collection[uid]
+            if (udata) {
+                
+                var sess = req.session;
+        		//Properties on req.session are automatically saved on a response
+        		sess.username = uid;
+        		createEvents(uid, null);
+        		//res.send({username: sess.username, userdata: users_collection[sess.username]});
+                res.render('home.ejs', { locals: { username: uid, userdata: users_collection[uid]} });
+                return;
+            }
+        }
+        res.render('logon.ejs', { locals: { message : 'Unknown user : ' + uid} });
+});
 
-		createEvents(req.body.username, null);
-		res.send({username: sess.username, userdata: users_collection[sess.username]});
+app.get('/home', function (req,res,next) {
+        var uid = req.session.username;
+    	console.log ('home: attempt to access home ' + uid);
+		
+        if (uid) {
+            var udata = users_collection[uid]
+            if (udata) {
+                
+                var sess = req.session;
+        		//Properties on req.session are automatically saved on a response
+        		sess.username = uid;
+        		createEvents(uid, null);
+        		//res.send({username: sess.username, userdata: users_collection[sess.username]});
+                res.render('home.ejs', { locals: { username: uid, userdata: users_collection[uid]} });
+                return;
+            }
+        }
+        res.render('logon.ejs', { locals: { message : 'Please Logon'} });
 });
 
 var event_index = 1;
@@ -375,6 +463,12 @@ app.get ('/stream/:filename', function (req,res,next) {
 	console.log ('stream: filename ' + fn);
 	res.sendfile (fn);
 });
+
+app.get ('/myfeed', function (req,res,next) {
+	console.log ('myfeed: sendit ');
+	res.send(my_feed);
+});
+
 
 /*
 app.get('/post/:user/:name/:desc', function(req, res) {
