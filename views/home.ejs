@@ -4,6 +4,17 @@
         initPoints ();
         $('#chatterdiv').load('/2.html');
         poll();
+        
+        $(window).resize(function() {
+            if ($("#jdialog").dialog( "isOpen" )) {
+                $("#jdialog").dialog("option", "position", "center");
+                var cw = $("#jdialog").dialog( "option", "width" );
+                var tw = getTargetWidth();
+                if (cw != tw) 
+                    $("#jdialog").dialog( "option", "width", tw );
+            }
+                
+        });
     });
                             
 </script>

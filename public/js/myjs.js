@@ -64,40 +64,6 @@
 		
 				return false;
 		};
-
-		function launchknowledge (kid, kdata) {
-			$("#event-container").empty();
-			
-			if (kdata.knowledgedata.type == 'EMBEDDED_IFRAME') {
-				var _utLayOut = $("<iframe/>").attr({ "width": "100%", "height": "400px", "src": kdata.knowledgedata.url, "frameborder":"0", "allowfullscreen":""});
-				$("#event-container").append(_utLayOut);
-				$('#basic-modal-content').modal({ 
-						close : true,
-						onClose: function() {
-							$("#event-container").empty();
-							$.modal.close();
-					}});
-				return true;
-			}
-			
-			if (kdata.knowledgedata.type == 'HTML5_VIDEO') {
-				var _vLayOut = $("<video/>").attr({"id": "video-container", "width": "100%", "height": "100%", "controls": "controls"}).append( 
-					$("<source/>").attr({"src": kdata.knowledgedata.url, "type": "video/mp4"}),
-					$("<span/>").text("Your browser does not support the video tag."));
-	
-				$("#event-container").append(_vLayOut);
-				$('#basic-modal-content').modal({ 
-						close : true,
-						onClose: function() {
-							$("#video-container")[0].pause();
-							$("#event-container").empty();
-							$.modal.close();
-					}});
-				return true;
-			}
-			
-		}
-        
         
         function getTargetWidth() {
             if ($(window).width() <= 480)
@@ -108,6 +74,59 @@
                  return  '60%'; 
             
         }
+
+		function launchknowledge (kid, kdata) {
+			$("#event-container").empty();
+			var tw = getTargetWidth();
+			if (kdata.knowledgedata.type == 'EMBEDDED_IFRAME') {
+				var _utLayOut = $("<iframe/>").attr({ "width": "100%", "height": "400px", "src": kdata.knowledgedata.url, "frameborder":"0", "allowfullscreen":""});
+				$("#event-container").append(_utLayOut);
+				/*
+                $('#basic-modal-content').modal({ 
+						close : true,
+						onClose: function() {
+							$("#event-container").empty();
+							$.modal.close();
+					}});
+				*/
+                //return true;
+			}
+			
+			if (kdata.knowledgedata.type == 'HTML5_VIDEO') {
+				var _vLayOut = $("<video/>").attr({"id": "video-container", "width": "100%", "height": "100%", "controls": "controls"}).append( 
+					$("<source/>").attr({"src": kdata.knowledgedata.url, "type": "video/mp4"}),
+					$("<span/>").text("Your browser does not support the video tag."));
+	            $("#event-container").append(_vLayOut);
+                
+                /*
+                $('#basic-modal-content').modal({ 
+						close : true,
+						onClose: function() {
+							$("#video-container")[0].pause();
+							$("#event-container").empty();
+							$.modal.close();
+					}});
+                */
+				//return true;
+            }
+            $("#jdialog").dialog ({ 
+                title: kdata.name,
+                modal: true, 
+                width: tw,
+                buttons: {               	
+    				Cancel: function() {
+                        if ($("#video-container")[0])
+                            $("#video-container")[0].pause();
+						$("#event-container").empty();
+    					$("#jdialog").dialog( "close" );
+    				}
+                }
+            });
+            
+            return true;
+                
+			
+		}
         
 		function launchquiz (quizid, itemdata) {
 			var options = {
@@ -123,7 +142,7 @@
 							$.post( '/donequiz', { id: quizid,  score: quizInfo.score, quesTried: quizInfo.quesTried},
 								function( data ) {
 										//$.modal.close();
-                                        $("#jdialog").dialog( "close" )
+                                        $("#jdialog").dialog( "close" );
 								});
 						}
 			}};
@@ -136,17 +155,10 @@
             $("#jdialog").dialog ({ 
                 title: itemdata.desc,
                 modal: true, 
-                width: tw });
-            
-            $(window).resize(function() {
-                $("#jdialog").dialog("option", "position", "center");
-                var cw = $("#jdialog").dialog( "option", "width" );
-                var tw = getTargetWidth();
-                if (cw != tw) 
-                    $("#jdialog").dialog( "option", "width", tw );
-                
-            });
-            
+                width: tw,
+                buttons: {}
+                });
+
 			return true;
 		};
 		
