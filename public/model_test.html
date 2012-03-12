@@ -1,0 +1,119 @@
+
+<html>
+<head>
+
+    <link rel="stylesheet" href="css/jquery-ui-1.8.18.custom.css"/>
+    
+    
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    
+    <script type="text/javascript" src="js/libs/jquery.simplemodal.js"></script>
+    <!--
+    <script type="text/javascript" src="js/libs/jquery.ui.core.min.js"></script>
+    
+    <script type="text/javascript" src="js/libs/jquery.ui.dialog.min.js"></script>
+    
+    <script type="text/javascript" src="js/libs/jquery.ui.position.min.js"></script>
+    
+    <script type="text/javascript" src="js/libs/jquery.ui.widget.min.js"></script>
+    -->
+     <script type="text/javascript" src="js/libs/jquery-ui-1.8.18.custom.min.js"></script>
+    <script>
+    
+        $(document).ready (function(){
+/*
+            $("#modal-content").modal({ 
+        						close : true,
+                });
+*/      
+
+            function getTargetWidth() {
+                if ($(window).width() <= 480)
+                    return  '99%'; 
+                else if ($(window).width() <= 700)
+                    return  '95%'; 
+                else 
+                     return  '60%'; 
+                
+            }
+            $("#jdialog").dialog ({ 
+                modal: true, 
+                width: '60%',
+                buttons: {
+        			"Delete all items": function() {
+    					$( this ).dialog( "close" );
+    				},
+    				Cancel: function() {
+    					$( this ).dialog( "close" );
+    				}
+                }
+                });
+            $(window).resize(function() {
+                $("#jdialog").dialog("option", "position", "center");
+                var cw = $("#jdialog").dialog( "option", "width" );
+                var tw = getTargetWidth();
+                if (cw != tw) 
+                    $("#jdialog").dialog( "option", "width", tw );
+                
+            });
+
+
+        });
+
+
+        
+    </script>
+    
+    <style>
+        #modal-content {
+            display: none;
+            width: 95%;
+            background-color:#333; 
+            border:4px solid #444; 
+        }
+        #event-container {
+            width: 65%;
+            height: 230px;
+        }
+        
+        
+        
+            
+        @media screen and (max-width: 480px) { /* width <= 480 pixels  */
+            #myDialog {
+                width:100%;
+                margin: 0;
+                padding:5px;
+            }
+        }
+        
+        @media screen and (max-width: 700px) { /* width <= 700 pixels  */
+            #myDialog {
+                width:90%;
+                
+            }
+        }
+
+
+    </style>
+</head>
+<body>
+    
+    <div id="modal-content">
+        <div id="eventArea">
+    		<div id="event-container">Hello</div>
+    	</div>
+    </div>
+    
+    <!-- preload the images -->
+    <div style='display:none'>
+    	<img src='image/lightbox/x.png' alt='' />
+    </div>
+    
+    <div>Hello Page</div>
+    
+    <div id="jdialog" title="Take the Quiz">
+        hello world
+    </div>
+</body>
+</html>

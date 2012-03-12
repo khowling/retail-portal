@@ -1,0 +1,274 @@
+
+<script>
+    $(document).ready (function(){
+        initPoints ();
+        $('#chatterdiv').load('/2.html');
+        poll();
+    });
+                            
+</script>
+
+    		
+<!-- modal content -->
+<style>
+    	
+	
+/* Overlay */
+#simplemodal-overlay {background-color:#000; cursor:wait;}
+
+
+#basic-modal-content {display:none;}
+#basic-modal-content, #simplemodal-container {
+    //height:420px; 
+    width:65%; 
+    max-width: 500px;
+    color:#bbb; 
+    background-color:#333; 
+    border:4px solid #444; 
+    padding:24px;
+    margin-left: auto;
+    margin-right: auto;
+    
+}
+
+@media screen and (max-width: 480px) { /* width <= 480 pixels  */
+    #basic-modal-content {
+        width:100%;
+        margin: 0;
+        padding:5px;
+    }
+}
+
+@media screen and (max-width: 700px) { /* width <= 700 pixels  */
+    #basic-modal-content {
+        width:90%;
+        
+    }
+}
+
+
+#simplemodal-overlay {
+    background-color: #000000;
+    cursor: wait;
+}
+
+
+</style>
+<!--
+<div id="simplemodal-overlay" class="simplemodal-overlay" style="opacity: 0.5; height: 100%; width: 100%; position: fixed; left: 0px; top: 0px; z-index: 1001;"></div>
+<div id="simplemodal-container" class="simplemodal-container" style="position: fixed; z-index: 1002; height: 410px; width: 65%; margin-left: auto; margin-right: auto;">
+    <div tabindex="-1" class="simplemodal-wrap" style="height: 100%; outline: 0px none; width: 100%; overflow: auto;">
+        <div id="basic-modal-content" class="simplemodal-data" style="display: block;">
+            <div id="eventArea">
+        		<div id="event-container">Hello</div>
+            </div>
+        </div>
+    </div>
+</div>
+-- >
+
+
+<div id="basic-modal-content">
+	<div id="eventArea">
+		<div id="event-container"></div>
+	</div>
+</div>
+
+<!-- preload the images -- >
+<div style='display:none'>
+	<img src='image/lightbox/x.png' alt='' />
+</div>
+-->
+<div id="jdialog">
+    <div id="eventArea">
+		<div id="event-container"></div>
+	</div>
+</div>
+
+
+<!-- LEFT PAGE -->
+<div id="home-left" >
+
+    <!-- KNOWLEDGE -->
+ 	<div class="myboarder">
+        <!-- Header -->
+		<div>
+			<div style="float:left; margin-top: 6px; margin-bottom: 6px;"><h3>Knowledge</h3></div>
+			<div style="float: right; margin-top: 5px; margin-bottom: 5px;"><input type="text" placeholder="search knowledge" class="modal-text-input" name="username" value=""></div>
+			<div style="clear: both;"></div>
+		</div>
+		<!-- Content -->
+		<ul id="knowledgeList" class="myboarder-inside" style="background: white; height: 4in; ">
+			<li id="knowledge-template"  style="display : none; " class="itemList">
+				<img class="quizImage" style="width: 50px;" src=""/>
+				<div class="itemName" style="font-weight: bold;"></div> 
+				<span class="itemDesc"></span>
+				<div style="float: right;">
+					<div id="whydoineedaid" class="knowRating" style="margin: 2px;"></div>
+					<div class="itemRate" style="margin: 2px;">(4234 ratings)</div>
+				</div>
+				<br/>
+				<div class="itemResults"></div>
+			</li>
+		</ul>
+	</div>
+
+    
+    <!-- QUIZ -->
+    <div id="quiz-container" class="myboarder" style="margin-top: 10px;">
+    	<!-- Header -->
+        <div>
+    		<div style="float:left; margin-top: 6px; margin-bottom: 6px;"><h3>Quiz</h3></div>
+    		<div style="float: right;margin-top: 15px; margin-bottom: 5px; color: #EBA555;">quizzes appear when something important occures</div>
+    		<div style="clear: both;"></div>
+    	</div>
+        <!-- Content -->
+        <ul id="quizList" class="myboarder-inside quizList_3in_2col">
+        	<li id="quiz-template" style="display : none;" class="itemList">
+        		<img class="quizImage" src="/image/icons/quiz_icon.gif"/>
+        		
+        		<div class="quizPass" style="display : none;">
+        			<img style="margin: 10px;" height="40px;" src="/image/pass.gif"></img>
+        		</div>
+        		<div class="itemName" style="font-weight: bold;"></div> 
+        		<span class="itemDesc"></span>
+        		<br/>
+        		<div class="itemResults"></div>
+        	</li>
+        </ul>
+    </div>
+</div> <!-- #home-left -->
+	
+<!-- RIGHT PAGE -->
+<div id="home-right">
+
+    
+	<div style="float: left; margin-right: 5px;">
+    
+         <!-- ME and MY POINTS -->
+        <div class="myboarder">
+            <!-- Header -->
+            <div>
+            	<div style="float:left; margin-top: 6px; margin-bottom: 6px;"><h3><span id="myuserName"><%= userdata.fullname %></span></h3><div id="userOrg1" style="color: #EBA555;"><%= userdata.outlet.name %></div></div>
+            	<div id="orgImage" style="float: right;margin: 5px;"><img src="<%= userdata.outlet.picture_url %>" width="55"/></div>
+            	<div style="clear: both;"></div>
+            </div>
+            <!-- Content -->
+            <div class="myboarder-inside" style="text-align: center; height: 120px; background: white; border-radius: 4px; border: 2px;">
+            	<div id="userImage" style="float:left; text-align: center; width: 50%;">
+                    <img src="<%= userdata.picture_url %>" width="75" style="margin: 5px;"/>
+                </div>
+            	<div style="float:left; text-align: center; width: 45%; margin-top: -5px;">
+            		<canvas id="points-guage" width="110" height="100"></canvas>
+            	</div>
+            	<div style="clear:both; color: black; font-weight:bold;" >My Points <span class="timer">0</span></div>
+            </div>
+        </div>
+    </div>
+    
+    <div style="float: left;">    
+	    <!-- RECOMMENDED -->
+		<div class="myboarder">
+			<!-- Header -->
+            <div>
+				<div style="float:left; margin-top: 6px; margin-bottom: 6px;"><h3>Recommended</h3></div>
+				<div class="carousel" style="float: right; margin: 5px;">
+					<ol id="carousel_items_items" class="carousel_itemList">
+					</ol>
+				</div>
+				<div style="clear: both;"></div>
+			</div>
+		    <!-- Content -->
+			<ul id="slider1" class="myboarder-inside" style="text-align: center; height: 70px;">
+                <li class="itemList" >
+					<img src="/image/icons/knowledge-icon.gif" class="quizImage">
+					<div style="font-weight: bold;" class="itemName">The Basics</div> 
+					<span class="itemDesc">Portal Training</span>
+					<div style="float: right;">
+						<div style="margin: 2px; height: 10px; width: 60px; overflow: hidden; z-index: 1; position: relative;" class="knowRating" id="whydoineedaid"><div class="jRatingColor"></div><div class="jRatingAverage" style="width: 40px; top: -10px;"></div><div class="jStar" style="width: 60px; height: 10px; top: -20px; background: url(&quot;/image/jrating/small.png&quot;) repeat-x scroll 0% 0% transparent;"></div></div>
+						<div style="margin: 2px;">(4234 ratings)</div>
+					</div>
+					<br>
+					<div class="itemResults">HTML5 Video Stream</div>	
+                </li>
+                    							
+                <li class="itemList" >
+					<img src="/image/icons/WP7.jpg" class="quizImage">
+					<div style="font-weight: bold;" class="itemName">Windows Phone 7</div> 
+					<span class="itemDesc">Presenting Training</span>
+					<div style="float: right;">
+						<div style="margin: 2px; height: 10px; width: 60px; overflow: hidden; z-index: 1; position: relative;" class="knowRating" id="whydoineedaid"><div class="jRatingColor"></div><div class="jRatingAverage" style="width: 40px; top: -10px;"></div><div class="jStar" style="width: 60px; height: 10px; top: -20px; background: url(&quot;/image/jrating/small.png&quot;) repeat-x scroll 0% 0% transparent;"></div></div>
+						<div style="margin: 2px;">(4234 ratings)</div>
+					</div>
+					<br>
+					<div class="itemResults">HTML5 Video Stream</div>
+                </li>							
+			</ul>
+		</div>
+		<div style="clear: both;"></div>
+	</div>
+    
+	<div style="clear: both;"></div>
+    
+    <!-- MY TEAM -->
+	<div class="myboarder" style="margin-top: 10px;">
+		<!-- Header -->
+        <div>
+			<div style="float:left; margin-top: 6px; margin-bottom: 6px;"><h3>My Team</h3></div>
+			<div id="userOrg2" style="float: right;margin-top: 15px; margin-bottom: 5px; color: #EBA555;"><%= userdata.outlet.name %></div>
+			<div style="clear: both;"></div>
+		</div>
+        <!-- Content -->
+		<!-- <ul class="myboarder-inside peopleList_2in_3col" style="display: inline;"> -->
+		<ul style="padding-left: 0px;">
+			<li style="float:left">
+				<div style="text-align: center; width: 65px;">
+					<img style="margin: 5px;" width="45px" src="/image/people/kimmo.jpeg"></img>
+					<div class="itemName">Kimmo</div>
+					<div class="itemResults">23,422</div>
+				</div>
+			</li >
+			
+			<li style="float:left">
+				<div style="text-align: center; width: 65px;">
+					<img style="margin: 5px;" width="45px" src="/image/people/matt.jpeg"></img>
+					<div class="itemName">Matt</div>
+					<div class="itemResults">21,422</div>
+				</div>
+			</li>
+			
+			<li style="float:left">
+				<div style="text-align: center; width: 65px;">
+					<img style="margin: 5px;" width="45px" src="/image/people/rich.png"></img>
+					<div class="itemName">Rich</div>
+					<div class="itemResults">6,422</div>
+				</div>
+			</li>
+			
+			<li style="float:left">
+				<div style="text-align: center; width: 65px;">
+					<img style="margin: 5px;" width="45px" src="/image/people/rich.png"></img>
+					<div class="itemName">Jim</div>
+					<div class="itemResults">45,422</div>
+				</div>
+			</li>
+		</ul>
+
+        <div id="chatterdiv" class="myboarder-inside" style="background: white;  "></div>
+        <div style="clear: both;"></div>
+	</div>
+    
+    <!-- Chatter -- >
+	<div class="myboarder" style="margin-top: 10px;">
+        <!-- Header -- >
+		<div>
+			<div style="float:left; margin-top: 6px; margin-bottom: 6px;"><h3>Chat</h3></div>
+			<div style="float: right; margin-top: 5px; margin-bottom: 5px;"><input type="text" placeholder="search Chat" class="modal-text-input" name="username" value=""></div>
+			<div style="clear: both;"/>
+		</div>
+		<!-- Content -- >
+	    <div id="chatterdiv" class="myboarder-inside" style="background: white; height: 4in; "></div>
+    </div>
+    -->
+
+</div> <!-- #home-right -->

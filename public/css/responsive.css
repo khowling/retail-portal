@@ -1,0 +1,506 @@
+
+
+body {
+    font-family: "Georgia",serif;
+    //line-height: 150%;
+    margin: 15px;
+    padding: 0;
+    font-size: 12px;
+    font-family: Tahoma,Geneva,sans-serif;
+}
+.wrapper{
+    max-width: 960px;
+    margin-right: auto;
+    margin-left: auto;
+    position: relative;
+}
+    
+h1 {
+    line-height: 100%;
+}
+h2 {
+    font-size: 200%;
+}
+h3 {
+    margin: 5px;
+    color: white;
+}
+#pageBody {
+    max-width: 1200px;
+    padding: 10px 0;
+}
+/*
+#header, #nav, #footer, h1, h2, h3 {
+  font-family: Tahoma,Geneva,sans-serif;
+}
+*/
+#titleheader {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    border-bottom: 10px solid #333;
+}
+#titleheader .inner {
+    background: none repeat scroll 0 0 #4472A7;
+    color: #FFFFFF;
+    margin: 0 0 20px;
+    padding: 5px;
+}
+#titleheader a {
+    color: #FFFFFF;
+    display: block;
+    //float: right;
+    font-size: 80%;
+    font-weight: normal;
+}
+#home-left {
+    float: left;
+    margin: 0 0 20px;
+    margin-right: 10px;
+    padding: 0;
+    width: 49%;
+}
+/*
+#content .inner {
+    background: none repeat scroll 0 0 #E0E4CC;
+    color: #333333;
+    margin-right: 10px;
+    padding: 10px;
+}
+*/
+#home-right {
+    float: right;
+    margin: 0;
+    padding: 0;
+    //margin-right: 0;
+    width: 49%;
+}
+/*
+#home-right .inner {
+    background: none repeat scroll 0 0 #69D2E7;
+    color: #FFFFFF;
+    font-size: 85%;
+    margin-right: 20px;
+    padding: 20px;
+}
+*/
+
+/*
+.nav ul {
+    background: none repeat scroll 0 0 #A7DBD8;
+    color: #333333;
+    list-style: none outside none;
+    margin: 0;
+    overflow: hidden;
+    padding: 20px;
+}
+
+#nav a {
+    color: #FFFFFF;
+    display: block;
+    font-weight: bold;
+    padding: 10px 0 10px 10px;
+    text-decoration: none;
+}
+#nav a:hover {
+    background: none repeat scroll 0 0 #BCE5E3;
+}
+*/
+#footer {
+    background: none repeat scroll 0 0 #4472A7;
+    clear: both;
+    color: #FFFFFF;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+#footer .inner {
+    padding: 5px 20px;
+}
+
+/* MINE */
+#footer, .myboarder { border-top: 10px solid lightGrey; }
+
+/* If the viewport width <= 2000 pixels ... */
+@media screen and (max-width: 2000px) {
+    
+    #nav  {
+        float: right;
+        margin: 0;
+        padding: 0;
+        width: 33%;
+    }
+    
+    #nav ul li{
+        display:inline;
+        margin-top: 0px; 
+        margin-bottom: 0px; 
+        padding-left: 0px;"
+    }
+
+    #nav a{
+        float:left;
+		width:27%;
+		margin:0 1.7%;
+		padding:25px 2%;
+		margin-bottom:0;
+	}
+    
+    #nav a{
+        display:block;
+        margin-top:10px;
+    	margin-bottom:10px;
+    	padding:15px 0;
+    
+    	background:#e0ca21;
+    	color:#000000;
+    
+    	text-align:center;
+    	text-decoration:none;
+    	font-weight:bold;
+    }
+	
+	#nav li:first-child a{ margin-left:0;  }
+	#nav li:last-child  a{ margin-right:0; }
+
+}
+
+/* If the viewport width <= 700 pixels ... */
+@media screen and (max-width: 700px) {
+    /* Make the main content fill the viewport width */
+    #home-left {
+        width: 100%;
+    }
+    /* Remove the main content right margin 
+    #home-left .inner {
+        margin-right: 0;
+    }
+*/
+    #nav  {
+        float: left;
+        margin: 0;
+        padding: 0;
+        width: 100%;
+    }
+
+    
+	
+	#nav li:first-child a{ margin-left:0;  }
+	#nav li:last-child  a{ margin-right:0; }
+    
+    /* Place the sidebar below the main content */
+    #home-right {
+        float: left;
+        clear: both;
+        width: 100%;
+        margin: 20px 0;
+    }
+}
+/* If the viewport width <= 480 pixels ... */
+@media screen and (max-width: 480px) {
+    body {
+        margin: 0; /* removes the margin from the page */
+    }
+    #titleheader .inner {
+        padding-top: 5px;
+        padding-bottom: 5px;
+    }
+    #titleheader .inner, #home-right, #nav, #home-left {
+        margin-bottom: 5px;
+    }
+    
+     #nav a{
+        display:block;
+        float: none;
+        margin-left: 0;
+     }
+     #nav a{
+            float:none;
+        	width:100%;
+     }
+}
+
+
+
+
+/* MINE */
+.clearfix:before, .clearfix:after { content: ""; display: table; }
+.clearfix:after { clear: both; }
+.clearfix { zoom: 1; }
+
+
+
+#nav li {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+}
+#nav li:last-child {
+    border-bottom: medium none;
+}
+
+#nav a:hover, nav a:visited{
+	color:black;
+}
+
+#nav a:hover{
+	text-decoration:underline;
+}
+ul.quizList_3in_2col {
+		-moz-column-count: 2;
+		-moz-column-gap: 20px;
+		-webkit-column-count: 2; 
+		-webkit-column-gap:20px; 
+		height: 3in; 
+}
+ul.peopleList_2in_3col {
+		-moz-column-count: 4;
+		-moz-column-gap: 5px;
+		-webkit-column-count: 4; 
+		-webkit-column-gap:5px; 
+		height: 2.92in; 
+}
+.myboarder {
+	//border-top: 10px solid #DFDBCB; 
+	//color: white; 
+	box-shadow: 0 5px 10px #AAAAAA; 
+	padding: 0 2px 2px; 
+	//background: none repeat scroll 0 0 #6CA128;
+    background: #4472A7;
+}
+ul.myboarder-inside {
+	background: none repeat scroll 0% 0% white; 
+    margin-top: 0px; margin-bottom: 0px;
+	color: black;
+	padding: 2px;
+	border-radius: 4px;
+	border: 2px solid transparent;
+	font-family: "Lucida Grande", sans-serif;
+	font-size: 14px;
+	line-height: 16px;
+	list-style-type: none;
+}
+
+li {
+	display: list-item;
+}		
+
+li.itemList {
+		position: relative;
+		min-height: 48px;
+		min-width: 48px;
+		-o-break-inside: avoid;         /* multicolumn */
+		-webkit-break-inside: avoid;    /* multicolumn */
+		-moz-break-inside: avoid;       /* multicolumn */
+		break-inside: avoid;            /* multicolumn */
+		padding: 4px 4px 4px 55px;  /* 35px is the left padding for the pic */
+		margin-bottom: 2px;
+		border-radius: 4px;
+		border-bottom: 1px solid #ececec;
+		font-size: 9pt;
+}
+
+li:hover {
+	cursor: pointer;
+	background: lightGrey;
+}
+
+img.quizImage {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width : 38px;
+	border: none;
+	margin-top: 2px;
+	margin-bottom: 2px;
+	margin-left: 2px;
+	border-radius: 4px;
+	text-overflow: ellipsis;
+}
+div.quizPass {
+	float: right;
+}
+
+
+div.itemName {
+//	font-weight: bold;
+	margin-right: 0.5em;
+	text-overflow: ellipsis;
+	color: #2276BB;
+	text-decoration: none;
+	font-size: 9pt;
+}
+span.itemDesc, div.itemRate {
+	color: black;
+	padding: 0px;
+	font-size: 9pt;
+}
+
+div.itemResults {
+	font-size: 11px;
+	color: #999;
+	line-height: 16px;
+	text-overflow: ellipsis;
+}
+/* Login */
+#login-content label {
+        //float: left;
+		line-height: 14px;
+		margin-top: -4px;
+		padding: 8px 8px 8px 0;
+		width: 70px;
+}
+
+input.modal-text-input {
+    	background: none repeat scroll 0 0 #FFFFFF;
+		border: 2px solid transparent;
+		border-radius: 4px 4px 4px 4px;
+		color: #555555;
+		//float: right;
+		font-size: 13px;
+		padding: 5px;
+		//width: 200px;
+        width: 90%;
+}
+div.modal-results {
+		background: none repeat scroll 0 0 #FFFFFF;
+		border: 1px solid transparent;
+		border-radius: 4px 4px 4px 4px;
+		color: #555555;
+		float: right;
+		font-size: 16px;
+		padding: 8px;
+		width: 100px;
+}
+input.modal-button {
+		background-color: #459300;
+		border: 1px solid transparent;
+		border-radius: 4px 4px 4px 4px;
+		color: #FFFFFF;
+		cursor: pointer;
+		font-size: 14px;
+		font-weight: bold;
+		letter-spacing: 1px;
+		padding: 3px 6px;
+		text-shadow: 0 -1px 0 #050505;
+}
+
+#login-content {
+    //height:420px; 
+    width:65%; 
+    max-width: 500px;
+    color:#bbb; 
+    background-color:#333; 
+    border:4px solid #444; 
+    padding:24px;
+    margin-left: auto;
+    margin-right: auto;
+    
+}
+
+@media screen and (max-width: 480px) { /* width <= 480 pixels  */
+    #login-content {
+        width:100%;
+        margin: 0;
+        padding:5px;
+    }
+}
+
+@media screen and (max-width: 700px) { /* width <= 700 pixels  */
+    #login-content {
+        width:90%;
+        
+    }
+}
+    
+#login-content .simplemodal-data {padding:8px;}
+#login-content code {background:#141414; border-left:3px solid #65B43D; color:#bbb; display:block; font-size:12px; margin-bottom:12px; padding:4px 6px 6px;}
+#login-content a {color:#ddd;}
+
+#login-content a.modalCloseImg {background:url(image/lightbox/x.png) no-repeat; width:25px; height:29px; display:inline; z-index:3200; position:absolute; top:-15px; right:-16px; cursor:pointer;}
+
+#login-content h3 {color:#84b8d9;}
+
+
+
+a.fbconnect_login_button {
+    cursor: pointer;
+}
+
+.fbconnect_login_button a:hover {
+    text-decoration : underline;
+}
+
+.FBConnectButton {
+    background: url("/image/connect_sprite.png") no-repeat scroll 0 0 #29447E;
+    cursor: default;
+    display: inline-block;
+    outline: medium none;
+    padding: 0 0 0 1px;
+    text-decoration: none;
+}
+.FBConnectButton .FBConnectButton_Text {
+    background: url("/image/connect_sprite.png") repeat scroll 0 0 #5F78AB;
+    border-bottom: 1px solid #1A356E;
+    border-top: 1px solid #879AC0;
+    color: #FFFFFF;
+    display: block;
+    font-family: "lucida grande",tahoma,sans-serif;
+    font-weight: bold;
+    margin: 1px 1px 0 0;
+    padding: 2px 6px 4px;
+    text-shadow: none;
+}
+.FBConnectButton_Large {
+    background-position: left -138px;
+    font-size: 13px;
+    line-height: 16px;
+}
+.FBConnectButton_Large .FBConnectButton_Text {
+    margin-left: 24px;
+}
+.FBConnectButton_Text {
+    margin-left: 21px;
+    padding: 2px 6px 3px;
+}
+
+
+/*  Carasel */
+ol {
+    display: block;
+	list-style-type: decimal;
+	-webkit-margin-before: 1em;
+	-webkit-margin-after: 1em;
+	-webkit-margin-start: 0px;
+	-webkit-margin-end: 0px;
+	-webkit-padding-start: 40px;
+}
+.carousel {
+	color: white;
+}
+.carousel .carousel_itemList {
+	//position: absolute;
+	//top: -26px;
+	//right: 18px;
+}
+.carousel .carousel_itemList li {
+	position: relative;
+	float: left;
+	width: 9px;
+	height: 9px;
+	background-color: #505050;
+	margin: 0 2px;
+	padding: 0;
+	border: 0;
+}
+.hide {
+	display: none !important;
+}
+li {
+	display: list-item;
+	text-align: -webkit-match-parent;
+}
+ol, ul {
+	list-style: none;
+}
+.carousel .carousel_itemList li.pager-active {
+	background-color: #EB7515;
+}

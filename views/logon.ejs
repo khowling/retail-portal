@@ -1,0 +1,44 @@
+
+        
+            <div id="login-content" class="clearfix">
+                <h2 style="margin: 0;">Login to the Nokia Knowledge portal</h2>
+                <p>for this demo, no authentication is in place, just use a name to identify yourself this time, and for future access</p>
+                
+                <form id="logmein"  action="/home" method="POST" style="float:left; width:45%">	
+                	
+                	<h3 style="margin: 0;">Existing Users</h3>
+                	<p><span id="logerrors" style="color: red;"><%= message %></span></p>
+                	<p>
+                		<label>Username</label>
+                		<input type="text" class="modal-text-input" name="username" value="">
+                	</p>
+               
+                	<p>
+                		<label>Password</label>
+                		<input type="password" class="modal-text-input" name="password">
+                	</p>
+               
+                	<p>
+                		<input type="submit" value="Sign In" class="modal-button" style="width: 95%;" >
+                	</p>
+                 
+                    <p>
+                        <div class="connect_widget">
+                            or <a class="fbconnect_login_button FBConnectButton FBConnectButton_Large" href="/auth/facebook" id="facebook_login_btn"><span class="FBConnectButton_Text">login with Facebook</span></a>
+                        </div>
+                    </p>
+                </form>
+                
+                <div style="float:right; width: 45%">
+                    <h3 style="margin: 0;">New Use?</h3>
+                    <p>You will be asked for the following detail, then your application will reviewed to gain access to the knowledge portal:
+                        <ul>
+                            <li style="list-style: disc outside none;">Outlet Name & address</li>
+                            <li style="list-style: disc outside none;">Store Manager email</li>
+                        </ul>
+                    </p>
+                    <p>
+                    <input type="submit" value="Register" class="modal-button" style="width: 95%;">
+                    </p>
+                </div>
+        	</div>
