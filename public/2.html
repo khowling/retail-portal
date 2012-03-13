@@ -384,55 +384,148 @@
         sendOptions.height = 400;
         SP.UI.ModalDialog.showModalDialog(sendOptions)
     }
+    
+    function addComment(e) {
+        var txtComment = $(e).parent().prev().children(".tbCommentClass");
+        
+        var divEComment = txtComment.parent().next();
+        var divDComment = divEComment.next();
+        var feeditem = $(e).parents('tr');
+        
+        var entercomment = $(e).parents('div.Like_box');
+        //if (typeof (Page_ClientValidate) == 'function') {
+        //    if (Page_ClientValidate() == false) {
+        //        return false
+         //   }
+        //}
+        if (txtComment.val().length > 0) {
+            txtComment.attr("disabled", "disabled");
+            divEComment.hide();
+            divDComment.show()
+        
+        
+            // call POST
+            $.post( '/postcomment', { 'feeditem' : feeditem.attr('id'), 'mess' : txtComment.val() }, function(cmt){
+                
+                divEComment.show();
+                divDComment.hide();
+                txtComment.removeAttr("disabled");
+                entercomment.attr({'style': 'display: none;'});
+                            
+            
+                var commenttr = feeditem.find('tr.Like_box').clone();
+				//	alert ('comment ' + JSON.stringify(commenttr) + ' val ' + cmt.user.name);
+				commenttr = commenttr.attr({"id": cmt.id }).removeAttr('style')
+    				.find('.commentAuthor').text(cmt.user.name).end()
+    				.find('.spanComment').text(cmt.body.text).end()
+    				.find('.commentCreatedDate').text(cmt.createdDate).end();
+				commenttr.appendTo(feeditem.find('.table_userComment'));
+            });
+        } else {
+            divEComment.show();
+            divDComment.hide();
+            txtComment.removeAttr("disabled");
+            entercomment.attr({'style': 'display: none;'});
+        }
+    };
+    
+    
+    function addPosting() {
+        $('#divActive').attr({'style': 'display: none;'});
+            $('#divInactive').attr({'style': 'display: block;'});
+
+        	var ptxt = $('#txtNewFeed').val();   
+            
+            $.post( '/post', { 'mess' : ptxt }, function(results){
+               
+        		$('#feed-post').clone().attr({'id': results.body.id}).find('.spanFeed').text(results.body.text).end().find('tr.Like_box').attr({'style': 'display: none;'}).end()
+                    .find('.linkComment').click(function () {
+                        // find the related DOM to add the comment (already in the DOM but hidden)
+						var divActivity = $(this).parent().parent().parent().next();
+						var dslComment = divActivity.children('.comment_feddbackBox').children('.Like_box_BG');
+						var divCBox = dslComment.next();
+						var tbComment = divCBox.children('.Like_box_right').children('.users_comment3').children('.tbCommentClass');
+						var lblLengthError = tbComment.next();
+                        
+						divActivity.show();
+						dslComment.hide();
+						divCBox.show();
+						tbComment.focus();
+						lblLengthError.hide()
+				}).end().removeAttr('style').prependTo('#feed-table');
+
+
+        		$('#txtNewFeed').val('');
+        		$('#divActive').attr({'style': 'display: block;'});
+        		$('#divInactive').attr({'style': 'display: none;'});
+        	});
+    }
+    
     BindLoadEvents();
 
     function BindLoadEvents() {
         $(document).ready(function () {
         		
-        		$.ajax({ 
-								url: "/myfeed", 
-								success: function(res){
-									
-									for (var idx in res.items) {
-										var itm = res.items[idx];
-		
-										var newpost = $('#feed-post').clone();
-										newpost = newpost.attr({"id": itm.id }).removeAttr('style')
-											.find('.spanFeed').text(itm.body.text).end()
-											.find('tr.Like_box').attr({'style': 'display: none;'}).end()
-											.find('.aFeedAuthor').text(itm.parent.name).end()
-											.find('.postCreatedDate').text(itm.createdDate).end()
-											.find('.linkComment').click(function () {
-												var divActivity = $(this).parent().parent().parent().next();
-												var dslComment = divActivity.children('.comment_feddbackBox').children('.Like_box_BG');
-												var divCBox = dslComment.next();
-												var tbComment = divCBox.children('.Like_box_right').children('.users_comment3').children('.tbCommentClass');
-												var lblLengthError = tbComment.next();
-												divActivity.show();
-												dslComment.hide();
-												divCBox.show();
-												tbComment.focus();
-												lblLengthError.hide()
-										}).end()
-										
-										var comments = itm.comments.comments;
-										if (comments){
-											for (var cidx in comments) {
-												var cmt = comments[cidx];
-												var commenttr = newpost.find('tr.Like_box').clone();
-											//	alert ('comment ' + JSON.stringify(commenttr) + ' val ' + cmt.user.name);
-												commenttr = commenttr.attr({"id": cmt.id }).removeAttr('style')
-													.find('.commentAuthor').text(cmt.user.name).end()
-													.find('.spanComment').text(cmt.body.text).end()
-													.find('.commentCreatedDate').text(cmt.createdDate).end();
-												commenttr.prependTo(newpost.find('.table_userComment'));
-											}
-										}
-										
-										newpost.prependTo('#feed-table');
-									}
-								}
-						});
+    		$.ajax({ 
+    			url: "/myfeed", 
+    			success: function(res){
+    				
+    				for (var idx in res.items) {
+    					var itm = res.items[idx];
+    
+    					var newpost = $('#feed-post').clone();
+    					newpost = newpost.attr({"id": itm.id }).removeAttr('style')
+    						.find('.spanFeed').text(itm.body.text).end()
+    						.find('tr.Like_box').attr({'style': 'display: none;'}).end()
+    						.find('.aFeedAuthor').text(itm.parent.name).end()
+    						.find('.postCreatedDate').text(itm.createdDate).end()
+    						.find('.linkComment').click(function () {
+    							var divActivity = $(this).parent().parent().parent().next();
+    							var dslComment = divActivity.children('.comment_feddbackBox').children('.Like_box_BG');
+    							var divCBox = dslComment.next();
+    							var tbComment = divCBox.children('.Like_box_right').children('.users_comment3').children('.tbCommentClass');
+                                tbComment.TextAreaExpander(30);
+                                tbComment.keydown(function () {
+                                    CheckCommentLength($(this))
+                                });
+                                tbComment.keyup(function () {
+                                    CheckCommentLength($(this))
+                                });
+                                
+    							var lblLengthError = tbComment.next();
+                                
+                                
+    							divActivity.attr({'style': 'display : block;'});
+    						//	dslComment.hide();
+    							divCBox.show();
+    							tbComment.focus();
+    							lblLengthError.hide();
+            
+    					}).end()
+    					
+    					var comments = itm.comments.comments;
+    					if (comments){
+                            
+    						for (var cidx in comments) {
+                                
+                                // adds in the arrow divider! (should be out the loop)
+                                newpost.find('div.comment_feedback').attr({'style': 'display : block;'});
+                                
+    							var cmt = comments[cidx];
+    							var commenttr = newpost.find('tr.Like_box').clone();
+    						//	alert ('comment ' + JSON.stringify(commenttr) + ' val ' + cmt.user.name);
+    							commenttr = commenttr.attr({"id": cmt.id }).removeAttr('style')
+    								.find('.commentAuthor').text(cmt.user.name).end()
+    								.find('.spanComment').text(cmt.body.text).end()
+    								.find('.commentCreatedDate').text(cmt.createdDate).end();
+    							commenttr.prependTo(newpost.find('.table_userComment'));
+    						}
+    					}
+    					
+    					newpost.appendTo('#feed-table');
+    				}
+    			}
+    	    });
 						
             try {
                 document.getElementById('chatterdiv').onscroll = function () {
@@ -709,21 +802,7 @@
                 tbComment.focus();
                 lblLengthError.hide()
             });
-            $(".imgBtnComment").click(function () {
-                var txtComment = $(this).parent().prev().children(".tbCommentClass");
-                var divEComment = txtComment.parent().next();
-                var divDComment = divEComment.next();
-                if (typeof (Page_ClientValidate) == 'function') {
-                    if (Page_ClientValidate() == false) {
-                        return false
-                    }
-                }
-                if (txtComment.val().length > 0) {
-                    txtComment.attr("disabled", "disabled");
-                    divEComment.hide();
-                    divDComment.show()
-                }
-            });
+            
             $(".txtNewFeedStyle").click(function () {
                 var $this = $(this);
                 var val = $this.val();
@@ -800,41 +879,6 @@
 </script>
 <body>
     <div class="main" id="divMain" visible="false" runat="server">
-    
-    <!--
-        <div class="toplinks">
-            <div class="toplinks_right">
-                <a ID="lnkLogOut" ToolTip="Logout" runat="server" Text="Logout!" OnClick="lnkLogOut_Click"></a>
-            </div>
-        </div>
-        <div class="title_group_mysite">
-            <table style="table-layout: fixed;" width="100%">
-                <tr>
-                    <td class="middle wrap">
-                        <strong>
-                            <label ID="lblUserStatus" runat="server" Font-Bold="true"></label>
-                        </strong>
-                        <label ID="lblUserStatusDetail" runat="server"></label>
-                        <a ID="lnkStatusClear" runat="server" Text="Clear" ToolTip="Clear current status"
-                            OnClick="lnkStatusClear_Click"></a>
-                    </td>
-                </tr>
-            </table>
-        </div>
-        <div>
-            <hr style="color: Silver; height: 0.3px;" />
-        </div>
-        <div id="divTopSearchBox">
-            <div id="loginbox">
-                <input id="txtFeedNCommentSearch" runat="server" name="username" type="text" class="SearchBox txtFeedNCommentSearch"
-                    placeholder="Search All..." /></div>
-            <div id="input_btn">
-                <input type="image" ID="imgBtnSearch" runat="server" class="imgBtnSearch" ToolTip="Search" src="/_layouts/images/SFChatterWP/searchchatter.png"
-                    OnClick="imgBtnSearch_Click" />
-            </div>
-        </div>
-        <br />
-     -->
         
         <!-- ENTER A NEW POST -->
         <div id="divNewComment">
@@ -859,34 +903,7 @@
                 </div>
                 <div class="btn_share divActive" id="divActive" style="display: block;">
                     <input type="image" ID="imgbtnShare" ToolTip="Share" runat="server" src="/_layouts/images/SFChatterWP/btn_share.png"
-                        Width="64" Height="23" onClick=" 	
-                        
-                        	$('#divActive').attr({'style': 'display: none;'});
-                        	$('#divInactive').attr({'style': 'display: block;'});
-                        	
-                        	var upfeed = function(){
-                        		var ptxt = $('#txtNewFeed').val();
-                        		$('#feed-post').clone().find('.spanFeed').text(ptxt).end().find('tr.Like_box').attr({'style': 'display: none;'}).end()
-                        			.find('.linkComment').click(function () {
-																var divActivity = $(this).parent().parent().parent().next();
-																var dslComment = divActivity.children('.comment_feddbackBox').children('.Like_box_BG');
-																var divCBox = dslComment.next();
-																var tbComment = divCBox.children('.Like_box_right').children('.users_comment3').children('.tbCommentClass');
-																var lblLengthError = tbComment.next();
-																divActivity.show();
-																dslComment.hide();
-																divCBox.show();
-																tbComment.focus();
-																lblLengthError.hide()
-														}).end().removeAttr('style').prependTo('#feed-table');
-            
-            
-                        		$('#txtNewFeed').val('');
-                        		$('#divActive').attr({'style': 'display: block;'});
-                        		$('#divInactive').attr({'style': 'display: none;'});
-                        		}
-                        		
-                        	setTimeout (upfeed, 1000);" />
+                        Width="64" Height="23" onClick="addPosting();" />
                 </div>
                 <div class="btn_share divInactive" id="divInactive" style="display: none;">
                     <img ID="imgBtnInactive" runat="server" src="/_layouts/images/SFChatterWP/btn_shareInactive.png"
@@ -1303,7 +1320,7 @@
                 	<tr id="feed-post" style="display: none;"><td>
                 	
                                 <div class="usersFeed">
-                                    <div class="users_feed">
+                                    <div class="users_feed"  style="padding-bottom: 5px;">
                                         <div class="users_photo">
                                             <img ID="imgPic" ToolTip='<%# Eval("Actor.Name") %>' Width="45"
                                                 Height="45" src="/image/people/keith.jpg"/>
@@ -1408,7 +1425,7 @@
                                                 </ul>
                                                 <label ID="lblFeedError" runat="server" Text="" ForeColor="Red"></label>
                                             </div>
-                                            <div class="comment_feddback" id="divActivity" runat="server" style="display: block;">
+                                            <div class="comment_feedback" id="divActivity" style="display: none;">
                                                 <div class="arrow">
                                                     <img src="/_layouts/images/SFChatterWP/arrow.png" runat="server" ID="Image2"
                                                         Width="9" Height="5" /></div>
@@ -1495,18 +1512,30 @@
                                                             <img ID="imgCommentNew" runat="server" Height="32" Width="32" src="/image/people/keith.jpg"/></div>
                                                         <div class="Like_box_right">
                                                             <div class="users_comment3">
+                                    <style>
+                                        .tbCommentClass {
+                                            border-color: #c7cacb;
+                                            border-style: solid;
+                                            border-width: 2px 1px 1px 1px;
+                                            border-radius: 5px 5px 5px 5px;
+                                            resize: none;
+                                            background: ffffff;
+                                            color: #7d7d78;
+                                            width: 100%;
+                                        }
+                                    </style>
                                                                 <textarea ID="tbComment" ToolTip="Write a comment..." runat="server" TextMode="MultiLine"
                                                                     Width="100%" MaxLength="1000" Rows="2" class="tbCommentClass autoCompleteClass"></textarea>
                                                                 <label ID="lblLengthError" runat="server" Text="Error:Your comment can't have more than 1000 characters."
                                                                     CssClass="disp_none" ForeColor="Red"></label>
                                                             </div>
-                                                            <div class="btn_comment" style="display: block;" id="divEComment" runat="server">
+                                                            <div class="btn_comment" style="display: block;" id="divEComment">
                                                                 <input type="image" ID="imgBtnComment" class="imgBtnComment" Style="cursor: pointer;"
-                                                                    runat="server" Height="20" Width="63" OnClick="btnComment_Click" ToolTip="Comment"
+                                                                    Height="20" Width="63"  ToolTip="Comment" onclick="addComment(this)"
                                                                     src="/_layouts/images/SFChatterWP/btn_comment.png" />
                                                             </div>
-                                                            <div class="btn_comment" id="divDComment" runat="server" style="display: none;">
-                                                                <input type="image" ID="imgdis" runat="server" Height="20" Width="63" src="/_layouts/images/SFChatterWP/btn_comment_dis.png"
+                                                            <div class="btn_comment" id="divDComment" style="display: none;">
+                                                                <input type="image" ID="imgdis" Height="20" Width="63" src="/_layouts/images/SFChatterWP/btn_comment_dis.png"
                                                                     Enabled="false" />
                                                             </div>
                                                             <div class="clear-1">

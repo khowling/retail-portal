@@ -124,14 +124,14 @@ a:hover
 
 .main
 {
-    min-width: 380px;
+    min-width: 320px;
     position: static;
     padding: 10px;
     background: url("/_layouts/images/SFChatterWP/background.png") repeat-x;
 }
 .divLoginBg
 {
-    min-width: 400px;
+    min-width: 32px;
     height: 350px;
     position: relative;
     padding: 74px 0px 0px 0px;
@@ -139,7 +139,7 @@ a:hover
 }
 .main_listusers
 {
-    min-width: 380px;
+    min-width: 320px;
     position: relative;
     padding: 15px 10px 14px 10px;
     background: url("/_layouts/images/SFChatterWP/background.png") repeat-x;
