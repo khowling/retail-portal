@@ -411,13 +411,24 @@
                 divDComment.hide();
                 txtComment.removeAttr("disabled");
                 entercomment.attr({'style': 'display: none;'});
+                
+                var posttxt = cmt.body.text.split(": ");
+                            
+                var author = 'Nokia';
+                var ptxt = posttxt[0];
+                
+                if (posttxt.length > 1) {
+                    author = posttxt[0];
+                    ptxt = posttxt[1];
+                }
+                
                             
             
-                var commenttr = feeditem.find('tr.Like_box').clone();
+                var commenttr = feeditem.find('tr.Like_box_template').clone();
 				//	alert ('comment ' + JSON.stringify(commenttr) + ' val ' + cmt.user.name);
-				commenttr = commenttr.attr({"id": cmt.id }).removeAttr('style')
-    				.find('.commentAuthor').text(cmt.user.name).end()
-    				.find('.spanComment').text(cmt.body.text).end()
+				commenttr = commenttr.attr({"id": cmt.id, "class": "Like_box" }).removeAttr('style')
+    				.find('.commentAuthor').text(author).end()
+    				.find('.spanComment').text(ptxt).end()
     				.find('.commentCreatedDate').text(cmt.createdDate).end();
 				commenttr.appendTo(feeditem.find('.table_userComment'));
             });
@@ -438,7 +449,20 @@
             
             $.post( '/post', { 'mess' : ptxt }, function(results){
                
-        		$('#feed-post').clone().attr({'id': results.body.id}).find('.spanFeed').text(results.body.text).end().find('tr.Like_box').attr({'style': 'display: none;'}).end()
+                var posttxt = results.body.text.split(": ");
+                            
+                var author = 'Nokia';
+                var ptxt = posttxt[0];
+                
+                if (posttxt.length > 1) {
+                    author = posttxt[0];
+                    ptxt = posttxt[1];
+                }
+                            
+        		$('#feed-post').clone().attr({'id': results.id})
+                    .find('.spanFeed').text(ptxt).end()
+                    .find('.aFeedAuthor').text(author).end()
+            		.find('.postCreatedDate').text(results.createdDate).end()
                     .find('.linkComment').click(function () {
                         // find the related DOM to add the comment (already in the DOM but hidden)
 						var divActivity = $(this).parent().parent().parent().next();
@@ -469,60 +493,86 @@
     		$.ajax({ 
     			url: "/myfeed", 
     			success: function(res){
-    				
-    				for (var idx in res.items) {
-    					var itm = res.items[idx];
-    
-    					var newpost = $('#feed-post').clone();
-    					newpost = newpost.attr({"id": itm.id }).removeAttr('style')
-    						.find('.spanFeed').text(itm.body.text).end()
-    						.find('tr.Like_box').attr({'style': 'display: none;'}).end()
-    						.find('.aFeedAuthor').text(itm.parent.name).end()
-    						.find('.postCreatedDate').text(itm.createdDate).end()
-    						.find('.linkComment').click(function () {
-    							var divActivity = $(this).parent().parent().parent().next();
-    							var dslComment = divActivity.children('.comment_feddbackBox').children('.Like_box_BG');
-    							var divCBox = dslComment.next();
-    							var tbComment = divCBox.children('.Like_box_right').children('.users_comment3').children('.tbCommentClass');
-                                tbComment.TextAreaExpander(30);
-                                tbComment.keydown(function () {
-                                    CheckCommentLength($(this))
-                                });
-                                tbComment.keyup(function () {
-                                    CheckCommentLength($(this))
-                                });
-                                
-    							var lblLengthError = tbComment.next();
-                                
-                                
-    							divActivity.attr({'style': 'display : block;'});
-    						//	dslComment.hide();
-    							divCBox.show();
-    							tbComment.focus();
-    							lblLengthError.hide();
-            
-    					}).end()
-    					
-    					var comments = itm.comments.comments;
-    					if (comments){
+                    
+                    if (res.items.length >0) {
+                       
+                        $('#selected_feed').text(res.items[0].parent.name);
+                        $('#option1_feed').text(res.items[0].parent.name);
+        				
+        				for (var idx in res.items) {
+        					var itm = res.items[idx];
+                            var posttxt = itm.body.text.split(": ");
                             
-    						for (var cidx in comments) {
-                                
-                                // adds in the arrow divider! (should be out the loop)
+                            var author = 'Nokia';
+                            var ptxt = posttxt[0];
+                            
+                            if (posttxt.length > 1) {
+                                author = posttxt[0];
+                                ptxt = posttxt[1];
+                            }
+                            
+        
+        					var newpost = $('#feed-post').clone();
+        					newpost = newpost.attr({"id": itm.id }).removeAttr('style')
+        						.find('.spanFeed').text(ptxt).end()
+        						.find('.aFeedAuthor').text(author).end()
+        						.find('.postCreatedDate').text(itm.createdDate).end()
+        						.find('.linkComment').click(function () {
+        							var divActivity = $(this).parent().parent().parent().next();
+        							var dslComment = divActivity.children('.comment_feddbackBox').children('.Like_box_BG');
+        							var divCBox = dslComment.next();
+        							var tbComment = divCBox.children('.Like_box_right').children('.users_comment3').children('.tbCommentClass');
+                                    tbComment.TextAreaExpander(30);
+                                    tbComment.keydown(function () {
+                                        CheckCommentLength($(this))
+                                    });
+                                    tbComment.keyup(function () {
+                                        CheckCommentLength($(this))
+                                    });
+                                    
+        							var lblLengthError = tbComment.next();
+                                    
+                                    
+        							divActivity.attr({'style': 'display : block;'});
+        						//	dslComment.hide();
+        							divCBox.show();
+        							tbComment.focus();
+        							lblLengthError.hide();
+                
+        					}).end()
+        					
+        				
+                            var nocomments = itm.comments.total;
+        					if (nocomments >0){
+                                // adds in the arrow divider! 
                                 newpost.find('div.comment_feedback').attr({'style': 'display : block;'});
-                                
-    							var cmt = comments[cidx];
-    							var commenttr = newpost.find('tr.Like_box').clone();
-    						//	alert ('comment ' + JSON.stringify(commenttr) + ' val ' + cmt.user.name);
-    							commenttr = commenttr.attr({"id": cmt.id }).removeAttr('style')
-    								.find('.commentAuthor').text(cmt.user.name).end()
-    								.find('.spanComment').text(cmt.body.text).end()
-    								.find('.commentCreatedDate').text(cmt.createdDate).end();
-    							commenttr.prependTo(newpost.find('.table_userComment'));
-    						}
-    					}
-    					
-    					newpost.appendTo('#feed-table');
+                                var comments = itm.comments.comments;
+        						for (var cidx in comments) {
+    
+        							var cmt = comments[cidx];
+                                    
+                                    var posttxt = cmt.body.text.split(": ");
+                            
+                                    var author = 'Nokia';
+                                    var ptxt = posttxt[0];
+                                    
+                                    if (posttxt.length > 1) {
+                                        author = posttxt[0];
+                                        ptxt = posttxt[1];
+                                    }
+                            
+        							var commenttr = newpost.find('tr.Like_box_template').clone();
+        						//	alert ('comment ' + JSON.stringify(commenttr) + ' val ' + cmt.user.name);
+        							commenttr = commenttr.attr({"id": cmt.id, "class": "Like_box" }).removeAttr('style')
+        								.find('.commentAuthor').text(author).end()
+        								.find('.spanComment').text(ptxt).end()
+        								.find('.commentCreatedDate').text(cmt.createdDate).end();
+        							commenttr.appendTo(newpost.find('.table_userComment'));
+        						}
+        					}
+        					
+        					newpost.appendTo('#feed-table');
+        				}
     				}
     			}
     	    });
@@ -1200,7 +1250,7 @@
                 font-weight: bold;">
                 Updates for 
                 <span onclick="filterVisibility()" class="SelectedFilter">
-                    <span>TMobile Slough</span>
+                    <span id="selected_feed"></span>
                     <img src="/_layouts/images/SFChatterWP/triangle-down.png" width="12" height="9" />
                 </span>
             </div>
@@ -1217,7 +1267,7 @@
                                         width="11" height="11">
                                 </td>
                                 <td class="menu_item">
-                                    <a onclick="filterVisibility();" ID="lnkFilter">TMobile Slough</a>
+                                    <a onclick="filterVisibility();" ID="option1_feed"></a>
                                 </td>
                             </tr>
                             <tr style="width: 100%">
@@ -1225,7 +1275,7 @@
 
                                 </td>
                                 <td class="menu_item">
-                                    <a onclick="filterVisibility();" ID="lnkFilter">TMobile UK</a>
+                                    <a onclick="filterVisibility();" ID="lnkFilter">Nokia Central</a>
                                 </td>
                             </tr>
                            
@@ -1458,7 +1508,7 @@
                                                                         <table class="table_userComment" cellspacing="0" cellpadding="0">
                                                                         
                                                                         
-                                                                            <tr class="Like_box">
+                                                                            <tr class="Like_box_template" style="display: none;">
                                                                                 <td class="users_photo_2">
                                                                                     <span class="Like_box_left">
 

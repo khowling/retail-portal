@@ -11,7 +11,7 @@ var clientId = process.env.CLIENT_ID;
 var clientSecret = process.env.CLIENT_SECRET;
 var sfuser = process.env.SFDC_USERNAME;
 var sfpasswd = process.env.SFDC_PASSWORD;
-var redirectUri = 'http://localhost:'+port+'/auth-callback';
+// var redirectUri = 'http://localhost:'+port+'/auth-callback'; /* NOT NEEDED FOR USERNAME/PASSWORD flow */
 
 app.use(express.static(__dirname + '/public'));    // middleware for static resources
 app.use(express.logger());
@@ -37,7 +37,7 @@ app.post ('/post', function (req,res) {
 	} 
 
 
-    var bdy = { "body" :   {"messageSegments" : [{"type": "Text", "text" : '[Portal Post] '+ req.body.mess  }] }};
+    var bdy = { "body" :   {"messageSegments" : [{"type": "Text", "text" : udata.fullname + ': '+ req.body.mess  }] }};
     queryAPI('chatter/feeds/record/'+udata.outlet.id+'/feed-items', bdy, function(results) {
         console.log ('/post : results : ' + JSON.stringify(results));
         res.send (results);
@@ -55,7 +55,7 @@ app.post ('/postcomment', function (req,res) {
 	} 
 
 
-    var bdy = { "body" :   {"messageSegments" : [{"type": "Text", "text" : '[Portal Post] '+ req.body.mess  }] }};
+    var bdy = { "body" :   {"messageSegments" : [{"type": "Text", "text" : udata.fullname + ': '+  req.body.mess  }] }};
     queryAPI('chatter/feed-items/'+ req.body.feeditem +'/comments', bdy, function(results) {
         console.log ('/postcomment : results : ' + JSON.stringify(results));
         res.send (results);
