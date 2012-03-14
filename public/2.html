@@ -74,18 +74,18 @@
         divimagShareFrmComp.style.display = 'block'
     }
     function imgCloseClick() {
-        var divFileUpload = document.getElementById("<%=divFileUpload.ClientID%>");
-        var divAttachFile = document.getElementById("<%=divAttachFile.ClientID%>");
-        var documentDiv = document.getElementById("<%=documentDiv.ClientID%>");
-        var compUploadDiv = document.getElementById("<%=compUploadDiv.ClientID%>");
-        var fplUpload = document.getElementById("<%=fplUpload.ClientID%>");
-        var txtFileName = document.getElementById("<%=txtFileName.ClientID%>");
-        var txtDescription = document.getElementById("<%=txtDescription.ClientID%>");
-        var errLabel = document.getElementById("<%=feedLengthError.ClientID%>");
-        var lblErrMsg = document.getElementById("<%=lblErrMsg.ClientID %>");
-        var descLengthError = document.getElementById("<%=descLengthError.ClientID %>");
-        var lblValidationMsg = document.getElementById("<%=lblValidationMsg.ClientID %>");
-        var lblFileCheck = document.getElementById("<%=lblFileCheck.ClientID %>");
+        var divFileUpload = document.getElementById("divFileUpload");
+        var divAttachFile = document.getElementById("divAttachFile");
+        var documentDiv = document.getElementById("documentDiv");
+        var compUploadDiv = document.getElementById("compUploadDiv");
+        var fplUpload = document.getElementById("fplUpload");
+        var txtFileName = document.getElementById("txtFileName>");
+        var txtDescription = document.getElementById("txtDescription");
+        var errLabel = document.getElementById("feedLengthError");
+        var lblErrMsg = document.getElementById("lblErrMsg");
+        var descLengthError = document.getElementById("descLengthError>");
+        var lblValidationMsg = document.getElementById("lblValidationMsg");
+        var lblFileCheck = document.getElementById("lblFileCheck");
         errLabel.style.display = 'none';
         lblErrMsg.style.display = 'none';
         divAttachFile.style.display = 'block';
@@ -97,7 +97,7 @@
         lblFileCheck.style.display = 'none';
         txtFileName.value = "";
         txtDescription.value = "";
-        var originaFileUpload = document.getElementsByName('<%= fplUpload.UniqueID %>')[0];
+        var originaFileUpload = document.getElementsByName('fplUpload.')[0];
         originaFileUpload.value = "";
         var dummyFileUpload = originaFileUpload.cloneNode(false);
         dummyFileUpload.onchange = originaFileUpload.onchange;
@@ -118,14 +118,14 @@
         return confirm('Are you sure you want to delete this comment?')
     }
     function imgCloseLinkClick() {
-        var divLinkPost = document.getElementById("<%=divLinkPost.ClientID%>");
-        var txtLinkUrl = document.getElementById("<%=txtLinkUrl.ClientID%>");
-        var txtLinkName = document.getElementById("<%=txtLinkName.ClientID%>");
-        var divAttachFile = document.getElementById("<%=divAttachFile.ClientID%>");
-        var LinkLengthError = document.getElementById("<%=LinkLengthError.ClientID%>");
-        var lblLinkUrlValidation = document.getElementById("<%=lblLinkUrlValidation.ClientID%>");
-        var LinkNameError = document.getElementById("<%=LinkNameError.ClientID%>");
-        var RegExpLinkValidator = document.getElementById("<%=RegExpLinkValidator.ClientID%>");
+        var divLinkPost = document.getElementById("divLinkPost");
+        var txtLinkUrl = document.getElementById("txtLinkUrl");
+        var txtLinkName = document.getElementById("txtLinkName");
+        var divAttachFile = document.getElementById("divAttachFile");
+        var LinkLengthError = document.getElementById("LinkLengthError");
+        var lblLinkUrlValidation = document.getElementById("lblLinkUrlValidation");
+        var LinkNameError = document.getElementById("LinkNameError");
+        var RegExpLinkValidator = document.getElementById("RegExpLinkValidator");
         ValidatorEnable(RegExpLinkValidator, false);
         divLinkPost.style.display = 'none';
         divAttachFile.style.display = 'block';
@@ -145,7 +145,7 @@
         var maxheight = (maxlines * lineheight);
         var allowedExtraLines = 3;
         var showText = "More";
-        var hdnMoreFeedId = document.getElementById("<%=hdnMoreFeedId.ClientID%>");
+        var hdnMoreFeedId = document.getElementById("hdnMoreFeedId");
         $(".expandmorelink").each(function () {
             var text = $(this);
             var feedID;

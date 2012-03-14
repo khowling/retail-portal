@@ -1,2 +1,3 @@
 ENV.sh
 node_modules
+.settings.xml

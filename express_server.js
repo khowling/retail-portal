@@ -38,8 +38,9 @@ app.post ('/post', function (req,res) {
 
 
     var bdy = { "body" :   {"messageSegments" : [{"type": "Text", "text" : udata.fullname + ': '+ req.body.mess  }] }};
-    queryAPI('chatter/feeds/record/'+udata.outlet.id+'/feed-items', bdy, function(results) {
-        console.log ('/post : results : ' + JSON.stringify(results));
+    queryAPI('chatter/feeds/record/'+udata.outlet.id+'/feed-items', bdy, 'POST',  function(results) {
+        //console.log ('/post : results : ' + JSON.stringify(results));
+        req.session = null; // method doesnt update the session
         res.send (results);
    });
 });
@@ -56,8 +57,9 @@ app.post ('/postcomment', function (req,res) {
 
 
     var bdy = { "body" :   {"messageSegments" : [{"type": "Text", "text" : udata.fullname + ': '+  req.body.mess  }] }};
-    queryAPI('chatter/feed-items/'+ req.body.feeditem +'/comments', bdy, function(results) {
-        console.log ('/postcomment : results : ' + JSON.stringify(results));
+    queryAPI('chatter/feed-items/'+ req.body.feeditem +'/comments', bdy, 'POST', function(results) {
+        //console.log ('/postcomment : results : ' + JSON.stringify(results));
+        req.session = null; // method doesnt update the session
         res.send (results);
    });
 });
@@ -70,27 +72,25 @@ app.get ('/myfeed', function (req,res,next) {
         res.send ('Please Login', 400);
 		return;
 	}     
-    queryAPI('chatter/feeds/record/'+udata.outlet.id+'/feed-items', null,  function (results) {
-        console.log ('/myfeed : results : ' + JSON.stringify(results));
+    queryAPI('chatter/feeds/record/'+udata.outlet.id+'/feed-items', null, 'GET', function (results) {
+        //console.log ('/myfeed : results : ' + JSON.stringify(results));
+        req.session = null; // method doesnt update the session
         res.send(results);
     });
 });
 
 
-function queryAPI (resturl, mbody, callback) {
+function queryAPI (resturl, mbody, httpmethod, callback) {
     
     //console.log ('got token : ' + JSON.stringify(foauth.getOAuthResponse()));
 
     var data = '';
     
     var host =  (require('url').parse(foauth.getOAuthResponse().instance_url))['host'];
-    
-    var method = 'GET';
-    if (mbody) method = 'POST';
-    
+
     
     var options = {
-        method: method,
+        method: httpmethod,
         host: host,
         path: '/services/data/v23.0/' + resturl,
         headers: {
@@ -115,14 +115,17 @@ function queryAPI (resturl, mbody, callback) {
         if (res.statusCode == 401){
           //Our Access Token has expired, and so we need to login again
           console.log('Logging in again...');
-          foauth.login(clientId, clientSecret , sfuser, sfpasswd,  queryAPI (resturl, callback));
-        }else if (res.statusCode != 200 && res.statusCode != 201){
+          foauth.login(clientId, clientSecret , sfuser, sfpasswd,  queryAPI (resturl, mbody, httpmethod, callback));
+        }else if (res.statusCode != 200 && res.statusCode != 201 && res.statusCode != 204){
             // 200 = OK, 201 = CREATED
           //Force.com API returned an error. Display it to the user
           console.log('Error from Force.com:' + res.statusCode + ' : ' +data);
           data = JSON.parse(data);
           console.log('Error message:'+data[0].message);
 
+        }else if (res.statusCode == 204) {
+            // this is from an update call!!!
+          callback (null);
         }else{
           callback (JSON.parse(data));
         }
@@ -136,59 +139,10 @@ function queryAPI (resturl, mbody, callback) {
       console.log('problem with request: ' + e.message);
     });
     console.log ('sending body ' + JSON.stringify(mbody));
+    req.session = null; // method doesnt update the session
     req.end(JSON.stringify(mbody));
 };
 
-var my_feed = {
-"items":[
-	{
-	"parent":{
-		"name":"Matthew Evens",
-		"id":"0032000000s8MiCAAU",
-		"type":"Contact"
-		},
-	"id":"0D52000000Wtkh4CAB",
-	"body":{"text":"created this contact."},
-	"createdDate":"2012-02-20T11:21:45.000Z",
-	"modifiedDate":"2012-02-29T12:39:39.000Z",
-	"photoUrl":"https://c.eu0.content.force.com/profilephoto/72920000000CmDj/T",
-	"comments":{
-		"total":1,
-		"comments":[
-			{
-				"parent":{
-					"id":"0032000000s8MiCAAU",
-					"url":"/services/data/v24.0/chatter/records/0032000000s8MiCAAU"
-					},
-				"id":"0D7200000000peiCAA",
-				"type":"TextComment",
-				"user":{
-					"name":"Keith Howling",					
-					"photo":{"largePhotoUrl":"https://c.eu0.content.force.com/profilephoto/72920000000CmDj/F","photoVersionId":"72920000000CmDjAAK","smallPhotoUrl":"https://c.eu0.content.force.com/profilephoto/72920000000CmDj/T"},
-					"id":"00520000001q8kmAAA",
-					"type":"User"
-					},
-				"body":{	"text":"jiopjij"	},
-				"createdDate":"2012-02-29T12:39:39.000+0000",
-				"likes":{"total":0,"likes":[] }
-			}]
-		}
-}]
-
-};
-var users_collection = {
-    'keith'  :  {
-        fullname: 'Keith Howling',
-        points: 0, 
-        outlet : {
-            name: 'Carphone Warehouse - Slough',
-            picture_url: '/image/carphone_warehouse.jpg'
-        },
-        department: 'IT', 
-        picture_url: '/image/people/keith.jpg', 
-        completed_events: {}
-    }
-};
 var event_collection = {
 	'K000': {
 			type: "KNOWLEDGE",
@@ -312,7 +266,7 @@ var event_collection = {
 						ques: "What office applications comes with Windows Mobile",
 						ans: 'Word, Excel, OneNote and PowerPoint',
 						ansSel: [ 'Word', 'Word and Excel', 'Word, Excel and OneNote' ],
-						retry: 0 	// The question can only be tried twice. Otherwise the user's answer is wrong.
+                        retry: 0    // The question can only be tried twice. Otherwise the user's answer is wrong.
 					},
 					{ 
 						ques: "Can you create linked inboxes with Outlook Mobile?", 
@@ -331,45 +285,70 @@ var event_collection = {
 
 
 app.get('/', function(req, res){
-    res.render('logon.ejs', { locals: {  message: '' } });
+    res.render('logon.ejs', { locals: {  loggedon: false, message: '' } });
 });
 //app.get('/:urlpage', function(req, res){
 //    console.log ('/:urlpage + ' + req.params.urlpage);
 //    res.render(req.params.urlpage + '.ejs', { locals: { } });
 //});
 
+app.get('/logout', function (req,res) {
+    req.session.username = null;
+    req.session.udata = null;
+    req.session.destroy();
+    res.redirect('/');
+    
+});
 // LOGIN POST
-app.post('/home', function (req,res,next) {
+app.post('/home', function (req,res) {
     var uid = req.body.username;
     console.log ('login: Attempt to login as ' + uid);
     
     if (uid) {
-        
-        queryAPI('query?q='+escape('select Name, PortalID__C, Points__c, Quiz_Completed__c, Account.Name, Account.id from Contact where PortalID__c = \'' + uid + '\''), null,  function (results) {
+
+        queryAPI('query?q='+escape('select Id, Name, PortalPic__c, PortalID__C, Points__c, Account.Name, Account.PortalPic__c, Account.id, (select Id, Name, Attempts__c, Best_Score__c, Passed__c, First_Score__c from Game_Events__r) from Contact where PortalID__c = \'' + uid + '\''), null, 'GET',  function (results) {
+           console.log ('login: got query results ' + JSON.stringify(results));
            if (results.totalSize == 1) {
                var udata = {
-                   id:  results.records[0].id,
+                   id:  results.records[0].Id,
                    fullname: results.records[0].Name,
                    points: results.records[0].Points__c, 
                    outlet : {
                        id: results.records[0].Account.Id,
                        name: results.records[0].Account.Name,
-                       picture_url: '/image/carphone_warehouse.jpg'
+                       picture_url: results.records[0].Account.PortalPic__c
                    },
-                   picture_url: '/image/people/keith.jpg', 
+                   picture_url: results.records[0].PortalPic__c, 
                    completed_events: {}
+                   };
+                   
+                if (results.records[0].Game_Events__r) {
+                    var gameevents =  results.records[0].Game_Events__r.records;
+                    for (var gidx in gameevents) {
+                        udata.completed_events[gameevents[gidx].Name] = {
+                            id:  gameevents[gidx].Id,
+                            attempts: gameevents[gidx].Attempts__c,
+                            passed: gameevents[gidx].Passed__c,
+                            score: gameevents[gidx].First_Score__c,
+                            bestscore: gameevents[gidx].Best_Score__c
+                        };
+                    }
                 }
-                    
+                
+                
+                console.log ('/home - got userdata : ' + JSON.stringify(udata));    
                 var sess = req.session;
-        		//Properties on req.session are automatically saved on a response
-        		sess.username = uid;
-                sess.userdata = udata;
-        		createEvents(uid, null);
-        		//res.send({username: sess.username, userdata: users_collection[sess.username]});
-                res.render('home.ejs', { locals: { username: uid, userdata: udata} });
+                //Properties on req.session are automatically saved on a response
+                sess.username = uid;
+                sess.userdata = udata;  
+                sess.completed_events = udata.completed_events;  
+                var start_idx = event_index -1;
+                createEvents(uid, udata,  null);
+                //res.send({username: sess.username, userdata: users_collection[sess.username]});
+                res.render('home.ejs', { locals: { username: uid, userdata: udata, current_index: start_idx} });
                 return;
            } else {
-                res.render('logon.ejs', { locals: { message : 'Please enter username: ' + uid} });
+                res.render('logon.ejs', { locals: { loggedon: false, message : 'Please enter username: ' + uid} });
                 return;
            }
         });
@@ -378,29 +357,30 @@ app.post('/home', function (req,res,next) {
     }
 });
 
-app.get('/home', function (req,res,next) {
+app.get('/home', function (req,res) {
     var uid = req.session.username,
         udata = req.session.userdata;
          
-    console.log ('home: attempt to access home ' + uid);
+    console.log ('home: attempt to access home ' + uid + ' --- ' + JSON.stringify(udata));
 		
     if (uid && udata) {
             
         var sess = req.session;
 		//Properties on req.session are automatically saved on a response
 		sess.username = uid;
-		createEvents(uid, null);
+		createEvents(uid, udata, null);
 		//res.send({username: sess.username, userdata: users_collection[sess.username]});
-        res.render('home.ejs', { locals: { username: uid, userdata: users_collection[uid]} });
+        req.session = null; // method doesnt update the session
+        res.render('home.ejs', { locals: { username: uid, userdata: udata} });
         return;
     }
-    res.render('logon.ejs', { locals: { message : 'Please Logon'} });
+    res.render('logon.ejs', { locals: { loggedon: false, message : 'Please Logon'} });
 });
 
 var event_index = 1;
-var events_by_user = {}
-function createEvents(user, just_completed) {
-	console.log ('createEvents :' + user + ', just_completed : ' + just_completed);
+var events_by_user = {};
+function createEvents(uid, udata, just_completed) {
+	console.log ('createEvents :' + uid + ', just_completed : ' + just_completed);
 	
 	for (var i in event_collection) {
 		var e = event_collection[i];
@@ -412,11 +392,11 @@ function createEvents(user, just_completed) {
 				newlyselected = false;
 				
 		for (var needtocomplete in e.forwho.completed) {
-			console.log ('createEvents: checking prereq for event, required : ' + needtocomplete + ', is it in ' + JSON.stringify(users_collection[user].completed_events) );
+			console.log ('createEvents: checking prereq for event, required : ' + needtocomplete + ', is it in ' + JSON.stringify(udata.completed_events) );
 			if (just_completed == needtocomplete ) {
 				newlyselected = true;
 			}
-			var hascompleted = users_collection[user].completed_events[needtocomplete];
+			var hascompleted = udata.completed_events[needtocomplete];
 			if ((!hascompleted) || hascompleted.passed == false) {
 			//if (! (needtocomplete in users_collection[user].completed_events)) {
 				selected = false; break;
@@ -424,8 +404,8 @@ function createEvents(user, just_completed) {
 		}
 		if (((!selected) || (just_completed != null && newlyselected == false))) continue;
 		// 100 points for just getting a new event
-		users_collection[user].points = users_collection[user].points + 50;
-		console.log ('createEvents: points: adding ' + '50' + ', total now : ' +users_collection[user].points);
+	    udata.points = udata.points + 50;
+		console.log ('createEvents: points: adding ' + '50' + ', total now : ' + udata.points);
 
 		
 		
@@ -436,12 +416,12 @@ function createEvents(user, just_completed) {
 			item_id: i,
 			item_type: e.type,
 			item_data: e,
-			results_data: users_collection[user].completed_events[i]
+			results_data: udata.completed_events[i]
 		};
 		
 			
-		if (!events_by_user[user])	events_by_user[user] = [];	
-		events_by_user[user].push(event);
+		if (!events_by_user[uid])	events_by_user[uid] = [];	
+		events_by_user[uid].push(event);
 		console.log('createEvents: ADDED EVENT [' + event.index +  '] [' + event.item_id +'], results_data ' + results_data  + ', newlyselected : '+ newlyselected);
 	}
 }
@@ -451,37 +431,37 @@ function nextEvent(user, lastindexprocessed) {
     if (!events_by_user[user]) return null;
     if (!lastindexprocessed) lastindexprocessed = 0;
     
-    console.log ('nextEvent: from ' + user + ', lastindexprocessed : ' +  lastindexprocessed);
+    //console.log ('nextEvent: from ' + user + ', lastindexprocessed : ' +  lastindexprocessed);
     var event;
     var minTimestamp = new Date().getTime() - (maxAge * 1000);
     for(var i in events_by_user[user]) {
-    	var e = events_by_user[user][i];
-    	console.log ('nextEvent: found event '+ e.item_id + ', checking index : ' + e.index);
+        var e = events_by_user[user][i];
+        //console.log ('nextEvent: found event '+ e.item_id + ', checking index : ' + e.index);
 			// expire event (event generated, not consumed by longpoll, throu away)
 			if (e.timestamp < minTimestamp) {
-				console.log ('nextEvent: timestamp check [' + e.index +  "] expired " + JSON.stringify(event));
+				//console.log ('nextEvent: timestamp check [' + e.index +  "] expired " + JSON.stringify(event));
 					e.active = false;
 					continue;
 			} else if (e.index > lastindexprocessed) {
-				console.log ('nextEvent: return ' + e.index);
+				//console.log ('nextEvent: return ' + e.index);
 				return e;
 			}
     }
 }
 
 
-function notify_long_connection_by_user(user) {	
+function notify_long_connection_by_user(uid, udata) {	
 	// started notify //
-	if (!long_connections_by_user[user]) {
-		console.log ("notify_long_connection_by_user: no longpolling requests for " + user + ", do nothing");
+	if (!long_connections_by_user[uid]) {
+		console.log ("notify_long_connection_by_user: no longpolling requests for " + uid + ", do nothing");
 	} else {
-		for (var i=0; i < long_connections_by_user[user].length; i++) {
-			var req_info = long_connections_by_user[user][i];
+		for (var i=0; i < long_connections_by_user[uid].length; i++) {
+			var req_info = long_connections_by_user[uid][i];
 			if (!req_info.completed) {
 				
-				console.log ('notify_long_connection_by_user: got active connection for user ' + user);
+				console.log ('notify_long_connection_by_user: got active connection for user ' + uid);
 				
-				var event = nextEvent(user, req_info.lasteventprocessed);
+				var event = nextEvent(uid, req_info.lasteventprocessed);
 				console.log ('notify_long_connection_by_user: ' + event);
 				if (event) {
 					console.log ('notify_long_connection_by_user: resume request & send event data' + event.index);
@@ -490,7 +470,8 @@ function notify_long_connection_by_user(user) {
 					req_info.completed = true;
 					
 					req_info.request.resume();
-					event['my_points'] = users_collection[user].points;
+					event.my_points = udata.points;
+                    req_info.request.session = null; // method doesnt update the session
 					req_info.response.send (JSON.stringify(event));
 					
 				}
@@ -500,7 +481,7 @@ function notify_long_connection_by_user(user) {
 }
 
 var PASS_SCORE = 100;
-app.post('/donequiz', function (req,res,next) {
+app.post('/donequiz', function (req,res) {
     var uid = req.session.username,
         udata = req.session.userdata;
 	if (!uid) {
@@ -515,19 +496,20 @@ app.post('/donequiz', function (req,res,next) {
 			now_passed = (req.body.quesTried>0 && req.body.score>=PASS_SCORE),
 			aready_passed = false;
 			
-	console.log ('donequiz: complted quiz:' + user + ', quiz : ' + qid + ', score ' + score + ', quesTried : ' + quesTried + ', now_passed : ' + now_passed);
+	console.log ('donequiz: complted quiz:' + uid + ', quiz : ' + qid + ', score ' + score + ', quesTried : ' + quesTried + ', now_passed : ' + now_passed);
 	// need to of least tryed one question to register quiz attempt!
 	if ( quesTried > 0) {
 		
 		var alreadydone = udata.completed_events;
-		
+		var points_award = 0;
 		if (!alreadydone[qid]) { // first atemmpt
-			alreadydone[qid] = { passed: now_passed, score: score, date: new Date(), attempts: 1, bestscore: score};
-			var points_award = score * event_collection[qid].points/100;
+			alreadydone[qid] = { id: "", passed: now_passed, score: score, attempts: 1, bestscore: score};
+			points_award = score * event_collection[qid].points/100;
 			
-			udata.points = udata.points + points_award
-			console.log ('points: adding ' + points_award + ', total now : ' +users_collection[user].points);
+			udata.points = udata.points + points_award;
+			console.log ('points: adding ' + points_award + ', total now : ' + udata.points);
 		} else { // NOT first attempt
+            console.log ('donequiz: not first attempt for : ' + qid);
 			aready_passed = alreadydone[qid].passed;
 			alreadydone[qid].attempts = alreadydone[qid].attempts + 1;
 			alreadydone[qid].bestscore = Math.max(alreadydone[qid].bestscore, score);
@@ -536,35 +518,74 @@ app.post('/donequiz', function (req,res,next) {
 
 		console.log ('donequiz: create results event ' + JSON.stringify(alreadydone[qid]));
 		// create event to register new results of quiz
-		var event = {
-			index: event_index++,
-			timestamp: new Date().getTime(),
-			active: true,
-			item_id: qid,
-			item_type: "QUIZ",
-			results_data: alreadydone[qid]
-		};
-		if (!events_by_user[uid]) events_by_user[uid] = [];	
-		events_by_user[uid].push(event);
+        
+        // send update to salesforce
+        var bdy = { Name: qid, Attempts__c: alreadydone[qid].attempts, Passed__c:  alreadydone[qid].passed, First_Score__c: alreadydone[qid].score, Best_Score__c: alreadydone[qid].bestscore};
+        var sfdc_url = 'sobjects/Game_Event__c/' + alreadydone[qid].id;
+        var httpmethod = 'PATCH'; // its an update
+        if (alreadydone[qid].id.length == 0) {
+            // its a insert, set the m/d file
+            bdy.Contact__c = udata.id;
+            bdy.Points__c = points_award;
+            httpmethod = 'POST';
+        }
+        console.log ('/donequiz - ' + sfdc_url + ' : ' + JSON.stringify(bdy));
+        
+        queryAPI(sfdc_url, bdy, httpmethod, function(response) {
+            if (response) {
+                console.log ('/donequiz -  response : ' +  JSON.stringify(response));
+                console.log ('/donequiz setting id ' + qid + ' : ' + response.id);
+                alreadydone[qid].id = response.id;
+            }
+
+            
+    		var event = {
+    			index: event_index++,
+    			timestamp: new Date().getTime(),
+    			active: true,
+    			item_id: qid,
+    			item_type: "QUIZ",
+    			results_data: alreadydone[qid]
+    		};
+    		if (!events_by_user[uid]) events_by_user[uid] = [];	
+    		events_by_user[uid].push(event);
+            
+            req.session.userdata = udata;  // update the session store with the new values.
+            console.log ('/donequiz - udata.completed_events : ' + JSON.stringify(req.session.userdata));
+            res.send({my_points: udata.points});
+            
+            
+            
+            if ((!aready_passed) && now_passed) {
+        		// just passwd new quiz, hunt for new unlocks!!
+    			createEvents (uid, udata, qid);
+    		}
+    		notify_long_connection_by_user(uid, udata);
+        });
+	} else {
+	
+    	// update points in response
+        req.session = null;
+    	res.send({my_points: udata.points});
 	}
-	
-	// update points in response
-	res.send({my_points: udata.points});
-	
+/*
 	if (quesTried > 0) {
+       
 		if ((!aready_passed) && now_passed) {
 			// just passwd new quiz, hunt for new unlocks!!
-			createEvents (uid, qid);
+			createEvents (uid, udata, qid);
 		}
-		notify_long_connection_by_user(uid)
+		notify_long_connection_by_user(uid, udata);
+        
 	}
+    */
 });
 
 /**
 * GET handler for retrieving events for the user.
 */
 var long_connections_by_user = {};
-app.get('/longpoll/:lasteventprocessed', function (req, res, next) {
+app.get('/longpoll/:lasteventprocessed', function (req, res) {
     var uid = req.session.username,
         udata = req.session.userdata;
     if (!uid) {
@@ -573,7 +594,7 @@ app.get('/longpoll/:lasteventprocessed', function (req, res, next) {
 	} 
     
 	var lasteventprocessed = req.params.lasteventprocessed;
-	console.log ('longpoll: got request from ' + uid);
+	console.log ('longpoll: got request from ' + uid + ' last eventprocessed from url : ' + lasteventprocessed);
 	// check the required parameters
 
 	var event = nextEvent(uid, lasteventprocessed);
@@ -596,7 +617,7 @@ app.get('/longpoll/:lasteventprocessed', function (req, res, next) {
 
 	} else {
 			console.log ('longpoll: got event to send to user');
-			event['my_points'] = users_collection[uid].points;
+			event.my_points =udata.points;
 			//setTimeout (function() {  // ADD A 1 SECOND DELAY - JUST FOR EFFECT!!!
 				res.send(JSON.stringify(event));
 				console.log ('longpoll sent :' + event.index);
@@ -604,7 +625,7 @@ app.get('/longpoll/:lasteventprocessed', function (req, res, next) {
 	}
 });
 
-app.get ('/stream/:filename', function (req,res,next) {
+app.get ('/stream/:filename', function (req,res) {
 	var fn = __dirname+'/public/media/' +req.params.filename;
 	console.log ('stream: filename ' + fn);
 	res.sendfile (fn);

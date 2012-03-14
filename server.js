@@ -46,7 +46,7 @@ foauth.login(clientId, clientSecret , sfuser, sfpasswd, function(){
 });
 
 app.get('/mytoken', function(req, res){
-    queryAPI('query?q='+escape('select Name, PortalID__C, Points__c, Quiz_Completed__c, Account.Name, Account.id from Contact where PortalID__c = \'' + 'keith' + '\''), null,  function (results) {
+    queryAPI('query?q='+escape('select Name, PortalID__C, Points__c, Account.Name, Account.id, (select Name, Attempts__c, Passed__c, First_Score__c, Best_Score__c, First_Date__c from Game_Events__r) from Contact where PortalID__c = \'' + 'keith' + '\''), null,  function (results) {
         console.log ('mytoken output ' + JSON.stringify(results) + ' totalSize : ' + results.totalSize);
         if (results.totalSize == 1) {
            res.end ('Welcome ' + results.records[0].Name);

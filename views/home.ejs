@@ -3,7 +3,7 @@
     $(document).ready (function(){
         initPoints ();
         $('#chatterdiv').load('/2.html');
-        poll();
+        
         
         $(window).resize(function() {
             if ($("#jdialog").dialog( "isOpen" )) {
@@ -15,6 +15,13 @@
             }
                 
         });
+        
+        <% if  (typeof current_index !== 'undefined') { %>
+            lasteventprocessed = <%= current_index %>
+            //alert ('setting last event processed ' + lasteventprocessed);
+        <% } %>
+        
+        poll();
     });
                             
 </script>

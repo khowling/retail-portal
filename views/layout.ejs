@@ -33,13 +33,17 @@
 	<div id="titleheader">
 		<div class="inner" style="margin-bottom: 0px;">
 			<h2 class="title" style="float:left;"><img src="/image/nk_nokia_logo.png" style="background: #4472A7; margin-right: 10px;"/>engaging learning</h2>
+
+            <% if  (typeof loggedon === 'undefined') { %>
             <div id="nav">
     			<ul style="padding-left: 0px;">
 					<li><a href="#">Scan QR</a></li>
 					<li><a href="#">Enter QR</a></li>
-					<li><a href="#">Logout</a></li>
+					<li><a href="/logout">Logout</a></li>
 				</ul>
 			</div>
+            <% } %>
+            
             <div style="clear:both;"></div>
 		</div>
 	</div>
