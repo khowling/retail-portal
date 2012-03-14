@@ -348,12 +348,12 @@ app.post('/home', function (req,res) {
                 res.render('home.ejs', { locals: { username: uid, userdata: udata, current_index: start_idx} });
                 return;
            } else {
-                res.render('logon.ejs', { locals: { loggedon: false, message : 'Please enter username: ' + uid} });
+                res.render('logon.ejs', { locals: { loggedon: false, message : 'username not found (ensure Contact exists with username in PortalID__c field): ' + uid} });
                 return;
            }
         });
     } else {
-        res.render('logon.ejs', { locals: { message : 'Please enter username: ' + uid} });
+        res.render('logon.ejs', { locals: { message : 'Please enter username'} });
     }
 });
 

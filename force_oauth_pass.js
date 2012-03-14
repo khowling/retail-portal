@@ -1,6 +1,6 @@
 var http = require('https');
 var oauthResponse = {"access_token":null,"instance_url":null, "id":null, "refresh_token":null};
-var hostname = 'login.salesforce.com';
+var hostname = process.env.SFDC_HOSTNAME;
 
 function getOAuthResponse() { return oauthResponse; }
 
@@ -35,14 +35,14 @@ function login(clientId, clientSecret , username, password, callback) {
             oauthResponse.access_token = newResponse.access_token;
             oauthResponse.instance_url = newResponse.instance_url;
             oauthResponse.id = newResponse.id;
-            console.log("OAuth response::"+JSON.stringify(oauthResponse));
+            console.log("OAuth response::"+JSON.stringify(newResponse));
         });
         
         res.on('end', function(d) {
         if (callback){callback(oauthResponse);}
         });
     }).on('error', function(e) {
-        console.error(e);
+        console.error('A logon error has occured ' + e);
     });
     
     req.write(post_data);
