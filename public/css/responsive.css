@@ -397,6 +397,12 @@ input.modal-button {
 }
 
 @media screen and (max-width: 480px) { /* width <= 480 pixels  */
+    
+    html {
+        -webkit-text-size-adjust: none;
+        -ms-text-size-adjust:none
+    }
+    
     #login-content {
         width:100%;
         margin: 0;
@@ -405,6 +411,12 @@ input.modal-button {
 }
 
 @media screen and (max-width: 700px) { /* width <= 700 pixels  */
+    
+    html {
+        -webkit-text-size-adjust: none;
+        -ms-text-size-adjust:none
+    }
+    
     #login-content {
         width:90%;
         
