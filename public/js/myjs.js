@@ -94,7 +94,7 @@
 			
 			if (kdata.knowledgedata.type == 'HTML5_VIDEO') {
 				var _vLayOut = $("<video/>").attr({"id": "video-container", "width": "100%", "height": "100%", "controls": "controls"}).append( 
-					$("<source/>").attr({"src": kdata.knowledgedata.url, "type": "video/mp4"}),
+					$("<source/>").attr({"src": kdata.knowledgedata.url, "type": 'video/mp4; codecs="avc1.42E01E, mp4a.40.2"'}),
 					$("<span/>").text("Your browser does not support the video tag."));
 	            $("#event-container").append(_vLayOut);
                 
