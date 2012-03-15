@@ -413,7 +413,7 @@
                 entercomment.attr({'style': 'display: none;'});
                 
                 var posttxt = cmt.body.text.split(": ");
-                            
+                var authorpic = $('#imgCommentNew').attr ('src');            
                 var author = 'Nokia';
                 var ptxt = posttxt[0];
                 
@@ -428,6 +428,7 @@
 				//	alert ('comment ' + JSON.stringify(commenttr) + ' val ' + cmt.user.name);
 				commenttr = commenttr.attr({"id": cmt.id, "class": "Like_box" }).removeAttr('style')
     				.find('.commentAuthor').text(author).end()
+                    .find('.pcommentAuthor').attr({"src": authorpic }).end()
     				.find('.spanComment').text(ptxt).end()
     				.find('.commentCreatedDate').text(cmt.createdDate).end();
 				commenttr.appendTo(feeditem.find('.table_userComment'));
@@ -450,7 +451,8 @@
             $.post( '/post', { 'mess' : ptxt }, function(results){
                
                 var posttxt = results.body.text.split(": ");
-                            
+                      
+                var authorpic = $('#imgCommentNew').attr ('src');
                 var author = 'Nokia';
                 var ptxt = posttxt[0];
                 
@@ -462,6 +464,7 @@
         		$('#feed-post').clone().attr({'id': results.id})
                     .find('.spanFeed').text(ptxt).end()
                     .find('.aFeedAuthor').text(author).end()
+                    .find('.pFeedAuthor').attr({"src": authorpic}).end()
             		.find('.postCreatedDate').text(results.createdDate).end()
                     .find('.linkComment').click(function () {
                         // find the related DOM to add the comment (already in the DOM but hidden)
@@ -493,22 +496,48 @@
     		$.ajax({ 
     			url: "/myfeed", 
     			success: function(res){
+                    var outletteam = {};
                     
-                    if (res.items.length >0) {
+                    $('#imgCommentNew').attr ({ 'src' : res.me.picture_url });
+                    
+                    
+                    if (res.team) {
+                        var teamlistDiv = $('#team-list');
+                        $('#selected_feed').text(res.team.outlet.name);
+                        $('#option1_feed').text(res.team.outlet.name);
+                        
+                        outletteam = res.team.outlet_team;
+                        for (var name in res.team.outlet_team) {
+                            var tm = res.team.outlet_team[name];
+                            var _member_layout = $("<li/>").attr({"style" : "float:left;"}).append(
+                            $("<div/>").attr({"style" : "text-align: center; width: 65px;"}).append(
+                                $("<img/>").attr({"style" : "margin: 5px;", "width": "45px", "height": "45px", "src": tm.pic}),
+                        		$("<div/>").attr({"class" : "itemName"}).text(name),
+            					$("<div/>").attr({"class" : "itemResults"}).text(tm.points)
+                                )
+                            );
+                            teamlistDiv.append(_member_layout);
+
+                        }
+                    }
+                
+                    
+                    if (res.feed.items.length >0) {
                        
-                        $('#selected_feed').text(res.items[0].parent.name);
-                        $('#option1_feed').text(res.items[0].parent.name);
+                        
         				
-        				for (var idx in res.items) {
-        					var itm = res.items[idx];
+        				for (var idx in res.feed.items) {
+        					var itm = res.feed.items[idx];
                             var posttxt = itm.body.text.split(": ");
                             
+                            var authorpic = '/image/NokiaLogo.gif';
                             var author = 'Nokia';
                             var ptxt = posttxt[0];
                             
                             if (posttxt.length > 1) {
                                 author = posttxt[0];
                                 ptxt = posttxt[1];
+                                authorpic = outletteam[author].pic;
                             }
                             
         
@@ -516,6 +545,7 @@
         					newpost = newpost.attr({"id": itm.id }).removeAttr('style')
         						.find('.spanFeed').text(ptxt).end()
         						.find('.aFeedAuthor').text(author).end()
+                                .find('.pFeedAuthor').attr({"src": authorpic }).end()
         						.find('.postCreatedDate').text(itm.createdDate).end()
         						.find('.linkComment').click(function () {
         							var divActivity = $(this).parent().parent().parent().next();
@@ -553,18 +583,21 @@
                                     
                                     var posttxt = cmt.body.text.split(": ");
                             
+                                    var authorpic = '/image/NokiaLogo.gif';
                                     var author = 'Nokia';
                                     var ptxt = posttxt[0];
                                     
                                     if (posttxt.length > 1) {
                                         author = posttxt[0];
                                         ptxt = posttxt[1];
+                                        authorpic = outletteam[author].pic;
                                     }
                             
         							var commenttr = newpost.find('tr.Like_box_template').clone();
         						//	alert ('comment ' + JSON.stringify(commenttr) + ' val ' + cmt.user.name);
         							commenttr = commenttr.attr({"id": cmt.id, "class": "Like_box" }).removeAttr('style')
         								.find('.commentAuthor').text(author).end()
+                                        .find('.pcommentAuthor').attr({"src": authorpic }).end()
         								.find('.spanComment').text(ptxt).end()
         								.find('.commentCreatedDate').text(cmt.createdDate).end();
         							commenttr.appendTo(newpost.find('.table_userComment'));
@@ -928,7 +961,51 @@
     }
 </script>
 <body>
-    <div class="main" id="divMain" visible="false" runat="server">
+    <div class="main" id="divMain" visible="false" >
+    
+        <!-- MY TEAM -->
+        
+        <ul id="team-list" style="padding-left: 0px;">
+        
+            
+                    <!--
+                    
+			<li style="float:left">
+				<div style="text-align: center; width: 65px;">
+					<img style="margin: 5px;" width="45px" src="/image/people/kimmo.jpeg"></img>
+					<div class="itemName">Kimmo</div>
+					<div class="itemResults">23,422</div>
+				</div>
+			</li >
+			
+			<li style="float:left">
+				<div style="text-align: center; width: 65px;">
+					<img style="margin: 5px;" width="45px" src="/image/people/matt.jpeg"></img>
+					<div class="itemName">Matt</div>
+					<div class="itemResults">21,422</div>
+				</div>
+			</li>
+			
+			<li style="float:left">
+				<div style="text-align: center; width: 65px;">
+					<img style="margin: 5px;" width="45px" src="/image/people/rich.png"></img>
+					<div class="itemName">Rich</div>
+					<div class="itemResults">6,422</div>
+				</div>
+			</li>
+			
+			<li style="float:left">
+				<div style="text-align: center; width: 65px;">
+					<img style="margin: 5px;" width="45px" src="/image/people/rich.png"></img>
+					<div class="itemName">Jim</div>
+					<div class="itemResults">45,422</div>
+				</div>
+			</li>
+            
+            -->
+		</ul>
+        
+        
         
         <!-- ENTER A NEW POST -->
         <div id="divNewComment">
@@ -1372,8 +1449,7 @@
                                 <div class="usersFeed">
                                     <div class="users_feed"  style="padding-bottom: 5px;">
                                         <div class="users_photo">
-                                            <img ID="imgPic" ToolTip='<%# Eval("Actor.Name") %>' Width="45"
-                                                Height="45" src="/image/people/keith.jpg"/>
+                                            <img ID="imgPic" width="45" class="pFeedAuthor" height="45" src=""/>
                                         </div>
                                         <div class="users_info">
                                             <div id="dvExpand" runat="server" class="users_comment expandmorelink">
@@ -1512,7 +1588,7 @@
                                                                                 <td class="users_photo_2">
                                                                                     <span class="Like_box_left">
 
-                                                                                        <img ID="imgComment" runat="server" Height="32" Width="32" src="/image/people/keith.jpg"/>
+                                                                                        <img ID="imgComment" height="32" width="32" class="pcommentAuthor" src=""/>
                                                                                     </span>
                                                                                 </td>
                                                                                 <td>
@@ -1557,9 +1633,9 @@
                                                     <div id="dslComment" class="Like_box_BG" runat="server" style="display: none;">
                                                         <input type="text" ID="txtSLComment" class="textfield_com2" runat="server">Write a comment...</input>
                                                     </div>
-                                                    <div class="Like_box" id="divCBox" runat="server" style="display: none;">
+                                                    <div class="Like_box" id="divCBox" style="display: none;">
                                                         <div class="Like_box_left">
-                                                            <img ID="imgCommentNew" runat="server" Height="32" Width="32" src="/image/people/keith.jpg"/></div>
+                                                            <img ID="imgCommentNew"  height="32" width="32" src=""/></div>
                                                         <div class="Like_box_right">
                                                             <div class="users_comment3">
                                     <style>

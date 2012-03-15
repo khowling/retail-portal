@@ -63,18 +63,38 @@ app.post ('/postcomment', function (req,res) {
 });
 
 
-app.get ('/myfeed', function (req,res,next) {
+app.get ('/myfeed', function (req,res) {
     var uid = req.session.username,
         udata = req.session.userdata;
     if (!uid) {
         res.send ('Please Login', 400);
 		return;
-	}     
-    queryAPI('chatter/feeds/record/'+udata.outlet.id+'/feed-items', null, 'GET', function (results) {
-        //console.log ('/myfeed : results : ' + JSON.stringify(results));
-        req.session = null; // method doesnt update the session
-        res.send(results);
+	}
+    // get user names and pictures and outlets too!
+     queryAPI('query?q='+escape('select Name, PortalPic__c,  (select Name, Points__c, PortalPic__c from Contacts) from Account where Id = \'' + udata.outlet.id + '\''), null, 'GET',  function (results) {
+           console.log ('myfeed: got team query results :' + JSON.stringify(results));
+           var team_data = {};
+           if (results.totalSize == 1) {
+                team_data.outlet  = { name: results.records[0].Name, pic: results.records[0].PortalPic__c};
+                team_data.outlet_team = {};
+                
+                if (results.records[0].Contacts) {
+                    var team =  results.records[0].Contacts.records;
+                    for (var m in team) {
+                         team_data.outlet_team[team[m].Name] =   { 
+                                points: team[m].Points__c,
+                                pic: team[m].PortalPic__c
+                        };
+                    }
+                }
+           }
+         queryAPI('chatter/feeds/record/'+udata.outlet.id+'/feed-items', null, 'GET', function (results1) {
+            //console.log ('/myfeed : results : ' + JSON.stringify(results));
+            req.session = null; // method doesnt update the session
+            res.send({team: team_data, feed :results1, me: udata});
+        });
     });
+   
 });
 
 
@@ -402,7 +422,7 @@ function createEvents(uid, udata, just_completed) {
 		}
 		if (((!selected) || (just_completed != null && newlyselected == false))) continue;
 		// 100 points for just getting a new event
-	    udata.points = udata.points + 50;
+	    //udata.points = udata.points + 50;
 		console.log ('createEvents: points: adding ' + '50' + ', total now : ' + udata.points);
 
 		

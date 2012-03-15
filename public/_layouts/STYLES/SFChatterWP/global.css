@@ -126,7 +126,7 @@ a:hover
 {
     min-width: 320px;
     position: static;
-    padding: 10px;
+    padding: 1px 10px;
     background: url("/_layouts/images/SFChatterWP/background.png") repeat-x;
 }
 .divLoginBg
