@@ -165,37 +165,7 @@ h3 {
 
 }
 
-/* If the viewport width <= 700 pixels ... */
-@media screen and (max-width: 700px) {
-    /* Make the main content fill the viewport width */
-    #home-left {
-        width: 100%;
-    }
-    /* Remove the main content right margin 
-    #home-left .inner {
-        margin-right: 0;
-    }
-*/
-    #nav  {
-        float: left;
-        margin: 0;
-        padding: 0;
-        width: 100%;
-    }
 
-    
-	
-	#nav li:first-child a{ margin-left:0;  }
-	#nav li:last-child  a{ margin-right:0; }
-    
-    /* Place the sidebar below the main content */
-    #home-right {
-        float: left;
-        clear: both;
-        width: 100%;
-        margin: 20px 0;
-    }
-}
 /* If the viewport width <= 480 pixels ... */
 @media screen and (max-width: 480px) {
     body {
@@ -221,7 +191,37 @@ h3 {
      }
 }
 
+/* If the viewport width <= 700 pixels ... */
+@media screen and (max-width: 780px) {
+    /* Make the main content fill the viewport width */
+    #home-left {
+        width: 100%;
+    }
+    /* Remove the main content right margin 
+    #home-left .inner {
+        margin-right: 0;
+    }
+*/
+    #nav  {
+        float: left;
+        margin: 0;
+        padding: 0;
+        width: 100%;
+    }
 
+    
+    
+	#nav li:first-child a{ margin-left:0;  }
+	#nav li:last-child  a{ margin-right:0; }
+    
+    /* Place the sidebar below the main content */
+    #home-right {
+        float: left;
+        clear: both;
+        width: 100%;
+        margin: 20px 0;
+    }
+}
 
 
 /* MINE */
@@ -386,14 +386,13 @@ input.modal-button {
 
 #login-content {
     //height:420px; 
-    width:100%;
-    max-width: 500px;
+    width:720px;
     color:#bbb; 
     background-color:#333; 
     border:4px solid #444; 
     padding:24px;
-    margin-left: auto;
-    margin-right: auto;
+    //margin-left: auto;
+    //margin-right: auto;
     
 }
 
@@ -411,7 +410,7 @@ input.modal-button {
     }
 }
 
-@media screen and (max-width: 700px) { /* width <= 700 pixels  */
+@media screen and (max-width: 780px) { /* width <= 700 pixels  */
     
     html {
         -webkit-text-size-adjust: none;
