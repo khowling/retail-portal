@@ -26,6 +26,9 @@ foauth.login(clientId, clientSecret , sfuser, sfpasswd, function(){
     console.log ('Server started on port ' + port);
 });
 
+app.post ('/ip', function (req,res) {
+    res.send (req);
+});
 app.post ('/post', function (req,res) {
     
     var uid = req.session.username,
