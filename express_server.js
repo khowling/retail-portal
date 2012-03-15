@@ -26,12 +26,7 @@ foauth.login(clientId, clientSecret , sfuser, sfpasswd, function(){
     console.log ('Server started on port ' + port);
 });
 
-app.post ('/ip', function (req,res) {
-    var headers = JSON.stringify(req.headers);
-    res.send (headers);
-});
 app.post ('/post', function (req,res) {
-    
     var uid = req.session.username,
          udata = req.session.userdata;
          
@@ -39,7 +34,6 @@ app.post ('/post', function (req,res) {
 		res.send ('Please Login', 400);
 		return;
 	} 
-
 
     var bdy = { "body" :   {"messageSegments" : [{"type": "Text", "text" : udata.fullname + ': '+ req.body.mess  }] }};
     queryAPI('chatter/feeds/record/'+udata.outlet.id+'/feed-items', bdy, 'POST',  function(results) {
