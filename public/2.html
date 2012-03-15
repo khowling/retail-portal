@@ -444,9 +444,11 @@
     
     function addPosting() {
         $('#divActive').attr({'style': 'display: none;'});
-            $('#divInactive').attr({'style': 'display: block;'});
+        $('#divInactive').attr({'style': 'display: block;'});
 
-        	var ptxt = $('#txtNewFeed').val();   
+    	var ptxt = $('#txtNewFeed').val(); 
+        
+        if (ptxt.length > 1) {
             
             $.post( '/post', { 'mess' : ptxt }, function(results){
                
@@ -482,10 +484,16 @@
 				}).end().removeAttr('style').prependTo('#feed-table');
 
 
-        		$('#txtNewFeed').val('');
+        		$('#txtNewFeed').val(null);
         		$('#divActive').attr({'style': 'display: block;'});
         		$('#divInactive').attr({'style': 'display: none;'});
         	});
+        } else {
+            $('#txtNewFeed').val(null);
+        	$('#divActive').attr({'style': 'display: block;'});
+    		$('#divInactive').attr({'style': 'display: none;'});
+            
+        }
     }
     
     BindLoadEvents();
@@ -965,44 +973,7 @@
     
         <!-- MY TEAM -->
         
-        <ul id="team-list" style="padding-left: 0px;">
-        
-            
-                    <!--
-                    
-			<li style="float:left">
-				<div style="text-align: center; width: 65px;">
-					<img style="margin: 5px;" width="45px" src="/image/people/kimmo.jpeg"></img>
-					<div class="itemName">Kimmo</div>
-					<div class="itemResults">23,422</div>
-				</div>
-			</li >
-			
-			<li style="float:left">
-				<div style="text-align: center; width: 65px;">
-					<img style="margin: 5px;" width="45px" src="/image/people/matt.jpeg"></img>
-					<div class="itemName">Matt</div>
-					<div class="itemResults">21,422</div>
-				</div>
-			</li>
-			
-			<li style="float:left">
-				<div style="text-align: center; width: 65px;">
-					<img style="margin: 5px;" width="45px" src="/image/people/rich.png"></img>
-					<div class="itemName">Rich</div>
-					<div class="itemResults">6,422</div>
-				</div>
-			</li>
-			
-			<li style="float:left">
-				<div style="text-align: center; width: 65px;">
-					<img style="margin: 5px;" width="45px" src="/image/people/rich.png"></img>
-					<div class="itemName">Jim</div>
-					<div class="itemResults">45,422</div>
-				</div>
-			</li>
-            
-            -->
+        <ul id="team-list" style="padding-left: 0px;">            
 		</ul>
         
         
@@ -1010,8 +981,8 @@
         <!-- ENTER A NEW POST -->
         <div id="divNewComment">
             <div class="textfield_comment">
-                <textarea ID="txtNewFeed" maxLength="1000" ForeColor="GrayText" placeholder="what are you working on..."
-                    TextMode="MultiLine" class="expand30-2000 textfield_com txtNewFeedStyle autoCompleteClass"> </textarea>
+                <textarea id="txtNewFeed" maxLength="1000"  placeholder="what are you working on..."
+                    class="textfield_com txtNewFeedStyle"></textarea>
                 <label ID="feedLengthError" runat="server" Text="Error: Your post can't have more than 1000 characters."
                     ForeColor="Red" Style="display: none;"></label>
             </div>
@@ -1650,8 +1621,8 @@
                                             width: 100%;
                                         }
                                     </style>
-                                                                <textarea ID="tbComment" ToolTip="Write a comment..." runat="server" TextMode="MultiLine"
-                                                                    Width="100%" MaxLength="1000" Rows="2" class="tbCommentClass autoCompleteClass"></textarea>
+                                                                <textarea id="tbComment" placeholder="Write a comment..." 
+                                                                    width="100%" MaxLength="1000" rows="2" class="tbCommentClass"></textarea>
                                                                 <label ID="lblLengthError" runat="server" Text="Error:Your comment can't have more than 1000 characters."
                                                                     CssClass="disp_none" ForeColor="Red"></label>
                                                             </div>
