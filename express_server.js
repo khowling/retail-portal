@@ -27,7 +27,8 @@ foauth.login(clientId, clientSecret , sfuser, sfpasswd, function(){
 });
 
 app.post ('/ip', function (req,res) {
-    res.send (req);
+    var headers = JSON.stringify(req.headers);
+    res.send (headers);
 });
 app.post ('/post', function (req,res) {
     
