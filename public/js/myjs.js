@@ -160,9 +160,107 @@
                 });
 
 			return true;
-		};
+		}
 		
+        function trainingfeed (e) {
+            $("#event-container").empty();
+            var trainingid = $(e).parent().parent().attr('id');
+            $('#event-container').load('/chat/' + trainingid);
+            
+            var tw = getTargetWidth();
+            $("#jdialog").dialog ({ 
+                title: 'Training Feed',
+                modal: true, 
+                width: tw,
+                 buttons: {                   
+        			Close: function() {
+                        $("#event-container").empty();
+    					$("#jdialog").dialog( "close" );
+    				}
+                }
+                });
+            $("#event-container").prepend(
+                $("<p/>").css('font-weight','bold').text('Chat with the folks on the course, here they are')  );
+			return true;
+            
+        }
+
+        function launchtraining (tid, itemdata) {
+
+
+			$("#event-container").empty();
+           
+                
+			$("#event-container").fullCalendar({
+                // put your options and callbacks here
+                 weekends: false,
+                 defaultView: 'agendaWeek',
+                 height: 401,
+                 events: [
+                        {
+                            title  : itemdata.name,
+                            start  : '2012-03-19 12:30:00',
+                            end    : '2012-03-19 14:30:00',
+                            allDay : false // will make the time show
+                        },
+                        {
+                            title  : itemdata.name,
+                            start  : '2012-03-21 15:30:00',
+                            end    : '2012-03-21 17:30:00',
+                            allDay : false // will make the time show
+                        },
+                        {
+                            title  : itemdata.name,
+                            start  : '2012-03-23 09:30:00',
+                            end    : '2012-03-23 11:30:00',
+                            allDay : false // will make the time show
+                        }
+                    ],
+                eventClick: function(calEvent, jsEvent, view) {
+            
+                    if (confirm('Event: ' + calEvent.title + ' on '+ calEvent.start +' would you like to book?')) {
+                        $(this).css('border-color', 'red');
+                            //alert ('posting ' + tid + ' : ' + calEvent.start);
+                            $.post( '/booktraining', { tid: tid, tdate: calEvent.start },
+    							function() {
+                                    $("#event-container").empty();
+    								$("#jdialog").dialog( "close" );
+    							});
+
+                    }
+
+                    // change the border color just for fun
+                    
+            
+                }
+            });
+            //
+            
+			//$('#basic-modal-content').modal({ close : false});
+            var tw = getTargetWidth();
+            $("#jdialog").dialog ({ 
+                title: itemdata.name,
+                modal: true, 
+                width: tw,
+                 buttons: {                   
+    				Close: function() {
+						//$("#event-container").fullCalendar( "destroy" );
+    					$("#jdialog").dialog( "close" );
+    				}
+                }
+                });
+            $("#event-container").prepend(
+                $("<p/>").css('font-weight','bold').text(itemdata.desc),
+                $("<p/>").css({'font-weight': 'bold', 'color': 'red'}).text('Book your place now!, there are ' + itemdata.info + ' people booked')
+                );
+                
+            //$('#event-container').fullCalendar('option', 'height', 400);
+            $('#event-container').fullCalendar( 'render' );
+			return true;
+		}
 		
+        
+        
 		var mypoints = 0;
 		var incrementpoints = [];
 		var incrementpoints_idx = 0;
@@ -178,7 +276,7 @@
 				$.ajax({ 
 					url: "/longpoll/" + lasteventprocessed, 
 					success: function(res){
-						if (res.item_type == 'QUIZ' || res.item_type == 'KNOWLEDGE') {
+						if (res.item_type == 'QUIZ' || res.item_type == 'KNOWLEDGE' || res.item_type == 'TRAINING') {
 							lasteventprocessed = res.index;
 
 							var itemid = $('#' + res.item_id);
@@ -200,6 +298,11 @@
 										.find(".itemResults").text(res.item_data.info).end()
 										.find(".quizImage").attr({"src": res.item_data.icon}).end()
 										.find(".knowRating").jRating({type: "small", isDisabled: true, defaultscore: 40});								
+								} else if (res.item_type == 'TRAINING') {
+    								itemid = $('#training-template').clone().attr({"id": res.item_id }).removeAttr("style").appendTo("#trainingList").on('click', function(e) {
+										launchtraining (res.item_id, res.item_data);
+										 return false;
+									}).find(".itemName").text(res.item_data.name).end().find(".itemDesc").text(res.item_data.desc).end();
 								}
 								$.jGrowl("<p>New " + res.item_type + " for you<\p>" + res.item_data.name);
 							}
@@ -211,6 +314,14 @@
 									}
 								} else {
 									$(itemid).find(".itemResults").text(res.item_data.points + ' points available!').end();
+								}
+							} else if (res.item_type == 'TRAINING') {
+    							if (res.results_data) {
+                                    //alert ('training results data :' + res.item_id + ' : ' + JSON.stringify(res.results_data));
+									$(itemid).find(".itemResults").text(res.results_data.type).end();
+									$(itemid).find(".quizPass").removeAttr("style");
+								} else {
+									$(itemid).find(".itemResults").text('click for more information and to book a place!').end();
 								}
 							}
 					

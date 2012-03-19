@@ -1,0 +1,606 @@
+
+
+
+<link rel="stylesheet" type="text/css" href="/_layouts/STYLES/SFChatterWP/global.css" />
+<script src="/_layouts/1033/SFChatterWP/jquery.expander.js" type="text/javascript"></script>
+<script src="/_layouts/1033/SFChatterWP/jquery.textarea-expander.js" type="text/javascript"></script>
+<script src="/_layouts/1033/SFChatterWP/jquery.autocomplete.js" type="text/javascript"></script>
+<script src="/js/mychat.js" type="text/javascript"></script>
+<script>
+    $(document).ready(function () {
+        loadfeeds('<%= feedid %>');
+    });
+
+</script>
+
+
+    <div class="main" id="divMain" visible="false" >
+    
+        <!-- MY TEAM -->
+        
+        <ul id="team-list<%= feedid %>" style="padding-left: 0px;">            
+		</ul>
+        
+        
+        
+        <!-- ENTER A NEW POST -->
+        <div id="divNewComment">
+            <div class="textfield_comment">
+                <textarea id="txtNewFeed<%= feedid %>" maxLength="1000"  placeholder="what are you working on..."
+                    class="textfield_com txtNewFeedStyle"></textarea>
+                <label ID="feedLengthError" runat="server" Text="Error: Your post can't have more than 1000 characters."
+                    ForeColor="Red" Style="display: none;"></label>
+            </div>
+            <div class="attach_share" id="divAttachFile" >
+                <div class="file_attach">
+                    <div class="attach_file">
+                        Attach
+                        <img ID="imgFileIcon" src="/_layouts/images/SFChatterWP/ic_file.png"
+                            class="file_icon" runat="server" align="absmiddle" />
+                        <a href="javascript:showUploadOptions();" id="lnkfileUpload" style="display: inline;">
+                            File</a>
+                        <img ID="Image9" src="/_layouts/images/SFChatterWP/ic_link.png" class="file_icon"
+                            runat="server" align="absmiddle" />
+                        <a href="javascript:showLinkUploadOptions();" id="A1" style="display: inline;">Link</a>
+                    </div>
+                </div>
+                <div class="btn_share divActive" id="divActive" style="display: block;">
+                    <input type="image" ID="imgbtnShare" ToolTip="Share" runat="server" src="/_layouts/images/SFChatterWP/btn_share.png"
+                        Width="64" Height="23" onClick="addPosting(this, '<%= feedid %>', '<%= udata.picture_url %>');" />
+                </div>
+                <div class="btn_share divInactive" id="divInactive" style="display: none;">
+                    <img ID="imgBtnInactive" runat="server" src="/_layouts/images/SFChatterWP/btn_shareInactive.png"
+                        Width="64" Height="23" />
+                </div>
+            </div>
+        </div>
+        <div class="clear-1">
+        </div>
+        
+        <div class="Attach_file_box" id="divFileUpload" runat="server" style="display: none;">
+            <div class="File_Attach_1">
+                <div class="File_Attach_title" runat="server" id="fileCLoseDiv">
+                    <div class="Attach_title_left">
+                        <img ID="imgFile" ToolTip="Attach a File" src="/_layouts/images/SFChatterWP/ic_file.png"
+                            class="file_icon" runat="server" align="absmiddle" />
+                        <span class="font_title2">Attach a File</span></div>
+                    <div class="Attach_title_right">
+                        <a href="#" onclick="imgCloseClick();">
+                            <img ID="imgFileClose" ToolTip="Close the publisher" runat="server" src="/_layouts/images/SFChatterWP/btn_close.png"
+                                Width="17" Height="16" />
+                        </a>
+                    </div>
+                </div>
+                <div class="File_upload" id="uploadOptionDiv" runat="server">
+                    <div class="File_upload_left">
+                        <a href="javascript:OpenDialog();" title="Select a file from Sharepoint">Select a file
+                            from Sharepoint</a></div>
+                    <div class="File_upload_right">
+                        <a href="javascript:compUploadClick();" title="Upload a file from your computer">Upload
+                            a file from your computer</a></div>
+                </div>
+            </div>
+            <div class="btn_share_attach">
+                <img ID="imgFileShare" runat="server" src="/_layouts/images/SFChatterWP/btn_shareInactive.png"
+                    Width="64" Height="23" />
+            </div>
+        </div>
+        <div class="Attach_file_box" id="compUploadDiv" style="display: none;" runat="server">
+            <div class="File_Attach">
+                <div class="File_Attach_title">
+                    <div class="Attach_title_left">
+                        <img ID="imgAttachFile" src="/_layouts/images/SFChatterWP/ic_file.png"
+                            CssClass="file_icon" runat="server" align="absmiddle" ToolTip="Attach a File" />
+                        <span class="font_title2">Attach a File</span></div>
+                    <div class="Attach_title_right">
+                        <a href="#" onclick="imgCloseClick();">
+                            <img ID="imgClose2" runat="server" src="/_layouts/images/SFChatterWP/btn_close.png"
+                                Width="17" Height="16" ToolTip="Close the publisher" />
+                        </a>
+                    </div>
+                </div>
+                <div class="File_upload2">
+                    <div class="requiredLegendContainer">
+                        <span class="requiredLegend"><span class="requiredExampleOuter"><span class="requiredExample">
+                            &nbsp;</span> </span><span class="requiredText">= Required Information</span>
+                        </span>
+                    </div>
+                    <div class="row_box">
+                        <table class="postInput">
+                            <tbody>
+                                <tr>
+                                    <th scope="row" class="rowStyle">
+                                        <label for="chatterFile">
+                                            Select a file
+                                        </label>
+                                    </th>
+                                    <td class="rowControlStyle">
+                                        <div>
+                                            <div class="requiredInput">
+                                                <div class="requiredBlock">
+                                                </div>
+                                                <asp:FileUpload ID="fplUpload" class="fplUpload" runat="server" ToolTip="Select a file"
+                                                    onchange="getNameFromPath(this.value)" oncopy="return false" onpaste="return false"
+                                                    oncut="return false" onkeypress="javascript:return false;" onkeydown="javascript:return false;" />
+                                                <label ID="lblFileCheck" runat="server" Text="Please choose a file to upload."
+                                                    CssClass="errorMsg" Style="display: none;"></label>
+                                            </div>
+                                            <div class="uploadFileSizeLimit">
+                                                <span class="fileSize">Maximum file size is 100&nbsp;MB</span>
+                                            </div>
+                                        </div>
+                                        <div class="clear-1">
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row" class="rowStyle">
+                                        <label for="fileName">
+                                            Name
+                                        </label>
+                                    </th>
+                                    <td class="rowControlStyle">
+                                        <div id="ext-gen6" class="requiredInput">
+                                            <div class="requiredBlock">
+                                            </div>
+                                            <div>
+                                                <input type="text" ID="txtFileName" ToolTip="Name" class="textbox_245 txtFileName" runat="server"></input>
+                                                <br />
+                                                <label ID="lblErrMsg" runat="server" Text="This field can't have more than 255 characters."
+                                                    CssClass="errorMsg" Style="display: none;"></label>
+                                                <label ID="lblValidationMsg" runat="server" Text="Please enter a name for your file."
+                                                    CssClass="errorMsg" Style="display: none;"></label>
+                                            </div>
+                                        </div>
+                                        <div class="clear-1">
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row" class="rowStyle">
+                                        <label for="desc">
+                                            Description</label>
+                                    </th>
+                                    <td class="rowControlStyle">
+                                        <div id="ext-gen4">
+                                            <input type="text" ID="txtDescription" ToolTip="Description" class="textbox2_245 txtDescription"
+                                                runat="server" TextMode="MultiLine"></input>
+                                            <br />
+                                            <label ID="descLengthError" runat="server" Text="Description field cannot have more than 1000 characters."
+                                                ForeColor="Red" Style="display: none;"></label>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="clear-1">
+                        </div>
+                    </div>
+                    <div class="clear-1">
+                    </div>
+                </div>
+            </div>
+            <div class="btn_share_attach">
+                <div class="btn_share divActive divActiveShareFrmComp" id="divImgBtnShareFrmComp"
+                    runat="server" style="display: none;">
+                    <input type="image" ID="imgBtnShareFrmComp" ToolTip="Share" runat="server" src="/_layouts/images/SFChatterWP/btn_share.png"
+                        Width="64" Height="23" OnClick="imgbtnShare_Click" />
+                </div>
+                <div class="btn_share divInactive divInactiveShareFrmComp" id="divimagShareFrmComp"
+                    runat="server" style="display: block;">
+                    <img ID="Image3" runat="server" src="/_layouts/images/SFChatterWP/btn_shareInactive.png"
+                        Width="64" Height="23" />
+                </div>
+            </div>
+            <div class="clear-1">
+            </div>
+        </div>
+        <div class="Attach_file_box" id="documentDiv" style="display: none;" runat="server">
+            <div class="File_Attach">
+                <div class="File_Attach_title">
+                    <div class="Attach_title_left">
+                        <img ID="Image2" src="/_layouts/images/SFChatterWP/ic_file.png" class="file_icon"
+                            runat="server" align="absmiddle" ToolTip="Attach a File" />
+                        <span class="font_title2">Attach a File</span></div>
+                    <div class="Attach_title_right">
+                        <a href="#" onclick="imgCloseClick();">
+                            <img ID="imgClose4" ToolTip="Close the publisher" runat="server" src="/_layouts/images/SFChatterWP/btn_close.png"
+                                Width="17" Height="16" />
+                        </a>
+                    </div>
+                </div>
+                <div class="File_upload">
+                    <div class="File_info_left">
+                        <img ID="imgThumbNail" ToolTip="We can't provide a preview for this file" runat="server"
+                            src="/_layouts/images/SFChatterWP/img_thumbnail.png" Width="80" Height="62" />
+                    </div>
+                    <div class="File_info_right">
+                        <span id="path"></span>
+                        <div id="divDummy" style="display: none;" class="hdnSharePointFilePath">
+                        </div>
+                        <asp:HiddenField ID="hdnSharePointFilePath" runat="server" />
+                        <a href="javascript:OpenDialog();">Change File</a>
+                    </div>
+                    <label ID="errlabel" runat="server" Visible="false" />
+                    <div class="clear-1">
+                    </div>
+                </div>
+            </div>
+            <div class="btn_share_attach">
+                <div class="btn_share divActive" id="divShareBtnFrmSP" style="display: block;" runat="server">
+                    <input type="image" ID="imgbtnFrmSP" ToolTip="Share" runat="server" src="/_layouts/images/SFChatterWP/btn_share.png"
+                        Width="64" Height="23" OnClick="imgbtnShare_Click" />
+                </div>
+                <div class="btn_share divInactive" id="divShareImgFrmSP" style="display: none;" runat="server">
+                    <img ID="Image4" runat="server" src="/_layouts/images/SFChatterWP/btn_shareInactive.png"
+                        Width="64" Height="23" />
+                </div>
+            </div>
+            <div class="clear-1">
+            </div>
+        </div>
+        <div class="Attach_file_box" id="divLinkPost" style="display: none;" runat="server">
+            <div class="File_Attach">
+                <div class="File_Attach_title">
+                    <div class="Attach_title_left">
+                        <img ID="Image10" src="/_layouts/images/SFChatterWP/ic_link.png" CssClass="file_icon"
+                            runat="server" align="absmiddle" />
+                        <span class="font_title2">Attach a Link</span></div>
+                    <div class="Attach_title_right">
+                        <a href="#" onclick="imgCloseLinkClick();">
+                            <img ID="Image11" runat="server" src="/_layouts/images/SFChatterWP/btn_close.png"
+                                Width="17" Height="16" />
+                        </a>
+                    </div>
+                </div>
+                <div class="File_upload2">
+                    <div class="reqInfo">
+                        <img ID="Image6" Width="3" Height="12" Style="padding-right: 5px;" align="absmiddle"
+                            src="/_layouts/images/SFChatterWP/img_reqField.png" runat="server" />
+                        =Required Information</div>
+                    <div class="row_box">
+                        <table class="postInput">
+                            <tbody>
+                                <tr>
+                                    <th scope="row" class="rowStyle">
+                                        <label for="chatterFile">
+                                            Link URL
+                                        </label>
+                                    </th>
+                                    <td class="rowControlStyle">
+                                        <div>
+                                            <div class="requiredInput">
+                                                <div class="requiredBlock">
+                                                </div>
+                                                <input type="text" ID="txtLinkUrl" runat="server" Text="http://" class="textbox_browse txtLinkUrl" />
+                                                <br />
+                                                <label ID="LinkLengthError" CssClass="LinkLengthError" runat="server" Text="This field can't have more than 1000 characters."
+                                                    ForeColor="Red" Style="display: none;"></label>
+                                                <label ID="lblLinkUrlValidation" CssClass="lblLinkUrlValidation" runat="server"
+                                                    Text="Please enter a link." ForeColor="Red" Style="display: none;"></label>
+                                            </div>
+                                            <asp:RegularExpressionValidator ID="RegExpLinkValidator" runat="server" ControlToValidate="txtLinkUrl"
+                                                ErrorMessage="This link is invalid" ForeColor="Red" ValidationGroup="valLink"
+                                                ValidationExpression="(http|ftp|https):\/\/[\w\-_]+(\.?[\w\-_]+)+([\w\-\.,@?{}()*!$^=%&amp;:/~\+#]*[\w\-\@?{}()*!$^=%&amp;/~\+#])?"></asp:RegularExpressionValidator>
+                                        </div>
+                                        <div class="clear-1">
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row" class="rowStyle">
+                                        <label for="chatterFile">
+                                            Link Name
+                                        </label>
+                                    </th>
+                                    <td class="rowControlStyle">
+                                        <div>
+                                            <div class="requiredInput">
+                                                <input type="text" ID="txtLinkName" runat="server" class="textbox_browse txtLinkName" />
+                                                <br />
+                                                <label ID="LinkNameError" runat="server" Text="This field can't have more than 255 characters."
+                                                    ForeColor="Red" Style="display: none;"></label>
+                                            </div>
+                                        </div>
+                                        <div class="clear-1">
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="clear-1">
+                        </div>
+                    </div>
+                    <div class="clear-1">
+                    </div>
+                </div>
+            </div>
+            <div class="btn_share_attach">
+                <div class="btn_share divActive divActiveLinkShare" id="divLinkShare" runat="server"
+                    style="display: none;">
+                    <input type="image" ID="ImageButton1" runat="server" src="/_layouts/images/SFChatterWP/btn_share.png"
+                        Width="64" Height="23" OnClick="imgbtnShare_Click" ValidationGroup="valLink" />
+                </div>
+                <div class="btn_share divInactive divInactiveLinkShare" id="divLinkShareBlur" runat="server"
+                    style="display: block;">
+                    <img ID="Image8" runat="server" src="/_layouts/images/SFChatterWP/btn_shareInactive.png"
+                        Width="64" Height="23" />
+                </div>
+            </div>
+            <div class="clear-1">
+            </div>
+        </div>
+        <div class="clear-1">
+        </div>
+        <label ID="lblExceptionTop" runat="server" Visible="false" ForeColor="Red"></label>
+        <br />
+        <div class="clear-1">
+        </div>
+        
+        <!-- UPDATES FOR DROPDOWN --> 
+        <div id="divFilter" runat="server">
+            <div id="menu_parent" runat="server" style="position: relative; font-size: 12px;
+                font-weight: bold;">
+                Updates for 
+                <span onclick="filterVisibility()" class="SelectedFilter">
+                    <span id="selected_feed"><%= udata.outlet.name %></span>
+                    <img src="/_layouts/images/SFChatterWP/triangle-down.png" width="12" height="9" />
+                </span>
+            </div>
+            <div id="drop_down_list" runat="server" class="drop_down_listMyChatter">
+                <table style="min-width: 130px;">
+
+                        <table>
+                            <tr style="width: 100%">
+                                <td width="12px">
+                                    <img runat="server" visible="false" id="imgTick" src="/_layouts/images/SFChatterWP/tick_16.png"
+                                        width="11" height="11">
+                                </td>
+                                <td class="menu_item">
+                                    <a onclick="filterVisibility();" ID="option1_feed"><%= udata.outlet.name %></a>
+                                </td>
+                            </tr>
+                            <tr style="width: 100%">
+                                <td width="12px">
+
+                                </td>
+                                <td class="menu_item">
+                                    <a onclick="filterVisibility();" ID="lnkFilter">Nokia Central</a>
+                                </td>
+                            </tr>
+
+                </table>
+            </div>
+        </div>
+
+
+        <div ID="upnlChatter">
+                <!-- Bind events for the dynamic controls without reloading the page -->
+                <script type="text/javascript">
+                    //var prm = Sys.WebForms.PageRequestManager.getInstance();
+                    //prm.add_endRequest(function () {
+                    //    BindLoadEvents();
+                    //});
+                </script>
+                <!-- Bind events for the dynamic controls without reloading the page -->
+                <div style="padding-top: 5px;">
+                    <label ID="lblFeedInfo" runat="server" Text="" Font-Bold="true" Font-Names="Verdana"
+                        Font-Size="10" Visible="false"></label></div>
+                <div id="dvUserAction">
+                    <div id="dvcontainer">
+                        <div>
+                            <img id="arrow_up" src="/_layouts/images/SFChatterWP/tooltip_up.png" style="display: block;
+                                margin-left: 11px; margin-bottom: -2px" runat="server" alt="" />
+                        </div>
+                        <div id="box">
+                            <a href="#" id="user_image_a">
+                                <img id="imgUserPic" alt="" width="45" height="45" src="/image/people/keith.jpg" />
+                            </a>
+                            <div id="content">
+                                <div id="name">
+                                    <span id="userName"><a id="hUserName" target="_blank" runat="server">Bob Smith</a>
+                                        <br />
+                                        <div>
+                                            <label ID="lblPhone1" CssClass="lblPhone" runat="server">0234 234 234</label>
+                                            <label ID="lbltype1" CssClass="lbltype" Font-Size="Small" runat="server">label11</label>
+                                        </div>
+                                        <div>
+                                            <label ID="lblPhone2" CssClass="lblPhone" runat="server">phone 2</label>
+                                            <label ID="lbltype2" CssClass="lbltype" Font-Size="Small" runat="server">789</label>
+                                        </div>
+                                    </span>
+                                </div>
+                                <div id="follow">
+                                    <a ID="lnkFollowUser" runat="server" Text="Follow User" CommandArgument="None"
+                                        OnCommand="lnkFollowUnFollowUser_Click" CommandName="Follow">
+                                                            <img id="icon" src="/_layouts/images/SFChatterWP/addbutton1.png"
+                                                                alt="Follow User" />
+                                                            <span class="spnFollow">Follow </span>
+                                    </a>
+                                    <div id="unfollow" runat="server">
+                                        <img src="/_layouts/images/SFChatterWP/correct.png" alt="UnFollow User" id="icon2" />
+                                        <span class="spnFollow">Following </span>
+                                        <a ID="lnkUnFollowUser" runat="server" Text="UnFollow User" CommandArgument="None"
+                                            OnCommand="lnkFollowUnFollowUser_Click" CommandName="UnFollow">                                                            
+                                                         <img src="/_layouts/images/SFChatterWP/close.png" id="UnFollowImg" alt=""  />
+                                        </a>
+                                    </div>
+                                </div>
+                                <div id="message">
+                                    <a ID="lnkSendMsg" runat="server" Text="Send Message" OnClientClick="javascript:OpenSendMsgDialog();">
+                                                        <img  id="icon1" src="/_layouts/images/SFChatterWP/chatbutton.png" 
+                                                         alt="Send Message" />
+                                                         <span>Send a message</span> 
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <img id="arrow_down" src="/_layouts/images/SFChatterWP/tooltip_down.png" style="margin-top: -2px;
+                                margin-left: 11px; display: none;" runat="server" alt="" />
+                        </div>
+                    </div>
+                </div>
+
+                <table id="feed-table<%= feedid %>" style="width: 100%;">
+                	<tr id="feed-post<%= feedid %>" style="display: none;"><td>
+                	
+                                <div class="usersFeed">
+                                    <div class="users_feed"  style="padding-bottom: 5px;">
+                                        <div class="users_photo">
+                                            <img ID="imgPic" width="45" class="pFeedAuthor" height="45" src=""/>
+                                        </div>
+                                        <div class="users_info">
+                                            <div id="dvExpand" runat="server" class="users_comment expandmorelink">
+                                                
+                                                <table class="fixtable">
+                                                    <tr>
+                                                        <td width="97%" class="middle wrap">
+                                                            <span class="font_title">
+                                                                <a ID="lblParent" target="_blank"></a>
+                                                                <a ID="lblActor" class="aFeedAuthor" target="_blank"></a>
+                                                                : </span><span class="spanFeed"></span>
+                                                        </td>
+                                                        <td class="trDelete">
+                                                            <input type="image" ID="btnDeletePost" class="deleteComment" height="16"
+                                                                Width="17" ToolTip="Delete this post" OnClick="btnDeletePost_Click" src="/_layouts/images/SFChatterWP/btn_close2.png" />
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                            <div class="users_comment" id="divFileInfo" runat="server" visible="false">
+
+
+                                            <div class="users_comment">
+                                                <ul class="ulChatter">
+                                                    <li class="font_time liChatter" style="background: none; padding-left: 0px;">
+                                                        <label class="postCreatedDate"></label>
+                                                    </li>
+                                                    <li class="liChatter"><a id="linkComment" title="Comment on this post" class="linkComment">
+                                                        Comment</a> </li>
+                                                    <li class="liChatter"><a href="#">
+                                                        <a bind="" ID="linkLike" ToolTip="Like this post" runat="server" OnCommand="command_Click"
+                                                            CommandArgument="Like">Like</a>
+                                                            <!--
+                                                        <a bind="" ID="linkUnlike" ToolTip="Stop liking this post" runat="server"
+                                                            Visible="false" OnCommand="command_Click" CommandArgument="Unlike">Unlike</a></a></li>
+                                                            -->
+                                                </ul>
+                                                <label ID="lblFeedError" runat="server" Text="" ForeColor="Red"></label>
+                                            </div>
+                                            <div class="comment_feedback" id="divActivity" style="display: none;">
+                                                <div class="arrow">
+                                                    <img src="/_layouts/images/SFChatterWP/arrow.png" runat="server" ID="Image2"
+                                                        Width="9" Height="5" /></div>
+                                                <div class="arrow_img">
+                                                </div>
+                                                <div class="comment_feddbackBox">
+
+                                                    <div class="Like_box" id="divCommentList" >
+
+                                                                        <table class="table_userComment" cellspacing="0" cellpadding="0">
+                                                                        
+                                                                        
+                                                                            <tr class="Like_box_template" style="display: none;">
+                                                                                <td class="users_photo_2">
+                                                                                    <span class="Like_box_left">
+
+                                                                                        <img ID="imgComment" height="32" width="32" class="pcommentAuthor" src=""/>
+                                                                                    </span>
+                                                                                </td>
+                                                                                <td>
+                                                                                    <div class="Like_box_right_L">
+                                                                                        <div id="dvExpand" runat="server" class="users_comment2 expandmorelink">
+                                                                                            
+                                                                                            <table class="fixtable">
+                                                                                                <tr>
+                                                                                                    <td class="middle wrap">
+                                                                                                        <span class="font_title">
+                                                                                                            <a class="commentAuthor" target="_blank"></a>
+                                                                                                            :</span> <span class="spanComment" ></span>
+                                                                                                    </td>
+                                                                                                </tr>
+                                                                                            </table>
+                                                                                        </div>
+                                                                                        <div class="users_comment3">
+                                                                                            <ul class="ulChatter">
+                                                                                                <li class="font_time liChatter" style="background: none; padding-left: 0px;">
+                                                                                                    <div class="commentCreatedDate"></div>
+                                                                                                </li>
+                                                                                            </ul>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </td>
+                                                                                <td class="close_btn">
+                                                                                    <input type="image" ID="btnDeleteComment" class="deleteComment" height="16"
+                                                                                        width="17" onClick="btnDeleteComment_Click" src="/_layouts/images/SFChatterWP/btn_close2.png" />
+                                                                                </td>
+                                                                            </tr>
+                                                                            
+                                                                        </table>
+
+                                                        <div class="clear-1">
+                                                        </div>
+                                                    </div>
+                                                    <div id="dslComment" class="Like_box_BG" runat="server" style="display: none;">
+                                                        <input type="text" ID="txtSLComment" class="textfield_com2" runat="server">Write a comment...</input>
+                                                    </div>
+                                                    <div class="Like_box" id="divCBox" style="display: none;">
+                                                        <div class="Like_box_left">
+                                                            <img ID="imgCommentNew"  height="32" width="32" src="<%= udata.picture_url %>"/></div>
+                                                        <div class="Like_box_right">
+                                                            <div class="users_comment3">
+                                    <style>
+                                        .tbCommentClass {
+                                            border-color: #c7cacb;
+                                            border-style: solid;
+                                            border-width: 2px 1px 1px 1px;
+                                            border-radius: 5px 5px 5px 5px;
+                                            resize: none;
+                                            background: ffffff;
+                                            color: #7d7d78;
+                                            width: 100%;
+                                        }
+                                    </style>
+                                                                <textarea id="tbComment" placeholder="Write a comment..." 
+                                                                    width="100%" MaxLength="1000" rows="2" class="tbCommentClass"></textarea>
+                                                                <label ID="lblLengthError" runat="server" Text="Error:Your comment can't have more than 1000 characters."
+                                                                    CssClass="disp_none" ForeColor="Red"></label>
+                                                            </div>
+                                                            <div class="btn_comment" style="display: block;" id="divEComment">
+                                                                <input type="image" ID="imgBtnComment" class="imgBtnComment" Style="cursor: pointer;"
+                                                                    Height="20" Width="63"  ToolTip="Comment" onclick="addComment(this)"
+                                                                    src="/_layouts/images/SFChatterWP/btn_comment.png" />
+                                                            </div>
+                                                            <div class="btn_comment" id="divDComment" style="display: none;">
+                                                                <input type="image" ID="imgdis" Height="20" Width="63" src="/_layouts/images/SFChatterWP/btn_comment_dis.png"
+                                                                    Enabled="false" />
+                                                            </div>
+                                                            <div class="clear-1">
+                                                            </div>
+                                                        </div>
+                                                        <div class="clear-1">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="clear-1">
+                                        </div>
+                                    </div>
+                                </div>
+                </td></tr></table>
+           </div>     
+
+        
+        <div class="showMore" id="divShowMoreFeeds" runat="server" visible="false">
+            <a ID="lnkbtnShowMoreFeeds" runat="server" onClick="btnShowMoreFeeds_Click"
+                Width="98%" Height="98%" style="color: #333333; text-align: center; vertical-align: middle;
+                text-decoration: none;">Show More...</a>
+        </div>
+    </div>
+    <div style="width: 100%; text-align: center;">
+        <label ID="lblExceptions" Style="text-align: center;" runat="server" Visible="false"
+            ForeColor="Red"></label>
+    </div>
+

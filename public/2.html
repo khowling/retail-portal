@@ -554,7 +554,7 @@
         						.find('.spanFeed').text(ptxt).end()
         						.find('.aFeedAuthor').text(author).end()
                                 .find('.pFeedAuthor').attr({"src": authorpic }).end()
-        						.find('.postCreatedDate').text(itm.createdDate).end()
+        						.find('.postCreatedDate').text($.cuteTime(new Date(itm.createdDate))).end()
         						.find('.linkComment').click(function () {
         							var divActivity = $(this).parent().parent().parent().next();
         							var dslComment = divActivity.children('.comment_feddbackBox').children('.Like_box_BG');

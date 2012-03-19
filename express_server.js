@@ -26,17 +26,18 @@ foauth.login(clientId, clientSecret , sfuser, sfpasswd, function(){
     console.log ('Server started on port ' + port);
 });
 
-app.post ('/post', function (req,res) {
+app.post ('/post/:what', function (req,res) {
     var uid = req.session.username,
-         udata = req.session.userdata;
+        udata = req.session.userdata,
+        whatid = req.params.what;
          
     if (!uid) {
 		res.send ('Please Login', 400);
 		return;
 	} 
-
+    if (whatid == 'me') whatid = udata.outlet.id;
     var bdy = { "body" :   {"messageSegments" : [{"type": "Text", "text" : udata.fullname + ': '+ req.body.mess  }] }};
-    queryAPI('chatter/feeds/record/'+udata.outlet.id+'/feed-items', bdy, 'POST',  function(results) {
+    queryAPI('chatter/feeds/record/'+whatid+'/feed-items', bdy, 'POST',  function(results) {
         //console.log ('/post : results : ' + JSON.stringify(results));
         req.session = null; // method doesnt update the session
         res.send (results);
@@ -62,38 +63,81 @@ app.post ('/postcomment', function (req,res) {
    });
 });
 
-
-app.get ('/myfeed', function (req,res) {
+app.get ('/chat/:what', function(req,res) {
     var uid = req.session.username,
-        udata = req.session.userdata;
+        udata = req.session.userdata,
+        whatid = req.params.what;
+        
+    if (!uid) {
+        res.send ('Please Login', 400);
+    	return;
+	}   
+
+    res.render('chat.ejs', { layout: false, locals: {  feedid: whatid, udata: udata } });
+    //res.render('chat.ejs', { locals: {  feedid: udata.outlet.id, udata: udata } });
+});
+
+app.get ('/myfeed/:what', function (req,res) {
+    var uid = req.session.username,
+        udata = req.session.userdata,
+        whatid = req.params.what;
+        
     if (!uid) {
         res.send ('Please Login', 400);
 		return;
 	}
-    // get user names and pictures and outlets too!
-     queryAPI('query?q='+escape('select Name, PortalPic__c,  (select Name, Points__c, PortalPic__c from Contacts) from Account where Id = \'' + udata.outlet.id + '\''), null, 'GET',  function (results) {
-           console.log ('myfeed: got team query results :' + JSON.stringify(results));
-           var team_data = {};
-           if (results.totalSize == 1) {
-                team_data.outlet  = { name: results.records[0].Name, pic: results.records[0].PortalPic__c};
-                team_data.outlet_team = {};
-                
-                if (results.records[0].Contacts) {
-                    var team =  results.records[0].Contacts.records;
-                    for (var m in team) {
-                         team_data.outlet_team[team[m].Name] =   { 
-                                points: team[m].Points__c,
-                                pic: team[m].PortalPic__c
-                        };
+    if (whatid == 'me') {
+        // get user names and pictures and outlets too!
+         queryAPI('query?q='+escape('select Name, PortalPic__c,  (select Name, Points__c, PortalPic__c from Contacts) from Account where Id = \'' + udata.outlet.id + '\''), null, 'GET',  function (results) {
+               console.log ('myfeed: got team query results :' + JSON.stringify(results));
+               var team_data = {};
+               if (results.totalSize == 1) {
+                    team_data.outlet  = { name: results.records[0].Name, pic: results.records[0].PortalPic__c};
+                    team_data.outlet_team = {};
+                    
+                    if (results.records[0].Contacts) {
+                        var team =  results.records[0].Contacts.records;
+                        for (var m in team) {
+                             team_data.outlet_team[team[m].Name] =   { 
+                                    points: team[m].Points__c,
+                                    pic: team[m].PortalPic__c
+                            };
+                        }
                     }
-                }
-           }
-         queryAPI('chatter/feeds/record/'+udata.outlet.id+'/feed-items', null, 'GET', function (results1) {
-            //console.log ('/myfeed : results : ' + JSON.stringify(results));
-            req.session = null; // method doesnt update the session
-            res.send({team: team_data, feed :results1, me: udata});
+               }
+             queryAPI('chatter/feeds/record/'+udata.outlet.id+'/feed-items', null, 'GET', function (results1) {
+                //console.log ('/myfeed : results : ' + JSON.stringify(results));
+                req.session = null; // method doesnt update the session
+                res.send({team: team_data, feed :results1, me: udata});
+            });
         });
-    });
+    } else {
+        // its a training id
+        // get user names and pictures and outlets too!
+         queryAPI('query?q='+escape('select Name, (select Contact__r.Name, Contact__r.Points__c, Contact__r.PortalPic__c from Training_Participation__r) from TR_Training_Availability__c where Id = \'' + whatid + '\''), null, 'GET',  function (results) {
+               console.log ('myfeed: got team query results :' + JSON.stringify(results));
+               var team_data = {};
+               if (results.totalSize == 1) {
+                    team_data.outlet  = { name: results.records[0].Name, pic: 'none'};
+                    team_data.outlet_team = {};
+                    
+                    if (results.records[0].Training_Participation__r) {
+                        var team =  results.records[0].Training_Participation__r.records;
+                        for (var m in team) {
+                             team_data.outlet_team[team[m].Contact__r.Name] =   { 
+                                    points: team[m].Contact__r.Points__c,
+                                    pic: team[m].Contact__r.PortalPic__c 
+                            };
+                        }
+                    }
+               }
+             queryAPI('chatter/feeds/record/'+whatid+'/feed-items', null, 'GET', function (results1) {
+                //console.log ('/myfeed : results : ' + JSON.stringify(results));
+                req.session = null; // method doesnt update the session
+                res.send({team: team_data, feed :results1, me: udata});
+            });
+        });        
+    }
    
 });
 
@@ -324,7 +368,7 @@ app.post('/home', function (req,res) {
     
     if (uid) {
 
-        queryAPI('query?q='+escape('select Id, Name, PortalPic__c, PortalID__C, Points__c, Account.Name, Account.PortalPic__c, Account.id, (select Id, Name, Attempts__c, Best_Score__c, Passed__c, First_Score__c from Game_Events__r) from Contact where PortalID__c = \'' + uid + '\''), null, 'GET',  function (results) {
+        queryAPI('query?q='+escape('select Id, Name, PortalPic__c, PortalID__C, Points__c, Account.Name, Account.PortalPic__c, Account.id, (select Id, Name, Attempts__c, Best_Score__c, Passed__c, First_Score__c from Game_Events__r), (select Id, Name, Type__c, Training_Availability__c  from Training_Participation__r) from Contact where PortalID__c = \'' + uid + '\''), null, 'GET',  function (results) {
            console.log ('login: got query results ' + JSON.stringify(results));
            if (results.totalSize == 1) {
                var udata = {
@@ -337,7 +381,8 @@ app.post('/home', function (req,res) {
                        picture_url: results.records[0].Account.PortalPic__c
                    },
                    picture_url: results.records[0].PortalPic__c, 
-                   completed_events: {}
+                   completed_events: {},
+                   booked_training: {}
                    };
                    
                 if (results.records[0].Game_Events__r) {
@@ -353,6 +398,18 @@ app.post('/home', function (req,res) {
                     }
                 }
                 
+                 if (results.records[0].Training_Participation__r) {
+                    var tevents =  results.records[0].Training_Participation__r.records;
+                    for (var gidx in tevents) {
+                        udata.booked_training[tevents[gidx].Training_Availability__c] = {
+                            id:  tevents[gidx].Id,
+                            name:  tevents[gidx].Name,
+                            type: tevents[gidx].Type__c
+                        };
+                    }
+                }
+                
+                
                 
                 console.log ('/home - got userdata : ' + JSON.stringify(udata));    
                 var sess = req.session;
@@ -362,6 +419,7 @@ app.post('/home', function (req,res) {
                 sess.completed_events = udata.completed_events;  
                 var start_idx = event_index -1;
                 createEvents(uid, udata,  null);
+                createTrainings (uid, udata);
                 //res.send({username: sess.username, userdata: users_collection[sess.username]});
                 res.render('home.ejs', { locals: { username: uid, userdata: udata, current_index: start_idx} });
                 return;
@@ -387,6 +445,7 @@ app.get('/home', function (req,res) {
 		//Properties on req.session are automatically saved on a response
 		sess.username = uid;
 		createEvents(uid, udata, null);
+        createTrainings (uid, udata);
 		//res.send({username: sess.username, userdata: users_collection[sess.username]});
         req.session = null; // method doesnt update the session
         res.render('home.ejs', { locals: { username: uid, userdata: udata} });
@@ -442,6 +501,38 @@ function createEvents(uid, udata, just_completed) {
 		events_by_user[uid].push(event);
 		console.log('createEvents: ADDED EVENT [' + event.index +  '] [' + event.item_id +'], results_data ' + results_data  + ', newlyselected : '+ newlyselected);
 	}
+}
+
+function createTrainings (uid, udata) {
+    console.log ('createTrainings');
+     queryAPI('query?q='+escape('select Id, Name, Description__c, Start_date__c, Total_Participations__c, TR_Training__r.Content_Reference__c  , Training_Categories__c  from TR_Training_Availability__c where Account__c = \'' + udata.outlet.id + '\''), null, 'GET',  function (results) {
+           console.log ('createTrainings: got  query results :' + JSON.stringify(results));
+            if (results.totalSize >= 1) {
+
+                for (var m in results.records) {
+                   var trec = results.records[m];
+                   var event = {
+                		index: event_index++,
+            			timestamp: new Date().getTime(),
+            			active: true,
+            			item_id: trec.Id,
+            			item_type: 'TRAINING',
+            			item_data: {
+                            name: trec.Name,
+                    		desc: trec.Description__c,
+                			info: trec.Total_Participations__c
+                          },
+            			results_data: udata.booked_training[trec.Id]
+            		};
+                    if (!events_by_user[uid])    events_by_user[uid] = [];	
+            		events_by_user[uid].push(event);
+            		console.log('createTrainings: ADDED EVENT [' + JSON.stringify(event));
+                    
+                }
+                notify_long_connection_by_user(uid, udata);
+            
+           }
+     });
 }
 
 var maxAge = 60;
@@ -586,17 +677,72 @@ app.post('/donequiz', function (req,res) {
         req.session = null;
     	res.send({my_points: udata.points});
 	}
-/*
-	if (quesTried > 0) {
-       
-		if ((!aready_passed) && now_passed) {
-			// just passwd new quiz, hunt for new unlocks!!
-			createEvents (uid, udata, qid);
-		}
-		notify_long_connection_by_user(uid, udata);
+});
+
+
+
+app.post('/booktraining', function (req,res) {
+    var uid = req.session.username,
+        udata = req.session.userdata;
+    if (!uid) {
+		res.send ('Please Login', 400);
+		return;
+	} 
+
+	var tid = req.body.tid,
+		tdate = req.body.tdate;
+
+	console.log ('booktraining: complted quiz:' + tid + ', data : ' + tdate);
+	// need to of least tryed one question to register quiz attempt!
+
+		
+		var alreadybooked = udata.booked_training;
+        if (!alreadybooked[tid]) { // first atemmpt
+    		alreadybooked[tid] = { id: "",   type: 'Booked on ' + tdate};
+        } else {
+            // just update date
+            alreadybooked[tid] = { type: 're-Booked on ' + tdate };
+        }
         
-	}
-    */
+        // send update to salesforce
+        var bdy = { Type__c:  alreadybooked[tid].type};
+        var sfdc_url = 'sobjects/TR_Training_Participation__c/' + alreadybooked[tid].id;
+        var httpmethod = 'PATCH'; // its an update
+        if (alreadybooked[tid].id.length == 0) {
+            // its a insert, set the m/d file
+            bdy.Contact__c = udata.id;
+            bdy.Training_Availability__c = tid;
+            httpmethod = 'POST';
+        }
+        console.log ('/booktraining - ' + sfdc_url + ' : ' + JSON.stringify(bdy));
+        
+        queryAPI(sfdc_url, bdy, httpmethod, function(response) {
+            if (response) {
+                console.log ('/booktraining -  response : ' +  JSON.stringify(response));
+                console.log ('/booktraining setting id ' + tid + ' : ' + response.id);
+                alreadybooked[tid].id = response.id;
+            }
+
+            
+    		var event = {
+    			index: event_index++,
+    			timestamp: new Date().getTime(),
+    			active: true,
+    			item_id: tid,
+    			item_type: "TRAINING",
+    			results_data: alreadybooked[tid]
+    		};
+    		if (!events_by_user[uid]) events_by_user[uid] = [];	
+    		events_by_user[uid].push(event);
+            
+            req.session.userdata = udata;  // update the session store with the new values.
+            console.log ('/donequiz - udata.completed_events : ' + JSON.stringify(req.session.userdata));
+            res.send({my_points: udata.points});
+            
+
+    		notify_long_connection_by_user(uid, udata);
+        });
+
 });
 
 /**
