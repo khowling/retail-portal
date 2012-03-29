@@ -37,8 +37,13 @@
                         Attach
                         <img ID="imgFileIcon" src="/_layouts/images/SFChatterWP/ic_file.png"
                             class="file_icon" runat="server" align="absmiddle" />
+                        <!-- 
                         <a href="javascript:showUploadOptions();" id="lnkfileUpload" style="display: inline;">
                             File</a>
+                        -->    
+                        <a href="javascript:compUploadClick();" id="lnkfileUpload" style="display: inline;">
+                            File</a>
+                            
                         <img ID="Image9" src="/_layouts/images/SFChatterWP/ic_link.png" class="file_icon"
                             runat="server" align="absmiddle" />
                         <a href="javascript:showLinkUploadOptions();" id="A1" style="display: inline;">Link</a>
@@ -46,7 +51,7 @@
                 </div>
                 <div class="btn_share divActive" id="divActive" style="display: block;">
                     <input type="image" ID="imgbtnShare" ToolTip="Share" runat="server" src="/_layouts/images/SFChatterWP/btn_share.png"
-                        Width="64" Height="23" onClick="addPosting(this, '<%= feedid %>', '<%= udata.picture_url %>');" />
+                        Width="64" Height="23" onClick="addPosting(this, '<%= feedid %>', '<%= udata.picture_url %>', '<%= udata.fullname %>');" />
                 </div>
                 <div class="btn_share divInactive" id="divInactive" style="display: none;">
                     <img ID="imgBtnInactive" runat="server" src="/_layouts/images/SFChatterWP/btn_shareInactive.png"
@@ -57,6 +62,7 @@
         <div class="clear-1">
         </div>
         
+        <!-- FILE UPLOAD OPTIONS , Shareponit or Computer -->
         <div class="Attach_file_box" id="divFileUpload" runat="server" style="display: none;">
             <div class="File_Attach_1">
                 <div class="File_Attach_title" runat="server" id="fileCLoseDiv">
@@ -71,13 +77,14 @@
                         </a>
                     </div>
                 </div>
-                <div class="File_upload" id="uploadOptionDiv" runat="server">
+                <div class="File_upload" id="uploadOptionDiv">
+                    
                     <div class="File_upload_left">
                         <a href="javascript:OpenDialog();" title="Select a file from Sharepoint">Select a file
                             from Sharepoint</a></div>
                     <div class="File_upload_right">
                         <a href="javascript:compUploadClick();" title="Upload a file from your computer">Upload
-                            a file from your computer</a></div>
+                            a file from your computer</a></div>  
                 </div>
             </div>
             <div class="btn_share_attach">
@@ -85,17 +92,20 @@
                     Width="64" Height="23" />
             </div>
         </div>
-        <div class="Attach_file_box" id="compUploadDiv" style="display: none;" runat="server">
+        
+        
+        <!-- UPLOAD FILE FROM COMPUTER -->
+        <div class="Attach_file_box" id="compUploadDiv" style="display: none;">
             <div class="File_Attach">
                 <div class="File_Attach_title">
                     <div class="Attach_title_left">
                         <img ID="imgAttachFile" src="/_layouts/images/SFChatterWP/ic_file.png"
-                            CssClass="file_icon" runat="server" align="absmiddle" ToolTip="Attach a File" />
+                            class="file_icon" runat="server" align="absmiddle" />
                         <span class="font_title2">Attach a File</span></div>
                     <div class="Attach_title_right">
                         <a href="#" onclick="imgCloseClick();">
-                            <img ID="imgClose2" runat="server" src="/_layouts/images/SFChatterWP/btn_close.png"
-                                Width="17" Height="16" ToolTip="Close the publisher" />
+                            <img ID="imgClose2" src="/_layouts/images/SFChatterWP/btn_close.png"
+                                Width="17" Height="16"  />
                         </a>
                     </div>
                 </div>
@@ -119,9 +129,14 @@
                                             <div class="requiredInput">
                                                 <div class="requiredBlock">
                                                 </div>
+
+                                                <input name="attach" id="fplUpload<%= feedid %>" type="file" class="fplUpload" onchange="getNameFromPath(this.value)"/>
+
+                                                <!--
                                                 <asp:FileUpload ID="fplUpload" class="fplUpload" runat="server" ToolTip="Select a file"
                                                     onchange="getNameFromPath(this.value)" oncopy="return false" onpaste="return false"
                                                     oncut="return false" onkeypress="javascript:return false;" onkeydown="javascript:return false;" />
+                                                -->
                                                 <label ID="lblFileCheck" runat="server" Text="Please choose a file to upload."
                                                     CssClass="errorMsg" Style="display: none;"></label>
                                             </div>
@@ -147,9 +162,9 @@
                                                 <input type="text" ID="txtFileName" ToolTip="Name" class="textbox_245 txtFileName" runat="server"></input>
                                                 <br />
                                                 <label ID="lblErrMsg" runat="server" Text="This field can't have more than 255 characters."
-                                                    CssClass="errorMsg" Style="display: none;"></label>
+                                                    class="errorMsg" Style="display: none;"></label>
                                                 <label ID="lblValidationMsg" runat="server" Text="Please enter a name for your file."
-                                                    CssClass="errorMsg" Style="display: none;"></label>
+                                                    class="errorMsg" Style="display: none;"></label>
                                             </div>
                                         </div>
                                         <div class="clear-1">
@@ -163,10 +178,10 @@
                                     </th>
                                     <td class="rowControlStyle">
                                         <div id="ext-gen4">
-                                            <input type="text" ID="txtDescription" ToolTip="Description" class="textbox2_245 txtDescription"
-                                                runat="server" TextMode="MultiLine"></input>
+                                            <input type="text" ID="txtDescription" class="textbox2_245 txtDescription"
+                                                TextMode="MultiLine"></input>
                                             <br />
-                                            <label ID="descLengthError" runat="server" Text="Description field cannot have more than 1000 characters."
+                                            <label id="descLengthError"  Text="Description field cannot have more than 1000 characters."
                                                 ForeColor="Red" Style="display: none;"></label>
                                         </div>
                                     </td>
@@ -181,13 +196,11 @@
                 </div>
             </div>
             <div class="btn_share_attach">
-                <div class="btn_share divActive divActiveShareFrmComp" id="divImgBtnShareFrmComp"
-                    runat="server" style="display: none;">
-                    <input type="image" ID="imgBtnShareFrmComp" ToolTip="Share" runat="server" src="/_layouts/images/SFChatterWP/btn_share.png"
-                        Width="64" Height="23" OnClick="imgbtnShare_Click" />
+                <div class="btn_share divActive divActiveShareFrmComp" id="divImgBtnShareFrmComp" style="display: none;">
+                    <input type="image" ID="imgBtnShareFrmComp" src="/_layouts/images/SFChatterWP/btn_share.png"
+                        Width="64" Height="23" onClick="addPostingWithPic(this, '<%= feedid %>', '<%= udata.picture_url %>', '<%= udata.fullname %>');" />
                 </div>
-                <div class="btn_share divInactive divInactiveShareFrmComp" id="divimagShareFrmComp"
-                    runat="server" style="display: block;">
+                <div class="btn_share divInactive divInactiveShareFrmComp" id="divimagShareFrmComp" style="display: block;">
                     <img ID="Image3" runat="server" src="/_layouts/images/SFChatterWP/btn_shareInactive.png"
                         Width="64" Height="23" />
                 </div>
@@ -195,7 +208,10 @@
             <div class="clear-1">
             </div>
         </div>
-        <div class="Attach_file_box" id="documentDiv" style="display: none;" runat="server">
+      
+        
+        <!-- FILE ATTACHED, ready to POST-->
+        <div class="Attach_file_box" id="documentDiv" style="display : none;">
             <div class="File_Attach">
                 <div class="File_Attach_title">
                     <div class="Attach_title_left">
@@ -216,6 +232,7 @@
                     </div>
                     <div class="File_info_right">
                         <span id="path"></span>
+                        <span id="hdnFileUploadPath"></span>
                         <div id="divDummy" style="display: none;" class="hdnSharePointFilePath">
                         </div>
                         <asp:HiddenField ID="hdnSharePointFilePath" runat="server" />
@@ -239,6 +256,8 @@
             <div class="clear-1">
             </div>
         </div>
+        
+        <!-- UPLOAD LINK -->
         <div class="Attach_file_box" id="divLinkPost" style="display: none;" runat="server">
             <div class="File_Attach">
                 <div class="File_Attach_title">
@@ -337,6 +356,8 @@
         <div class="clear-1">
         </div>
         
+        
+        
         <!-- UPDATES FOR DROPDOWN --> 
         <div id="divFilter" runat="server">
             <div id="menu_parent" runat="server" style="position: relative; font-size: 12px;
@@ -386,6 +407,9 @@
                 <div style="padding-top: 5px;">
                     <label ID="lblFeedInfo" runat="server" Text="" Font-Bold="true" Font-Names="Verdana"
                         Font-Size="10" Visible="false"></label></div>
+                
+                <!-- User Hover -->
+ <!--
                 <div id="dvUserAction">
                     <div id="dvcontainer">
                         <div>
@@ -398,15 +422,15 @@
                             </a>
                             <div id="content">
                                 <div id="name">
-                                    <span id="userName"><a id="hUserName" target="_blank" runat="server">Bob Smith</a>
+                                    <span id="userName"><a id="hUserName" target="_blank" >Bob Smith</a>
                                         <br />
                                         <div>
-                                            <label ID="lblPhone1" CssClass="lblPhone" runat="server">0234 234 234</label>
-                                            <label ID="lbltype1" CssClass="lbltype" Font-Size="Small" runat="server">label11</label>
+                                            <label ID="lblPhone1" CssClass="lblPhone" >0234 234 234</label>
+                                            <label ID="lbltype1" CssClass="lbltype" Font-Size="Small" >label11</label>
                                         </div>
                                         <div>
-                                            <label ID="lblPhone2" CssClass="lblPhone" runat="server">phone 2</label>
-                                            <label ID="lbltype2" CssClass="lbltype" Font-Size="Small" runat="server">789</label>
+                                            <label ID="lblPhone2" CssClass="lblPhone">phone 2</label>
+                                            <label ID="lbltype2" CssClass="lbltype" Font-Size="Small" >789</label>
                                         </div>
                                     </span>
                                 </div>
@@ -441,7 +465,7 @@
                         </div>
                     </div>
                 </div>
-
+-->
                 <table id="feed-table<%= feedid %>" style="width: 100%;">
                 	<tr id="feed-post<%= feedid %>" style="display: none;"><td>
                 	
@@ -468,8 +492,31 @@
                                                     </tr>
                                                 </table>
                                             </div>
-                                            <div class="users_comment" id="divFileInfo" runat="server" visible="false">
-
+                                            
+                                            <!-- FILE INFO -->
+                                            <div class="users_comment" id="divFileInfo" style="display: none;">
+                                                <div class="file_upload_icon">
+                                                    <img id="imgFile" src="/_layouts/images/SFChatterWP/File.png" Width="32" Height="32" style="cursor:pointer; " />
+                                                </div>
+                                                <div class="file_upload_info">
+                                                    <div class="file_title">
+                                                       
+                                                                    <span class="font_title">
+                                                                        <label id="lblFileName" >filename</label>
+                                                         
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div class="file_upload_info">
+                                                    <div class="file_Description">
+                                                       
+                                                                    <label id="lblFileDesc" >file description</label>
+                                                            
+                                                    </div>
+                                                </div>
+                                                <div class="clear-1">
+                                                </div>
+                                            </div>
 
                                             <div class="users_comment">
                                                 <ul class="ulChatter">
@@ -569,7 +616,7 @@
                                                             </div>
                                                             <div class="btn_comment" style="display: block;" id="divEComment">
                                                                 <input type="image" ID="imgBtnComment" class="imgBtnComment" Style="cursor: pointer;"
-                                                                    Height="20" Width="63"  ToolTip="Comment" onclick="addComment(this)"
+                                                                    Height="20" Width="63"  ToolTip="Comment" onclick="addComment(this, '<%= udata.picture_url %>', '<%= udata.fullname %>')"
                                                                     src="/_layouts/images/SFChatterWP/btn_comment.png" />
                                                             </div>
                                                             <div class="btn_comment" id="divDComment" style="display: none;">

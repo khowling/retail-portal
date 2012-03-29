@@ -1,6 +1,7 @@
 var express = require('express'),
     foauth = require('./force_oauth_pass.js'),
-    https = require('https');
+    https = require('https'), 
+    rest  = require('restler');
     
 var app = express.createServer();
 var port = process.env.PORT || 3001;
@@ -29,19 +30,55 @@ foauth.login(clientId, clientSecret , sfuser, sfpasswd, function(){
 app.post ('/post/:what', function (req,res) {
     var uid = req.session.username,
         udata = req.session.userdata,
-        whatid = req.params.what;
-         
+        whatid = req.params.what,
+        files = req.files,
+        filename = req.body.fname,
+        filedesc = req.body.fdesc;
+        
+
+        
     if (!uid) {
 		res.send ('Please Login', 400);
 		return;
 	} 
     if (whatid == 'me') whatid = udata.outlet.id;
-    var bdy = { "body" :   {"messageSegments" : [{"type": "Text", "text" : udata.fullname + ': '+ req.body.mess  }] }};
-    queryAPI('chatter/feeds/record/'+whatid+'/feed-items', bdy, 'POST',  function(results) {
-        //console.log ('/post : results : ' + JSON.stringify(results));
-        req.session = null; // method doesnt update the session
-        res.send (results);
-   });
+    
+    
+    if (files) {
+        
+        console.log('/post ' + filename);
+        console.dir(files);
+        
+        var host =  (require('url').parse(foauth.getOAuthResponse().instance_url))['host'];
+
+        rest.post('https://' + host + '/services/data/v24.0/' + 'chatter/feeds/record/'+whatid+'/feed-items', {
+          multipart: true,
+          headers: { 
+              'Host': host,
+              'Authorization': 'OAuth '+foauth.getOAuthResponse().access_token,
+              'Accept':'application/jsonrequest',
+              'Cache-Control':'no-cache,no-store,must-revalidate',
+              'Content-type':'application/json; charset=UTF-8' 
+            },
+          data: {
+            'text':  udata.fullname + ': '+ req.body.mess,
+            'desc': filedesc,
+            'title': filename,
+            'feedItemFileUpload': rest.file(files.attach.path, null, null, null,  'image/png')
+          }
+        }).on('complete', function(results) {
+            req.session = null; // method doesnt update the session
+            res.send (results);
+        });
+        
+    } else {
+        var bdy = { "body" :   {"messageSegments" : [{"type": "Text", "text" : udata.fullname + ': '+ req.body.mess  }] }};
+        queryAPI('chatter/feeds/record/'+whatid+'/feed-items', bdy, 'POST',  function(results) {
+            //console.log ('/post : results : ' + JSON.stringify(results));
+            req.session = null; // method doesnt update the session
+            res.send (results);
+       });
+    }
 });
 
 app.post ('/postcomment', function (req,res) {
@@ -61,6 +98,34 @@ app.post ('/postcomment', function (req,res) {
         req.session = null; // method doesnt update the session
         res.send (results);
    });
+});
+
+app.get ('/feedfile', function(req,res) {
+    var uid = req.session.username,
+        what = req.query.what,
+        mt = req.query.mt;
+        
+    if (!uid) {
+//        res.send ('Please Login', 400);
+//        return;
+	}
+    
+    console.log ('/feedfile ' + what);
+    
+    var host =  (require('url').parse(foauth.getOAuthResponse().instance_url))['host'];
+
+    rest.get('https://' + host +  what, {
+      headers: { 
+          'Host': host,
+          'Authorization': 'OAuth '+foauth.getOAuthResponse().access_token
+      }
+    }).on('complete', function(results) {
+        
+        req.session = null; // method doesnt update the session
+        res.header('Content-Type', mt);
+        res.end (results, 'binary');
+    });
+    
 });
 
 app.get ('/chat/:what', function(req,res) {
@@ -154,7 +219,7 @@ function queryAPI (resturl, mbody, httpmethod, callback) {
     var options = {
         method: httpmethod,
         host: host,
-        path: '/services/data/v23.0/' + resturl,
+        path: '/services/data/v24.0/' + resturl,
         headers: {
           'Host': host,
           'Authorization': 'OAuth '+foauth.getOAuthResponse().access_token,
@@ -200,7 +265,7 @@ function queryAPI (resturl, mbody, httpmethod, callback) {
     req.on('error', function(e) {
       console.log('problem with request: ' + e.message);
     });
-    console.log ('sending body ' + JSON.stringify(mbody));
+//    console.log ('sending body ' + JSON.stringify(mbody));
     req.session = null; // method doesnt update the session
     req.end(JSON.stringify(mbody));
 };

@@ -1,127 +1,161 @@
 
-   function loadfeeds(feedid) {
-        $.ajax({ 
-    		url: "/myfeed/" + feedid, 
-			success: function(res){
-                var outletteam = {};
-                
-                //$('#imgCommentNew').attr ({ 'src' : res.me.picture_url });
-                
-                
-                if (res.team) {
-                    var teamlistDiv = $('#team-list'+feedid);
-                    //$('#selected_feed').text(res.team.outlet.name);
-                    //$('#option1_feed').text(res.team.outlet.name);
-                    
-                    outletteam = res.team.outlet_team;
-                    for (var name in res.team.outlet_team) {
-                        var tm = res.team.outlet_team[name];
-                        var _member_layout = $("<li/>").attr({"style" : "float:left;"}).append(
-                        $("<div/>").attr({"style" : "text-align: center; width: 65px;"}).append(
-                            $("<img/>").attr({"style" : "margin: 5px;", "width": "45px", "height": "45px", "src": tm.pic}),
-                    		$("<div/>").attr({"class" : "itemName"}).text(name),
-        					$("<div/>").attr({"class" : "itemResults"}).text(tm.points)
-                            )
-                        );
-                        teamlistDiv.append(_member_layout);
+function processsfdcfeeditem (itm, outletteam) {
+    
+    var posttxt = itm.body.text.split(": ");
+    //alert ('processsfdcfeeditem ' + itm.body.text + '('+posttxt.length+') :: ' + JSON.stringify(outletteam));
+    
+    var ret = {};
+    if (posttxt.length < 2) {
+        ret = { pic: '/image/NokiaLogo.gif', author: 'Nokia', ptxt: posttxt[0] };
+    } else {
+        var pauthor = posttxt[0];
+        ret = { pic: outletteam[pauthor].pic, author: pauthor, ptxt: posttxt[1] };
+    } 
+    
+    var pdate = new Date(Date.parse(itm.createdDate));
+    ret.ctime = $.cuteTime({}, pdate.toString());  
+    
+    return ret;
+}
+   
+function newfeeddom (itm, outletteam, feedid) {
 
-                    }
-                }
-            
-                
-                if (res.feed.items.length >0) {
-                   
-                    
-    				
-    				for (var idx in res.feed.items) {
-    					var itm = res.feed.items[idx];
-                        var posttxt = itm.body.text.split(": ");
-                        
-                        var authorpic = '/image/NokiaLogo.gif';
-                        var author = 'Nokia';
-                        var ptxt = posttxt[0];
-                        
-                        if (posttxt.length > 1) {
-                            author = posttxt[0];
-                            ptxt = posttxt[1];
-                            authorpic = outletteam[author].pic;
-                        }
-                        
-                       
-                        
-    					var newpost = $('#feed-post'+feedid).clone();
-    					newpost = newpost.attr({"id": itm.id }).removeAttr('style')
-    						.find('.spanFeed').text(ptxt).end()
-    						.find('.aFeedAuthor').text(author).end()
-                            .find('.pFeedAuthor').attr({"src": authorpic }).end()
-    						.find('.postCreatedDate').text(itm.createdDate).end()
-    						.find('.linkComment').click(function () {
-    							var divActivity = $(this).parent().parent().parent().next();
-    							var dslComment = divActivity.children('.comment_feddbackBox').children('.Like_box_BG');
-    							var divCBox = dslComment.next();
-    							var tbComment = divCBox.children('.Like_box_right').children('.users_comment3').children('.tbCommentClass');
-                                //tbComment.TextAreaExpander(30);
-                                //tbComment.keydown(function () {
-                                //    CheckCommentLength($(this))
-                                //});
-                                //tbComment.keyup(function () {
-                               //     CheckCommentLength($(this))
-                                //});
-                                
-    							//var lblLengthError = tbComment.next();
-                                
-                                
-    							divActivity.attr({'style': 'display : block;'});
-    						//	dslComment.hide();
-    							divCBox.show();
-    							tbComment.focus();
-    						//	lblLengthError.hide();
-            
-    					}).end()
-    					
-    				
-                        var nocomments = itm.comments.total;
-    					if (nocomments >0){
-                            // adds in the arrow divider! 
-                            newpost.find('div.comment_feedback').attr({'style': 'display : block;'});
-                            var comments = itm.comments.comments;
-    						for (var cidx in comments) {
+    var post = processsfdcfeeditem(itm, outletteam);
 
-    							var cmt = comments[cidx];
-                                
-                                var posttxt = cmt.body.text.split(": ");
-                        
-                                var authorpic = '/image/NokiaLogo.gif';
-                                var author = 'Nokia';
-                                var ptxt = posttxt[0];
-                                
-                                if (posttxt.length > 1) {
-                                    author = posttxt[0];
-                                    ptxt = posttxt[1];
-                                    authorpic = outletteam[author].pic;
-                                }
-                        
-    							var commenttr = newpost.find('tr.Like_box_template').clone();
-    						//	alert ('comment ' + JSON.stringify(commenttr) + ' val ' + cmt.user.name);
-    							commenttr = commenttr.attr({"id": cmt.id, "class": "Like_box" }).removeAttr('style')
-    								.find('.commentAuthor').text(author).end()
-                                    .find('.pcommentAuthor').attr({"src": authorpic }).end()
-    								.find('.spanComment').text(ptxt).end()
-    								.find('.commentCreatedDate').text(cmt.createdDate).end();
-    							commenttr.appendTo(newpost.find('.table_userComment'));
-    						}
-    					}
-    					
-    					newpost.appendTo('#feed-table'+feedid);
+    var newpost = $('#feed-post'+feedid).clone();
+    newpost = newpost.attr({"id": itm.id }).removeAttr('style')
+        .find('.spanFeed').text(post.ptxt).end()
+        .find('.aFeedAuthor').text(post.author).end()
+        .find('.pFeedAuthor').attr({"src": post.pic }).end()
+        .find('.postCreatedDate').text(post.ctime).end()
+        .find('.linkComment').click(function () {
+                var divActivity = $(this).parent().parent().parent().next();
+                var dslComment = divActivity.children('.comment_feddbackBox').children('.Like_box_BG');
+                var divCBox = dslComment.next();
+                var tbComment = divCBox.children('.Like_box_right').children('.users_comment3').children('.tbCommentClass');
+                //tbComment.TextAreaExpander(30);
+                //tbComment.keydown(function () {
+                //    CheckCommentLength($(this))
+                //});
+                //tbComment.keyup(function () {
+                //     CheckCommentLength($(this))
+                //});
+                
+                //var lblLengthError = tbComment.next();
+                
+                
+                divActivity.attr({'style': 'display : block;'});
+                //	dslComment.hide();
+                divCBox.show();
+                tbComment.focus();
+                //	lblLengthError.hide();
+                
+       }).end();
+       
+    if (itm.attachment) {
+        if (!itm.attachment.description) itm.attachment.description = '';
+      newpost.find('#divFileInfo').removeAttr('style').end()
+        .find('#lblFileName').text(itm.attachment.title).end()
+        .find('#lblFileDesc').text(itm.attachment.description).end()
+        .find('#imgFile').click(function () {
+            $("#event-container").empty();
+            $("#event-container").append(
+                $("<img/>").attr({ "src": '/feedfile?what=' + escape(itm.attachment.downloadUrl) + '&mt=' + escape(itm.attachment.mimeType)})
+                );
+                
+            var tw = getTargetWidth();
+            $("#jdialog").dialog ({ 
+                title: 'View file ' + itm.attachment.title,
+                modal: true, 
+                width: tw,
+                buttons: {                   
+    				Cancel: function() {
+                        if ($("#video-container")[0])
+                            $("#video-container")[0].pause();
+						$("#event-container").empty();
+    					$("#jdialog").dialog( "close" );
     				}
+                }
+            });
+            
+            
+            });
+    }
+    
+    return newpost;
+}
+
+function newcommentdom(cmt, outletteam, newpost)  {
+    
+    var post = processsfdcfeeditem(cmt, outletteam);
+    
+    var commenttr = newpost.find('tr.Like_box_template').clone();
+    //	alert ('comment ' + JSON.stringify(commenttr) + ' val ' + cmt.user.name);
+    
+    commenttr = commenttr.attr({"id": cmt.id, "class": "Like_box" }).removeAttr('style')
+        .find('.commentAuthor').text(post.author).end()
+        .find('.pcommentAuthor').attr({"src": post.pic }).end()
+        .find('.spanComment').text(post.ptxt).end()
+        .find('.commentCreatedDate').text(post.ctime).end();
+        
+    return commenttr;
+}
+   
+function loadfeeds(feedid) {
+    $.ajax({ 
+		url: "/myfeed/" + feedid, 
+		success: function(res){
+            var outletteam = {};
+            
+            //$('#imgCommentNew').attr ({ 'src' : res.me.picture_url });
+            
+            if (res.team) {
+                var teamlistDiv = $('#team-list'+feedid);
+                //$('#selected_feed').text(res.team.outlet.name);
+                //$('#option1_feed').text(res.team.outlet.name);
+                
+                outletteam = res.team.outlet_team;
+                for (var name in res.team.outlet_team) {
+                    var tm = res.team.outlet_team[name];
+                    var _member_layout = $("<li/>").attr({"style" : "float:left;"}).append(
+                    $("<div/>").attr({"style" : "text-align: center; width: 65px;"}).append(
+                        $("<img/>").attr({"style" : "margin: 5px;", "width": "45px", "height": "45px", "src": tm.pic}),
+                		$("<div/>").attr({"class" : "itemName"}).text(name),
+    					$("<div/>").attr({"class" : "itemResults"}).text(tm.points)
+                        )
+                    );
+                    teamlistDiv.append(_member_layout);
+                }
+            }
+
+            if (res.feed.items.length >0) {
+
+				for (var idx in res.feed.items) {
+                    var itm = res.feed.items[idx];
+                   
+                    var newpost = newfeeddom (itm, outletteam, feedid);
+				
+                    var nocomments = itm.comments.total;
+					if (nocomments >0){
+                        // adds in the arrow divider! 
+                        newpost.find('div.comment_feedback').attr({'style': 'display : block;'});
+                        var comments = itm.comments.comments;
+						for (var cidx in comments) {
+
+							var cmt = comments[cidx];
+                            var commenttr = newcommentdom (cmt, outletteam, newpost);    
+							commenttr.appendTo(newpost.find('.table_userComment'));
+						}
+					}
+					newpost.appendTo('#feed-table'+feedid);
 				}
 			}
-	    });
-   
-   }
+		}
+    });
+}
 
     
-    function addComment(e) {
+    function addComment(e, pic_url, fullname) {
         var txtComment = $(e).parent().prev().children(".tbCommentClass");
         
         var divEComment = txtComment.parent().next();
@@ -134,7 +168,7 @@
         //        return false
          //   }
         //}
-        if (txtComment.val().length > 0) {
+        if (txtComment.val().length > 1) {
             txtComment.attr("disabled", "disabled");
             divEComment.hide();
             divDComment.show()
@@ -148,25 +182,11 @@
                 txtComment.removeAttr("disabled");
                 entercomment.attr({'style': 'display: none;'});
                 
-                var posttxt = cmt.body.text.split(": ");
-                var authorpic = $('#imgCommentNew').attr ('src');            
-                var author = 'Nokia';
-                var ptxt = posttxt[0];
-                
-                if (posttxt.length > 1) {
-                    author = posttxt[0];
-                    ptxt = posttxt[1];
-                }
-                
-                            
-            
-                var commenttr = feeditem.find('tr.Like_box_template').clone();
-            	//	alert ('comment ' + JSON.stringify(commenttr) + ' val ' + cmt.user.name);
-				commenttr = commenttr.attr({"id": cmt.id, "class": "Like_box" }).removeAttr('style')
-    				.find('.commentAuthor').text(author).end()
-                    .find('.pcommentAuthor').attr({"src": authorpic }).end()
-    				.find('.spanComment').text(ptxt).end()
-    				.find('.commentCreatedDate').text(cmt.createdDate).end();
+                var meteam = {};
+                meteam[fullname] = { pic: pic_url};
+                //alert ('addComment ' + JSON.stringify(meteam));
+                var commenttr = newcommentdom (cmt, meteam , feeditem);  
+
 				commenttr.appendTo(feeditem.find('.table_userComment'));
             });
         } else {
@@ -178,67 +198,95 @@
     };
     
     
-    function addPosting(e, feedid, pic_url) {
-        
-        $(e).parent().attr({'style': 'display: none;'});
-        $(e).parent().next().attr({'style': 'display: block; '});
-        
-        //$('#divActive').attr({'style': 'display: none;'});
-        //$('#divInactive').attr({'style': 'display: block;'});
+function addPosting(e, feedid, pic_url, fullname) {
 
-    	var ptxt = $('#txtNewFeed'+feedid).val(); 
+    $(e).parent().attr({'style': 'display: none;'});
+    $(e).parent().next().attr({'style': 'display: block; '});
+    
+    //$('#divActive').attr({'style': 'display: none;'});
+    //$('#divInactive').attr({'style': 'display: block;'});
+    
+    var ptxt = $('#txtNewFeed'+feedid).val(); 
+    
+    if (ptxt.length > 1) {
+    
+        $.post( '/post/'+feedid, { 'mess' : ptxt }, function(results){
         
-        if (ptxt.length > 1) {
+            var meteam = {};
+            meteam[fullname] = { pic: pic_url};
+            var newpost = newfeeddom (results, meteam, feedid);
+            newpost.prependTo('#feed-table'+feedid);
             
-            $.post( '/post/'+feedid, { 'mess' : ptxt }, function(results){
-               
-                var posttxt = results.body.text.split(": ");
-                      
-                var author = 'Nokia';
-                var ptxt = posttxt[0];
-                
-                if (posttxt.length > 1) {
-                    author = posttxt[0];
-                    ptxt = posttxt[1];
-                }
-                            
-        		$('#feed-post'+feedid).clone().attr({'id': results.id})
-                    .find('.spanFeed').text(ptxt).end()
-                    .find('.aFeedAuthor').text(author).end()
-                    .find('.pFeedAuthor').attr({"src": pic_url}).end()
-            		.find('.postCreatedDate').text(results.createdDate).end()
-                    .find('.linkComment').click(function () {
-                        // find the related DOM to add the comment (already in the DOM but hidden)
-						var divActivity = $(this).parent().parent().parent().next();
-						var dslComment = divActivity.children('.comment_feddbackBox').children('.Like_box_BG');
-						var divCBox = dslComment.next();
-						var tbComment = divCBox.children('.Like_box_right').children('.users_comment3').children('.tbCommentClass');
-						var lblLengthError = tbComment.next();
-                        
-						divActivity.show();
-						dslComment.hide();
-						divCBox.show();
-						tbComment.focus();
-						lblLengthError.hide()
-				}).end().removeAttr('style').prependTo('#feed-table'+feedid);
-
-
-        		$('#txtNewFeed'+feedid).val(null);
-                $(e).parent().attr({'style': 'display: block;'});
-                $(e).parent().next().attr({'style': 'display: none;'});
-        		//$('#divActive').attr({'style': 'display: block;'});
-        		//$('#divInactive').attr({'style': 'display: none;'});
-        	});
-        } else {
             $('#txtNewFeed'+feedid).val(null);
             $(e).parent().attr({'style': 'display: block;'});
             $(e).parent().next().attr({'style': 'display: none;'});
-        	//$('#divActive').attr({'style': 'display: block;'});
-    		//$('#divInactive').attr({'style': 'display: none;'});
-            
-        }
+            //$('#divActive').attr({'style': 'display: block;'});
+            //$('#divInactive').attr({'style': 'display: none;'});
+        });
+    } else {
+        $('#txtNewFeed'+feedid).val(null);
+        $(e).parent().attr({'style': 'display: block;'});
+        $(e).parent().next().attr({'style': 'display: none;'});
+        //$('#divActive').attr({'style': 'display: block;'});
+        //$('#divInactive').attr({'style': 'display: none;'});
+    
+    }
+}
+    
+var its_setup = false;
+function addPostingWithPic(e, feedid, pic_url, fullname) {
+
+    $(e).parent().attr({'style': 'display: none;'});
+    $(e).parent().next().attr({'style': 'display: block; '});
+    
+    var ptxt = $('#txtNewFeed'+feedid).val(); 
+    var fname = $('#txtFileName').val(); 
+    var fdesc = $('#txtDescription').val(); 
+
+    if (ptxt.length == 0) {
+        ptxt = 'Posted a File';
     }
     
+    // Create an iframe to submit through, using a semi-unique ID
+    var frame_id = 'ajaxUploader-iframe-' + Math.round(new Date().getTime() / 1000)
+    $('body').after('<iframe width="0" height="0" style="display:none;" name="'+frame_id+'" id="'+frame_id+'"/>');
+    $('#'+frame_id).load(function() {
+        if (its_setup) {
+            
+            
+            var response, responseStr = this.contentWindow.document.body.innerHTML;
+            var r = /^\<pre\>(.*)\<\/pre\>$/
+            responseStr = responseStr.match(r)[1]
+            response = JSON.parse(responseStr);
+            alert (response);
+   
+            // Tear-down the wrapper form
+            $('#fplUpload'+feedid).siblings().remove();
+            $('#fplUpload'+feedid).unwrap();
+            its_setup = false;
+            
+            imgCloseClick();
+            
+            var meteam = {};
+            meteam[fullname] = { pic: pic_url};
+            var newpost = newfeeddom (response, meteam, feedid);
+            newpost.prependTo('#feed-table'+feedid);
+            
+            $('#txtNewFeed'+feedid).val(null);
+            $(e).parent().attr({'style': 'display: block;'});
+            $(e).parent().next().attr({'style': 'display: none;'});
+        }
+    });
+    
+    // Wrap it in a form
+    $('#fplUpload'+feedid).wrap('<form action="' + '/post/'+feedid + '" method="POST" enctype="multipart/form-data" target="'+frame_id+'" />'
+    ).after('<input type="hidden" name="' + 'mess' + '" value="' + ptxt + '" />'+
+            '<input type="hidden" name="' + 'fname' + '" value="' + fname + '" />'+
+            '<input type="hidden" name="' + 'fdesc' + '" value="' + fdesc + '" />');
+    its_setup = true; 
+    $('#fplUpload'+feedid).parent('form').submit();
+
+}
     
    
    function btnOnClientClick() {
@@ -255,6 +303,34 @@
     }
     var messageId;
 
+    /* Upload selected file to server, and ready to go */
+    function imgbtnShare_Click() {
+        alert ('ok');
+        var target = '/pathname/filename.jpg';
+        var divAttachFile = document.getElementById("compUploadDiv");
+        var divFileUpload = document.getElementById("divFileUpload");
+        //if (result === SP.UI.DialogResult.OK) {
+        divFileUpload.style.display = 'none';
+        document.getElementById("documentDiv").style.display = 'block';
+        var fileurl = target;
+        var tempfile1 = fileurl.substring(fileurl.lastIndexOf('/') + 1);
+        var tempfile2 = tempfile1.substring(tempfile1.lastIndexOf('/') + 1);
+        var filename = tempfile2.split("#");
+        document.getElementById('path').innerHTML = filename[0];
+        document.getElementById("hdnSharePointFilePath").value = target + "#FromSharePoint"
+        divAttachFile.style.display = 'none';
+            
+            
+        //} else {
+        //    if (document.getElementById("documentDiv").style.display == 'block') {
+        //        divAttachFile.style.display = 'none'
+        //    } else if (divAttachFile.style.display == 'block') {
+        //        divFileUpload.style.display = 'none'
+        //    }
+        //}
+        
+    }
+    
     function CloseCallback(result, target) {
         var divAttachFile = document.getElementById("<%=divAttachFile.ClientID%>");
         var divFileUpload = document.getElementById("<%=divFileUpload.ClientID%>");
@@ -282,6 +358,8 @@
         options1.height = 420;
         SP.UI.ModalDialog.showModalDialog(options1)
     }
+    
+    /* NOT USING THIS - shows sharepoint / computer file upload options */
     function showUploadOptions() {
         var fplUpload = document.getElementById("fplUpload");
         var divFileUpload = document.getElementById("divFileUpload");
@@ -294,7 +372,13 @@
         divFileUpload.style.display = 'block';
         divAttachFile.style.display = 'none'
     }
+    
+    /* Upload File from Computer */
     function compUploadClick() {
+        
+        var divAttachFile = document.getElementById("divAttachFile");
+        divAttachFile.style.display = 'none';
+        
         var divFileUpload = document.getElementById("divFileUpload");
         var compUploadDiv = document.getElementById("compUploadDiv");
         var divImgBtnShareFrmComp = document.getElementById("divImgBtnShareFrmComp");
@@ -304,17 +388,19 @@
         divImgBtnShareFrmComp.style.display = 'none';
         divimagShareFrmComp.style.display = 'block'
     }
+    
+    
     function imgCloseClick() {
         var divFileUpload = document.getElementById("divFileUpload");
         var divAttachFile = document.getElementById("divAttachFile");
         var documentDiv = document.getElementById("documentDiv");
         var compUploadDiv = document.getElementById("compUploadDiv");
         var fplUpload = document.getElementById("fplUpload");
-        var txtFileName = document.getElementById("txtFileName>");
+        var txtFileName = document.getElementById("txtFileName");
         var txtDescription = document.getElementById("txtDescription");
         var errLabel = document.getElementById("feedLengthError");
         var lblErrMsg = document.getElementById("lblErrMsg");
-        var descLengthError = document.getElementById("descLengthError>");
+        var descLengthError = document.getElementById("descLengthError");
         var lblValidationMsg = document.getElementById("lblValidationMsg");
         var lblFileCheck = document.getElementById("lblFileCheck");
         errLabel.style.display = 'none';
@@ -328,11 +414,11 @@
         lblFileCheck.style.display = 'none';
         txtFileName.value = "";
         txtDescription.value = "";
-        var originaFileUpload = document.getElementsByName('fplUpload.')[0];
-        originaFileUpload.value = "";
-        var dummyFileUpload = originaFileUpload.cloneNode(false);
-        dummyFileUpload.onchange = originaFileUpload.onchange;
-        originaFileUpload.parentNode.replaceChild(dummyFileUpload, originaFileUpload)
+        //var originaFileUpload = document.getElementsByName('fplUpload.')[0];
+        //originaFileUpload.value = "";
+        //var dummyFileUpload = originaFileUpload.cloneNode(false);
+        //dummyFileUpload.onchange = originaFileUpload.onchange;
+        //originaFileUpload.parentNode.replaceChild(dummyFileUpload, originaFileUpload)
     }
     function ShowDeleteImage(imageID) {
         var btnDeletePost = document.getElementById(imageID);
@@ -409,13 +495,15 @@
             }
         })
     }
+    
+    /* When a file is selected from the computer, enable the share button */
     function getNameFromPath(strFilepath, target) {
-        var lblFileCheck = document.getElementById("<%=lblFileCheck.ClientID %>");
+        var lblFileCheck = document.getElementById("lblFileCheck");
         if (strFilepath.length == 0) {
-            var divImgBtnShareFrmComp = document.getElementById("<%=divImgBtnShareFrmComp.ClientID%>");
-            var divimagShareFrmComp = document.getElementById("<%=divimagShareFrmComp.ClientID%>");
-            var fplUpload = document.getElementById("<%=fplUpload.ClientID%>");
-            var txtFileName = document.getElementById("<%=txtFileName.ClientID %>");
+            var divImgBtnShareFrmComp = document.getElementById("divImgBtnShareFrmComp");
+            var divimagShareFrmComp = document.getElementById("divimagShareFrmComp");
+            var fplUpload = document.getElementById("fplUpload");
+            var txtFileName = document.getElementById("txtFileName");
             divImgBtnShareFrmComp.style.display = 'none';
             divimagShareFrmComp.style.display = 'block';
             txtFileName.value = "";
@@ -428,24 +516,25 @@
             if (strName == null) {
                 return null
             } else {
-                document.getElementById("<%=hdnSharePointFilePath.ClientID%>").value = "FromComputer";
-                var hdnFileUploadPath = document.getElementById("<%=hdnFileUploadPath.ClientID%>");
-                var divImgBtnShareFrmComp = document.getElementById("<%=divImgBtnShareFrmComp.ClientID%>");
-                var divimagShareFrmComp = document.getElementById("<%=divimagShareFrmComp.ClientID%>");
+                document.getElementById("hdnSharePointFilePath").value = "FromComputer";
+                var hdnFileUploadPath = document.getElementById("hdnFileUploadPath");
+                var divImgBtnShareFrmComp = document.getElementById("divImgBtnShareFrmComp");
+                var divimagShareFrmComp = document.getElementById("divimagShareFrmComp");
                 hdnFileUploadPath.value = strFilepath;
                 var extIndex = strName[0].lastIndexOf(".");
                 var fileName = strName[0].substring(0, extIndex);
-                document.getElementById("<%=txtFileName.ClientID%>").value = fileName;
+                document.getElementById("txtFileName").value = fileName;
                 divImgBtnShareFrmComp.style.display = 'block';
                 divimagShareFrmComp.style.display = 'none';
-                var lblErrMsg = document.getElementById("<%=lblErrMsg.ClientID %>");
+                var lblErrMsg = document.getElementById("lblErrMsg");
                 lblErrMsg.style.display = 'none';
-                var lblValidationMsg = document.getElementById("<%=lblValidationMsg.ClientID %>");
+                var lblValidationMsg = document.getElementById("lblValidationMsg");
                 lblValidationMsg.style.display = 'none';
                 return strName[0]
             }
         }
     }
+    
     function showLinkUploadOptions() {
         document.getElementById("<%=hdnSharePointFilePath.ClientID%>").value = "";
         var divAttachFile = document.getElementById("<%=divAttachFile.ClientID%>");
@@ -496,10 +585,10 @@
     function setDivControls(imgPicUrl, ActorId, ActorName, IsFollow, Phone, IsChatterGuest) {
         var divID = $("#dvUserAction");
         $(divID).show();
-        lnkFollowID = $("#<%=lnkFollowUser.ClientID%>");
-        lnkUnFollowID = $("#<%=unfollow.ClientID%>");
-        lnkSendId = $("#<%=lnkSendMsg.ClientID%>");
-        loggedInUserId = $("#<%=hdnMyUserID.ClientID%>").val();
+        lnkFollowID = $("lnkFollowUser");
+        lnkUnFollowID = $("unfollow");
+        lnkSendId = $("#lnkSendMsg");
+        loggedInUserId = $("#hdnMyUserID").val();
         $("#<%=imgUserPic.ClientID%>").attr({
             title: ActorName,
             src: imgPicUrl
@@ -782,6 +871,7 @@
                     }
                 }
             }
+            
             function CheckFileNameLength(txtFileName) {
                 var $this = txtFileName;
                 var val = $this.val();

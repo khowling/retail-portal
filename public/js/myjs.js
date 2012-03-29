@@ -164,8 +164,12 @@
 		
         function trainingfeed (e) {
             $("#event-container").empty();
+            $("#event-container").append(
+                $("<p/>").css('font-weight','bold').text('Chat with the folks on the course, here they are'),
+                $("div/").attr("id", "feed-container"));
+                
             var trainingid = $(e).parent().parent().attr('id');
-            $('#event-container').load('/chat/' + trainingid);
+            $('#feed-container').load('/chat/' + trainingid);
             
             var tw = getTargetWidth();
             $("#jdialog").dialog ({ 
@@ -179,8 +183,7 @@
     				}
                 }
                 });
-            $("#event-container").prepend(
-                $("<p/>").css('font-weight','bold').text('Chat with the folks on the course, here they are')  );
+            
 			return true;
             
         }
