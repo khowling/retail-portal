@@ -8,16 +8,16 @@
 <script src="/js/mychat.js" type="text/javascript"></script>
 
 <!-- this will be resolved if running inside PhoneGap -->
-<script type="text/javascript" charset="utf-8" src="cordova-1.5.0.js"></script>
+<script type="text/javascript" charset="utf-8" src="/js/libs/cordova-1.5.0.js"></script>
 
 
 <script>
     $(document).ready(function () {
         loadfeeds('<%= feedid %>');
         
-        if (window.PhoneGap !== undefined && navigator.camera) {  
-            document.addEventListener("deviceready", onDeviceReady, false);
-        } 
+        
+        document.addEventListener("deviceready", onDeviceReady, false);
+
         //onDeviceReady();
     });
     
