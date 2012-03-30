@@ -6,10 +6,94 @@
 <script src="/_layouts/1033/SFChatterWP/jquery.textarea-expander.js" type="text/javascript"></script>
 <script src="/_layouts/1033/SFChatterWP/jquery.autocomplete.js" type="text/javascript"></script>
 <script src="/js/mychat.js" type="text/javascript"></script>
+
+<!-- this will be resolved if running inside PhoneGap -->
+<script type="text/javascript" charset="utf-8" src="cordova-1.5.0.js"></script>
+
+
 <script>
     $(document).ready(function () {
         loadfeeds('<%= feedid %>');
+        
+        if (window.PhoneGap !== undefined && navigator.camera) {  
+            document.addEventListener("deviceready", onDeviceReady, false);
+        } 
+        //onDeviceReady();
     });
+    
+// once the device ready event fires, you can safely do your thing! -jm
+    function onDeviceReady()    {
+        $('#lnkfileUpload<%= feedid %>').attr({'href': 'javascript:showUploadOptions();'});
+
+        $('#upload_camera<%= feedid %>').click( function () {
+           
+            navigator.camera.getPicture(
+                uploadPhoto,
+                function onFail(message)   {
+                alert('Error taking picture');
+                },
+                {sourceType : Camera.PictureSourceType.CAMERA});
+            
+            //uploadPhoto('/path/file.jpg');
+        });
+
+        $('#upload_photo<%= feedid %>').click( function () {
+            //console.log("SAVEDPHOTOALBUM");
+            navigator.camera.getPicture(
+                uploadPhoto,
+                function onFail(message)   {
+                alert('Error selecting picture');
+                },
+                {sourceType : Camera.PictureSourceType.SAVEDPHOTOALBUM});
+        });
+    }
+    var readyURI;
+    function uploadPhoto(imageURI) {
+        readyURI = imageURI;
+        var target = '/pathname/filename.jpg';
+        var divAttachFile = document.getElementById("compUploadDiv");
+        var divFileUpload = document.getElementById("divFileUpload");
+
+        divFileUpload.style.display = 'none';
+        document.getElementById("documentDiv").style.display = 'block';
+
+        var tempfile1 = imageURI.substring(imageURI.lastIndexOf('/') + 1);
+        var tempfile2 = tempfile1.substring(tempfile1.lastIndexOf('/') + 1);
+        var filename = tempfile2.split("#");
+        document.getElementById('path').innerHTML = filename[0];
+        //document.getElementById("hdnSharePointFilePath").value = target + "#FromSharePoint"
+        divAttachFile.style.display = 'none';
+    }
+    
+     function  imgbtnShare_Click() {
+        
+        var options = new FileUploadOptions();
+        options.fileKey="file";
+        options.fileName=imageURI.substr(imageURI.lastIndexOf('/')+1);
+        options.mimeType="image/jpeg";
+
+        
+        var params = new Object();
+        params.mess = $("#txtNewFeed<%= feedid %>").text();
+        params.fname = options.fileName;
+        params.fdesc = "From my Windows Phone";
+
+        options.params = params;
+
+        var ft = new FileTransfer();
+        
+        ft.upload(imageURI, "/post/<%= feedid %>", function success(results) {
+            imgCloseClick();
+            var meteam = {};
+            meteam['<%= udata.fullname %>'] = { pic: '<%= udata.picture_url %>'};
+            var newpost = newfeeddom (results, meteam, '<%= feedid %>');
+            newpost.prependTo('#feed-table'+'<%= feedid %>');
+            
+            } , function fail(error) {
+        alert("An error has occurred: Code = " + error.code);
+        }, options);
+    }
+
 
 </script>
 
@@ -37,11 +121,9 @@
                         Attach
                         <img ID="imgFileIcon" src="/_layouts/images/SFChatterWP/ic_file.png"
                             class="file_icon" runat="server" align="absmiddle" />
-                        <!-- 
-                        <a href="javascript:showUploadOptions();" id="lnkfileUpload" style="display: inline;">
-                            File</a>
-                        -->    
-                        <a href="javascript:compUploadClick();" id="lnkfileUpload" style="display: inline;">
+
+                           
+                        <a href="javascript:compUploadClick();" id="lnkfileUpload<%= feedid %>" style="display: inline;">
                             File</a>
                             
                         <img ID="Image9" src="/_layouts/images/SFChatterWP/ic_link.png" class="file_icon"
@@ -63,7 +145,7 @@
         </div>
         
         <!-- FILE UPLOAD OPTIONS , Shareponit or Computer -->
-        <div class="Attach_file_box" id="divFileUpload" runat="server" style="display: none;">
+        <div class="Attach_file_box" id="divFileUpload" style="display: none;">
             <div class="File_Attach_1">
                 <div class="File_Attach_title" runat="server" id="fileCLoseDiv">
                     <div class="Attach_title_left">
@@ -80,11 +162,9 @@
                 <div class="File_upload" id="uploadOptionDiv">
                     
                     <div class="File_upload_left">
-                        <a href="javascript:OpenDialog();" title="Select a file from Sharepoint">Select a file
-                            from Sharepoint</a></div>
+                        <a id="upload_camera<%= feedid %>" title="Select a file from Sharepoint">Take a new photo</a></div>
                     <div class="File_upload_right">
-                        <a href="javascript:compUploadClick();" title="Upload a file from your computer">Upload
-                            a file from your computer</a></div>  
+                        <a id="upload_photo<%= feedid %>" title="Upload a file from your computer">existing photos</a></div>  
                 </div>
             </div>
             <div class="btn_share_attach">
@@ -244,11 +324,11 @@
                 </div>
             </div>
             <div class="btn_share_attach">
-                <div class="btn_share divActive" id="divShareBtnFrmSP" style="display: block;" runat="server">
+                <div class="btn_share divActive" id="divShareBtnFrmSP" style="display: block;" >
                     <input type="image" ID="imgbtnFrmSP" ToolTip="Share" runat="server" src="/_layouts/images/SFChatterWP/btn_share.png"
                         Width="64" Height="23" OnClick="imgbtnShare_Click" />
                 </div>
-                <div class="btn_share divInactive" id="divShareImgFrmSP" style="display: none;" runat="server">
+                <div class="btn_share divInactive" id="divShareImgFrmSP" style="display: none;" >
                     <img ID="Image4" runat="server" src="/_layouts/images/SFChatterWP/btn_shareInactive.png"
                         Width="64" Height="23" />
                 </div>

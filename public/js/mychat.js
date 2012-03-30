@@ -1,4 +1,8 @@
 
+
+
+
+
 function processsfdcfeeditem (itm, outletteam) {
     
     var posttxt = itm.body.text.split(": ");
@@ -258,7 +262,7 @@ function addPostingWithPic(e, feedid, pic_url, fullname) {
             var r = /^\<pre\>(.*)\<\/pre\>$/
             responseStr = responseStr.match(r)[1]
             response = JSON.parse(responseStr);
-            alert (response);
+
    
             // Tear-down the wrapper form
             $('#fplUpload'+feedid).siblings().remove();
@@ -359,17 +363,17 @@ function addPostingWithPic(e, feedid, pic_url, fullname) {
         SP.UI.ModalDialog.showModalDialog(options1)
     }
     
-    /* NOT USING THIS - shows sharepoint / computer file upload options */
+    /*  USING THIS FOR PHONEGAP- shows sharepoint / computer file upload options */
     function showUploadOptions() {
-        var fplUpload = document.getElementById("fplUpload");
-        var divFileUpload = document.getElementById("divFileUpload");
+        //var fplUpload = document.getElementById("fplUpload");
+        var divFileUpload = $("#divFileUpload");
         var divAttachFile = document.getElementById("divAttachFile");
         var divLinkPost = document.getElementById("divLinkPost");
         divLinkPost.style.display = 'none';
-        document.getElementById("hdnSharePointFilePath").value = "";
+        //document.getElementById("hdnSharePointFilePath").value = "";
         document.getElementById("txtFileName").value = "";
-        fplUpload.value = null;
-        divFileUpload.style.display = 'block';
+        //fplUpload.value = null;
+        divFileUpload.attr({'style': 'display: block;'});
         divAttachFile.style.display = 'none'
     }
     
