@@ -427,6 +427,85 @@ app.get('/logout', function (req,res) {
     
 });
 // LOGIN POST
+app.post('/ajaxlogin', function (req,res) {
+    var uid = req.body.username;
+    console.log ('ajaxlogin: Attempt to login as ' + uid);
+    
+    if (uid) {
+
+        queryAPI('query?q='+escape('select Id, Name, PortalPic__c, PortalID__C, Points__c, Account.Name, Account.PortalPic__c, Account.id, (select Id, Name, Attempts__c, Best_Score__c, Passed__c, First_Score__c from Game_Events__r), (select Id, Name, Type__c, Training_Availability__c  from Training_Participation__r) from Contact where PortalID__c = \'' + uid + '\''), null, 'GET',  function (results) {
+           console.log ('login: got query results ' + JSON.stringify(results));
+           if (results.totalSize == 1) {
+               var udata = {
+                   id:  results.records[0].Id,
+                   fullname: results.records[0].Name,
+                   points: results.records[0].Points__c, 
+                   outlet : {
+                       id: results.records[0].Account.Id,
+                       name: results.records[0].Account.Name,
+                       picture_url: results.records[0].Account.PortalPic__c
+                   },
+                   picture_url: results.records[0].PortalPic__c, 
+                   completed_events: {},
+                   booked_training: {}
+                   };
+                   
+                if (results.records[0].Game_Events__r) {
+                    var gameevents =  results.records[0].Game_Events__r.records;
+                    for (var gidx in gameevents) {
+                        udata.completed_events[gameevents[gidx].Name] = {
+                            id:  gameevents[gidx].Id,
+                            attempts: gameevents[gidx].Attempts__c,
+                            passed: gameevents[gidx].Passed__c,
+                            score: gameevents[gidx].First_Score__c,
+                            bestscore: gameevents[gidx].Best_Score__c
+                        };
+                    }
+                }
+                
+                 if (results.records[0].Training_Participation__r) {
+                    var tevents =  results.records[0].Training_Participation__r.records;
+                    for (var gidx in tevents) {
+                        udata.booked_training[tevents[gidx].Training_Availability__c] = {
+                            id:  tevents[gidx].Id,
+                            name:  tevents[gidx].Name,
+                            type: tevents[gidx].Type__c
+                        };
+                    }
+                }
+                
+                
+                
+                console.log ('/home - got userdata : ' + JSON.stringify(udata));    
+                var sess = req.session;
+                //Properties on req.session are automatically saved on a response
+                sess.username = uid;
+                sess.userdata = udata;  
+                sess.completed_events = udata.completed_events;  
+                var start_idx = event_index -1;
+//                createEvents(uid, udata,  null);
+//                createTrainings (uid, udata);
+                res.send({ username: uid, userdata: udata, current_index: start_idx} });
+               
+                return;
+           } else {
+                res.send({message : 'username not found (ensure Contact exists with username in PortalID__c field): ' + uid});
+                return;
+           }
+        });
+    } else {
+	res.send({message : 'Please enter username'});
+    }
+});
+
+app.get('/logout', function (req,res) {
+    req.session.username = null;
+    req.session.udata = null;
+    req.session.destroy();
+    res.redirect('/');
+    
+});
+// LOGIN POST
 app.post('/home', function (req,res) {
     var uid = req.body.username;
     console.log ('login: Attempt to login as ' + uid);
