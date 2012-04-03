@@ -483,8 +483,8 @@ app.post('/ajaxlogin', function (req,res) {
                 sess.userdata = udata;  
                 sess.completed_events = udata.completed_events;  
                 var start_idx = event_index -1;
-//                createEvents(uid, udata,  null);
-//                createTrainings (uid, udata);
+                createEvents(uid, udata,  null);
+                createTrainings (uid, udata);
                 res.send({ username: uid, userdata: udata, current_index: start_idx});
                
                 return;
