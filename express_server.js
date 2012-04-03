@@ -270,17 +270,18 @@ function queryAPI (resturl, mbody, httpmethod, callback) {
     req.end(JSON.stringify(mbody));
 };
 
+var hostapp = 'http://nokiaknowledge2.herokuapp.com';
 var event_collection = {
 	'K000': {
 			type: "KNOWLEDGE",
 			name: "Start Here  *** The Basics  ***",
 			desc: "Portal Training",
 			info: "HTML5 Video Stream",
-			icon: "/image/icons/gettingstarted.jpg",
+			icon: "image/icons/gettingstarted.jpg",
 			forwho: { completed : {}},
 			points: 50,
 			knowledgedata: {
-				url: '/stream/myvid.mp4',
+				url: hostapp+'/stream/myvid.mp4',
 				type: 'HTML5_VIDEO'
 			}
 	},
@@ -293,7 +294,7 @@ var event_collection = {
 			forwho: { completed : {}},
 			points: 50,
 			knowledgedata: {
-				url: '/stream/gizmo.webm',
+				url: hostapp+'/stream/gizmo.webm',
 				type: 'HTML5_VIDEO'
 			}
 	},
@@ -302,7 +303,7 @@ var event_collection = {
 			name: "Nokia Lumia 710",
 			desc: "Basic Phone Demo Training",
 			info: "YouTube Embedded Video",
-			icon: "/image/icons/nokia-710.png",
+			icon: "image/icons/nokia-710.png",
 			forwho: { completed : { 'Q001':true}},
 			points: 50,
 			knowledgedata: {
@@ -315,7 +316,7 @@ var event_collection = {
 			name: "Windows Phone 7",
 			desc: "Presenting Training",
 			info: "YouTube Embedded Video",
-			icon: "/image/icons/WP7.jpg",
+			icon: "image/icons/WP7.jpg",
 			forwho: { completed : {}},
 			points: 50,
 			knowledgedata: {
