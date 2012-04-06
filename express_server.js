@@ -56,15 +56,14 @@ app.post ('/post/:what', function (req,res) {
           headers: { 
               'Host': host,
               'Authorization': 'OAuth '+foauth.getOAuthResponse().access_token,
-              'Accept':'application/jsonrequest',
               'Cache-Control':'no-cache,no-store,must-revalidate',
-              'Content-type':'application/json; charset=UTF-8' 
+              'Content-type':'multipart/form-data' 
             },
           data: {
             'text':  udata.fullname + ': '+ req.body.mess,
             'desc': filedesc,
             'title': filename,
-            'feedItemFileUpload': rest.file(files.attach.path, null, null, 'binary',  'image/gif')
+            'feedItemFileUpload': rest.file(files.attach.path, null, null, null,  'image/gif')
           }
         }).on('complete', function(results) {
             req.session = null; // method doesnt update the session
