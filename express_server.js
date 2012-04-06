@@ -56,14 +56,12 @@ app.post ('/post/:what', function (req,res) {
           headers: { 
               'Host': host,
               'Authorization': 'OAuth '+foauth.getOAuthResponse().access_token,
-              'Cache-Control':'no-cache,no-store,must-revalidate',
-              'Content-type':'multipart/form-data' 
             },
           data: {
             'text':  udata.fullname + ': '+ req.body.mess,
             'desc': filedesc,
             'title': filename,
-            'feedItemFileUpload': rest.file(files.attach.path, null, null, null,  'image/gif')
+            'feedItemFileUpload': rest.file(files.attach.path, files.attach.name, null, 'binary',  files.attach.type)
           }
         }).on('complete', function(results) {
             req.session = null; // method doesnt update the session
@@ -122,7 +120,7 @@ app.get ('/feedfile', function(req,res) {
         
         req.session = null; // method doesnt update the session
         res.header('Content-Type', mt);
-        res.end (results, 'binary');
+        res.end (results, 'base64');
     });
     
 });
