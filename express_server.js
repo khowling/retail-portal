@@ -110,10 +110,9 @@ app.get ('/feedfile', function(req,res) {
     console.log ('/feedfile ' + what);
     
     var host =  (require('url').parse(foauth.getOAuthResponse().instance_url))['host'];
-
+/*
     rest.get('https://' + host +  what, {
       headers: { 
-          'Host': host,
           'Authorization': 'OAuth '+foauth.getOAuthResponse().access_token
       }
     }).on('complete', function(results) {
@@ -122,7 +121,31 @@ app.get ('/feedfile', function(req,res) {
         res.header('Content-Type', mt);
         res.end (results, 'binary');
     });
+*/
+	
+	var data = null;
+	https.get({
+			method: 'get',
+			host: host,
+			path: what,
+			headers: {
+			  'Authorization': 'OAuth '+foauth.getOAuthResponse().access_token,
+		}}, function(fileres) {
+			console.log("statusCode: ", res.statusCode);
     
+			fileres.on('data', function(_data) {
+				if (!data)
+					data = _data;
+				else
+					data += _data;
+			});
+    
+			fileres.on('end', function() {
+				res.end (data, 'binary');
+			});
+		}).on('error', function(e) {
+		  console.log(e);
+		})
 });
 
 app.get ('/chat/:what', function(req,res) {
