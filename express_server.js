@@ -123,6 +123,7 @@ app.get ('/feedfile', function(req,res) {
     });
 */
 	
+	res.header('Content-Type', mt);
 	var data = null;
 	https.get({
 			method: 'get',
@@ -134,11 +135,14 @@ app.get ('/feedfile', function(req,res) {
 			console.log("/feedfile : statusCode: ", fileres.statusCode);
     
 			fileres.on('data', function(_data) {
+				/*
 				console.log ('/feedfile : got some data');
 				if (!data)
 					data = _data;
 				else
 					data += _data;
+				*/
+				res.send(data, 'binary');
 			});
     
 			fileres.on('end', function() {
