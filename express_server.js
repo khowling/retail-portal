@@ -123,7 +123,9 @@ app.get ('/feedfile', function(req,res) {
     });
 */
 	
-	res.header('Content-Type', mt);
+	res.contentType(mt);
+	res.attachment();
+	
 	var data = null;
 	https.get({
 			method: 'get',
@@ -135,19 +137,22 @@ app.get ('/feedfile', function(req,res) {
 			console.log("/feedfile : statusCode: ", fileres.statusCode);
     
 			fileres.on('data', function(_data) {
-				/*
+				
 				console.log ('/feedfile : got some data');
+				/*
 				if (!data)
 					data = _data;
 				else
 					data += _data;
 				*/
-				res.send(data, 'binary');
+				res.write (data);
+				
 			});
     
 			fileres.on('end', function() {
 				console.log ('/feedfile : end, send the response');
-				res.end (data, 'binary');
+				//res.end (data, 'binary');
+				res.end();
 			});
 		}).on('error', function(e) {
 		  console.log(e);
