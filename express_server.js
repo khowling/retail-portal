@@ -120,7 +120,7 @@ app.get ('/feedfile', function(req,res) {
         
         req.session = null; // method doesnt update the session
         res.header('Content-Type', mt);
-        res.end (results, 'base64');
+        res.end (results, 'binary');
     });
     
 });
