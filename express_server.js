@@ -123,7 +123,7 @@ app.get ('/feedfile', function(req,res) {
     });
 */
 	
-	res.contentType(mt);
+	res.header('Content-Type', mt);
 	res.attachment();
 	
 	var data = null;
