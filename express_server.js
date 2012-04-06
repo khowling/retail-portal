@@ -131,9 +131,10 @@ app.get ('/feedfile', function(req,res) {
 			headers: {
 			  'Authorization': 'OAuth '+foauth.getOAuthResponse().access_token,
 		}}, function(fileres) {
-			console.log("statusCode: ", res.statusCode);
+			console.log("/feedfile : statusCode: ", fileres.statusCode);
     
 			fileres.on('data', function(_data) {
+				console.log ('/feedfile : got some data');
 				if (!data)
 					data = _data;
 				else
@@ -141,10 +142,13 @@ app.get ('/feedfile', function(req,res) {
 			});
     
 			fileres.on('end', function() {
+				console.log ('/feedfile : end, send the response');
 				res.end (data, 'binary');
 			});
 		}).on('error', function(e) {
 		  console.log(e);
+		}).on('end', function() {
+		  console.log('/feedfile : the end');
 		})
 });
 
