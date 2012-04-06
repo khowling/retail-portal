@@ -141,20 +141,20 @@ app.get ('/feedfile', function(req,res) {
 			fileres.on('data', function(_data) {
 				
 				console.log ('/feedfile : got some data');
-				
+				/*
 				if (!data)
 					data = _data;
 				else
 					data += _data;
-				
-				//res.write (data);
+				*/
+				res.write (new Buffer(_data, 'binary'));
 				
 			});
     
 			fileres.on('end', function() {
 				console.log ('/feedfile : end, send the response');
-				res.end (data, 'binary');
-				//res.end();
+				//res.end (data, 'binary');
+				res.end();
 			});
 		}).on('error', function(e) {
 		  console.log(e);
