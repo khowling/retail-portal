@@ -64,7 +64,7 @@ app.post ('/post/:what', function (req,res) {
             'text':  udata.fullname + ': '+ req.body.mess,
             'desc': filedesc,
             'title': filename,
-            'feedItemFileUpload': rest.file(files.attach.path, null, null, 'multipart/form-data',  'image/png')
+            'feedItemFileUpload': rest.file(files.attach.path, null, null, 'binary',  'image/gif')
           }
         }).on('complete', function(results) {
             req.session = null; // method doesnt update the session
