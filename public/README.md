@@ -1,3 +1,0 @@
-keith
-is
-here

@@ -1,6 +1,0 @@
-ENV.sh
-node_modules
-.settings.xml
-views
-views/*
-

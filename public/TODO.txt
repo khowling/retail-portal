@@ -1,3 +1,0 @@
-== IE7 ==
-Offset in the 480+ menu
-Offset in the footer
