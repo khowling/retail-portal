@@ -110,23 +110,8 @@ app.get ('/feedfile', function(req,res) {
     console.log ('/feedfile ' + what);
     
     var host =  (require('url').parse(foauth.getOAuthResponse().instance_url))['host'];
-/*
-    rest.get('https://' + host +  what, {
-      headers: { 
-          'Authorization': 'OAuth '+foauth.getOAuthResponse().access_token
-      }
-    }).on('complete', function(results) {
-        
-        req.session = null; // method doesnt update the session
-        res.header('Content-Type', mt);
-        res.end (results, 'binary');
-    });
-*/
-	
 	res.header('Content-Type', mt);
 	res.attachment();
-	
-	//var buf = new Buffer(64*1024);
 	
 	var data = null;
 	https.get({
@@ -139,27 +124,17 @@ app.get ('/feedfile', function(req,res) {
 			console.log("/feedfile : statusCode: ", fileres.statusCode);
     
 			fileres.on('data', function(_data) {
-				
 				console.log ('/feedfile : got some data');
-				/*
-				if (!data)
-					data = _data;
-				else
-					data += _data;
-				*/
 				res.write (new Buffer(_data, 'binary'));
 				
 			});
     
 			fileres.on('end', function() {
 				console.log ('/feedfile : end, send the response');
-				//res.end (data, 'binary');
 				res.end();
 			});
 		}).on('error', function(e) {
 		  console.log(e);
-		}).on('end', function() {
-		  console.log('/feedfile : the end');
 		})
 });
 
@@ -312,7 +287,7 @@ var event_collection = {
 			name: "Start Here  *** The Basics  ***",
 			desc: "Portal Training",
 			info: "HTML5 Video Stream",
-			icon: "image/icons/gettingstarted.jpg",
+			icon: "images/icons/gettingstarted.jpg",
 			forwho: { completed : {}},
 			points: 50,
 			knowledgedata: {
@@ -338,7 +313,7 @@ var event_collection = {
 			name: "Nokia Lumia 710",
 			desc: "Basic Phone Demo Training",
 			info: "YouTube Embedded Video",
-			icon: "image/icons/nokia-710.png",
+			icon: "images/icons/nokia-710.png",
 			forwho: { completed : { 'Q001':true}},
 			points: 50,
 			knowledgedata: {
@@ -351,7 +326,7 @@ var event_collection = {
 			name: "Windows Phone 7",
 			desc: "Presenting Training",
 			info: "YouTube Embedded Video",
-			icon: "image/icons/WP7.jpg",
+			icon: "images/icons/WP7.jpg",
 			forwho: { completed : {}},
 			points: 50,
 			knowledgedata: {

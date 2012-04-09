@@ -1,0 +1,1699 @@
+
+/* CSS Document */
+
+.main
+{
+    margin: 0px;
+    padding: 0px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    font-weight: normal;
+    color: #333435;
+}
+
+.clear
+{
+    clear: both;
+}
+.clear-1
+{
+    clear: both;
+    font-size: 1px;
+}
+a
+{
+    text-decoration: none;
+    color: #015ba7;
+}
+a:hover
+{
+    text-decoration: underline;
+    color: #015ba7;
+}
+.ulChatter
+{
+    margin: 0px;
+    padding: 0px;
+}
+
+.liChatter
+{
+    background: url("images/bullet.png") left no-repeat;
+    display: inline;
+    list-style-type: none;
+    margin: 0px;
+    padding: 0 13px 0 7px;
+    font-size: 11px;
+}
+.font_title2
+{
+    font: 13px;
+    font-weight: bold;
+    color: #000000;
+}
+.toplinks
+{
+    width: 100%;
+    height: 20px;
+    margin: auto;
+}
+.toplinks_left
+{
+    width: 85%;
+    float: left;
+}
+.toplinks_right
+{
+    width: 15%;
+    float: right;
+    text-align: right;
+}
+.toplinks a
+{
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 11px;
+    font-weight: normal;
+    color: #015ba7;
+    text-decoration: none;
+}
+.toplinks a:hover
+{
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 11px;
+    font-weight: normal;
+    color: #015ba7;
+    text-decoration: underline;
+}
+.font_title
+{
+    font-family: Arial, Helvetica, sans-serif;
+    //font-size: 13px;
+    color: #015ba7;
+    font-weight: bold;
+}
+.font_title a
+{
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 13px;
+    color: #015ba7;
+    font-weight: bold;
+}
+.font_title a:hover
+{
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 13px;
+    color: #015ba7;
+    font-weight: bold;
+    text-decoration: underline;
+}
+.font_time
+{
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 11px;
+    color: #b4b3b3;
+    font-weight: normal;
+    list-style-type: none;
+    background: none;
+    padding: 0 10px 0 0;
+}
+
+.users_comment li.font_time span
+{
+    background: none;
+}
+
+.main
+{
+    min-width: 280px;
+    position: static;
+    padding: 1px 5px;
+    background: url("images/background.png") repeat-x;
+}
+.divLoginBg
+{
+    min-width: 32px;
+    height: 350px;
+    position: relative;
+    padding: 74px 0px 0px 0px;
+    background: url("images/bg_login.png") repeat-x;
+}
+.main_listusers
+{
+    min-width: 320px;
+    position: relative;
+    padding: 15px 10px 14px 10px;
+    background: url("images/background.png") repeat-x;
+}
+.login_bg
+{
+    width: 100%;
+    height: 100px;
+    position: relative;
+    background: url("images/img_cloud.png") no-repeat center;
+    padding-top: 80px;
+}
+.login_button
+{
+    width: 100%;
+    height: 29px;
+    padding: 30px 0 0 0;
+    text-align: center;
+}
+.topDiv
+{
+    width: 100%;
+    margin: auto;
+}
+.textbox
+{
+    width: 255px;
+    height: 20px;
+    padding: 0px;
+    vertical-align: middle;
+}
+.textbox_fileupload
+{
+    width: 300px;
+    height: 10px;
+    padding: 3px;
+    vertical-align: middle;
+    margin: 0 10px 0 0;
+}
+.title_group
+{
+    font: 13px;
+    font-weight: bold;
+    color: #000000;
+    padding: 5px 0 0px 0;
+}
+.commentBox
+{
+    width: 100%;
+    padding: 8px 0px 0px 0;
+    background: url("images/background2.png") no-repeat right top;
+    text-align: left;
+}
+.textfield_comment
+{
+    width: 100%;
+    padding: 3px 0 3px 0;
+    vertical-align: middle;
+}
+.textfield_com
+{
+    min-height: 30px;
+    width: 98%;
+    border: none;
+    border: 1px #c3c8ca solid;
+    padding: 3px 0 0 3px;
+    border-width: 2px 1px 1px 1px;
+    border-radius: 5px 5px 5px 5px;
+    filter: alpha(opacity=70);
+    opacity: 0.7;
+    -moz-opacity: 0.7;
+    margin-bottom: 2px;
+    padding: 4px;
+    resize: none;
+    outline-style: none;
+    overflow: hidden;
+    word-wrap: break-word;
+}
+.textfield_com2
+{
+    width: 96%;
+    height: 20px;
+    padding: 0 5px 0 5px;
+    border-color: #c7cacb;
+    border-style: solid;
+    border-width: 2px 1px 1px 1px;
+    border-radius: 5px 5px 5px 5px;
+    resize: none;
+    background: ffffff;
+    color: #7d7d78;
+}
+.textfield_com3
+{
+    width: 300px;
+    height: 40px;
+    padding: 0 5px 0 5px;
+    border-color: #c7cacb;
+    border-style: solid;
+    border-width: 2px 1px 1px 1px;
+    background: ffffff;
+    color: #7d7d78;
+    vertical-align: top;
+}
+.textfield_com4
+{
+    width: 260px;
+    height: 20px;
+    padding: 0 5px 0 5px;
+    border-color: #c7cacb;
+    border-style: solid;
+    border-width: 2px 1px 1px 1px;
+    background: ffffff;
+    color: #7d7d78;
+}
+.attach_share
+{
+    width: 100%;
+    height: 34px;
+    clear: both;
+}
+.btn_share
+{
+    width: 64px;
+    float: right;
+    height: 34px;
+}
+.attach_file
+{
+    width: 188px;
+    height: 34px;
+}
+.file_icon
+{
+    margin: 0 5px 0 10px;
+}
+.usersFeed
+{
+    width: 100%;
+    /*position: relative;*/
+}
+.users_feed
+{
+    width: 100%;
+    clear: both;
+    padding: 0 0 10px 0;
+    border-bottom: 1px #e6e6e6 solid;
+    margin: 0px 0 0 0;
+}
+.users_photo
+{
+    width: 45px;
+    float: left;
+    /* margin: 0px 15px 0px 0px; */
+    padding: 8px 0px 0px 0px;
+}
+.users_info
+{
+    /* width: 85%; */
+    /*position: relative;*/
+    margin: 0px 0 0 55px;
+}
+.users_comment
+{
+    width: 98%;
+    padding: 5px 0 0 0px;
+    vertical-align: top;
+}
+.users_comment li, .users_comment3 li, .list_user li
+{
+    background: url("images/bullet.png") left no-repeat;
+    display: inline;
+    list-style-type: none;
+    margin: 0px;
+    padding: 0 13px 0 7px;
+    font-size: 11px;
+}
+.users_comment ul, .users_comment3 ul, .list_user ul
+{
+    margin: 0px;
+    padding: 0px;
+}
+
+.users_comment2
+{
+    width: 100%;
+    float: left;
+    padding: 0px;
+    vertical-align: top;
+    clear: both;
+}
+.users_comment3
+{
+    width: 100%;
+    padding: 2px 0 2px 0;
+    vertical-align: top;
+}
+.users_comment3 li
+{
+    list-style-type: none;
+}
+.usersFeed_time
+{
+    width: 10%;
+    padding: 0px;
+    float: left;
+    height: 15px;
+}
+.users_like
+{
+    width: 90%;
+    padding: 0px;
+    float: right;
+}
+.users_links
+{
+    width: 100%;
+    padding: 0px 0 0 10px;
+    vertical-align: top;
+    clear: both;
+}
+.users_links ul
+{
+    margin: 0px;
+    padding: 0px;
+}
+
+.users_links li
+{
+    background: url("images/bullet.png") left no-repeat;
+    float: left;
+    list-style-type: none;
+    margin: 0px;
+    padding: 0 13px 0 7px;
+}
+.users_links a
+{
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 11px;
+    color: #015ba7;
+    text-decoration: none;
+}
+.users_links a:hover
+{
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 11px;
+    color: #015ba7;
+    text-decoration: underline;
+}
+.comment_feddback
+{
+    width: 100%;
+    margin: 5px 0 0 0px;
+    vertical-align: top;
+}
+.arrow_img
+{
+    /* width: 98%;  */
+    height: 7px;
+    padding-left: 10px;
+    background: url("images/background3.png") left repeat-x;
+}
+.arrow
+{
+    /* width: 98%; */
+    height: 5px;
+    /* padding: 0 0 0 10px; */
+}
+
+
+.comment_feddbackBox
+{
+    /* width: 98%; */
+    background-color: #eff7fa;
+    /* padding: 0px 5px 0px 5px; */
+}
+.Like_box
+{
+    width: 100%;
+    //padding: 5px 0 7px 0;
+    padding: 0px 0 0px 0;
+    background: url("images/divider_line.png") bottom repeat-x;
+    text-align: left;
+}
+.Like_box_left
+{
+    width: 40px;
+    float: left;
+    padding: 3px 0 0 0;
+}
+.Like_box_right
+{
+    width: 87%;
+    float: left;
+}
+.Like_box img
+{
+    padding-right: 10px;
+}
+.Like_box_BG
+{
+    width: 100%;
+    padding: 5px 0 7px 0;
+    background: url("images/divider_line.png") repeat-x bottom;
+}
+.btn_comment
+{
+    width: 100%;
+    padding: 5px 0 7px 250px;
+    background: none;
+}
+.list_user
+{
+    width: 390px;
+    padding: 0px;
+    clear: both;
+    background: #FFFFFF;
+    border-bottom: 1px #eaeaea solid;
+}
+.list_user_border
+{
+    border: 1px #bfcfd4 solid;
+    width: 390px;
+}
+.list_user_btnDone
+{
+    width: 392px;
+    text-align: right;
+    padding: 15px 0 0 0;
+}
+.list_user ul
+{
+    margin: 0px;
+    padding: 0 0 0 5px;
+}
+.list_user li
+{
+    background: none;
+    list-style-type: none;
+    padding: 5px 10px 5px 5px;
+    float: left;
+}
+.title_listuser
+{
+    width: 380px;
+    height: 20px;
+    background: #c4e7f2;
+    text-align: left;
+    padding: 2px 0 0 10px;
+    border-bottom: 0px;
+    font-weight: bold;
+}
+.Prev_next
+{
+    width: 390px;
+    height: 21px;
+    padding: 5px 0 0 0;
+    clear: both;
+    background: url("images/bg_lists.png") repeat-x left;
+    border-bottom: 1px #eaeaea solid;
+    text-align: center;
+}
+.Prev_next_left
+{
+    width: 200px;
+    text-align: right;
+    float: left;
+    background: url("images/img_prev.png") no-repeat right;
+}
+.Prev_next_right
+{
+    width: 180px;
+    text-align: left;
+    float: right;
+    padding: 0 0 0 10px;
+    background: url("images/img_next.png") no-repeat left;
+}
+.Prev_next a
+{
+    color: #a8a8a8;
+}
+.brd-none
+{
+    border: none;
+}
+.Attach_file_box
+{
+    width: 99.5%;
+}
+.File_Attach
+{
+    width: 100%;
+    border: 1px #999999 solid;
+    background: #FFFFFF;
+    padding: 0 0 10px 0;
+}
+.File_Attach_1
+{
+    width: 100%;
+    height: 80px;
+    border: 1px #999999 solid;
+    background: #FFFFFF;
+}
+.file_attach
+{
+    width: 200px;
+    float: left;
+}
+.File_Attach_title
+{
+    width: 100%;
+    height: 30px;
+    border-bottom: 1px #d7dbde solid;
+    background: #FFFFFF;
+}
+.Attach_title_left
+{
+    width: 90%;
+    height: 23px;
+    float: left;
+    padding: 7px 0 0 0;
+}
+.Attach_title_right
+{
+    width: 10%;
+    height: 23px;
+    float: right;
+    padding: 7px 0 0 0;
+}
+.File_upload
+{
+    width: 100%;
+    clear: both;
+}
+.File_upload_left
+{
+    width: 50%;
+    height: 34px;
+    padding: 15px 0 0 0;
+    float: left;
+    text-align: center;
+    border-right: 1px #d7dbde solid;
+}
+.File_upload_right
+{
+    width: 48%;
+    padding: 15px 0 0 0;
+    float: right;
+    text-align: center;
+    height: 34px;
+}
+.btn_share_attach
+{
+    width: 100%;
+    height: 25px;
+    text-align: right;
+    padding: 5px 0 0 0;
+}
+.File_info
+{
+    width: 374px;
+}
+.File_info_left
+{
+    width: 130px;
+    padding: 15px 0 0 0;
+    float: left;
+    text-align: center;
+}
+.File_info_right
+{
+    width: 65%;
+    padding: 10px 0 0 0;
+    float: left;
+    text-align: left;
+}
+.Upload_file_box
+{
+    width: 100%;
+    text-align: left;
+    clear: both;
+}
+.Upload_file
+{
+    width: 98%;
+    text-align: left;
+    padding: 10px 10px 10px 0px;
+    clear: both;
+}
+.error_msg
+{
+    clear: both;
+    width: 97%;
+    text-align: left;
+    padding-top: 10px;
+}
+.treeview_box
+{
+    width: 370px;
+    text-align: left;
+    padding: 10px;
+}
+.reqInfo
+{
+    width: 100%;
+    height: 15px;
+    text-align: right;
+    padding: 3px 5px 10px 0;
+}
+.textbox_browse
+{
+    width: 180px;
+    height: 18px;
+    padding: 3px;
+    vertical-align: top;
+}
+.textbox_245
+{
+    width: 75%;
+    height: 14px;
+    padding: 3px;
+    vertical-align: top;
+    resize: none;
+}
+.textbox2_245
+{
+    width: 75%;
+    height: 55px;
+    padding: 3px;
+    vertical-align: top;
+}
+.File_upload2
+{
+    width: 98%;
+    clear: both;
+    padding: 5px;
+}
+.row_box
+{
+    padding: 0;
+    width: 100%;
+}
+.row_box_left
+{
+    width: 25%;
+    float: left;
+    text-align: right;
+    vertical-align: middle;
+    padding: 0px 5px 0 0;
+}
+.row_box_right
+{
+    width: 73%;
+    float: right;
+}
+.row_box2
+{
+    padding: 3px 0 10px 5px;
+    color: #7d7d78;
+}
+.width_box
+{
+    width: 100px;
+}
+.img_space
+{
+    padding: 0 0 0 10px;
+}
+.btn_comment
+{
+    width: 100%;
+    height: 20px;
+    text-align: right;
+    padding: 3px 0 0 0;
+}
+.file_upload_icon
+{
+    width: 42px;
+    float: left;
+    padding: 0 0 0 0;
+}
+.file_upload_info
+{
+    /* width: 80%; */
+    /* float: left; */
+    padding: 1px 0 0 0;
+}
+.file_title
+{
+    width: 100%; /*height: 20px;*/
+}
+
+.file_title_left
+{
+    width: 93%;
+    float: left;
+}
+.file_title_right
+{
+    width: 5%;
+    float: right;
+    text-align: right;
+    padding: 0 5px 0 0;
+}
+.file_actions
+{
+    width: 100%;
+}
+
+.topDiv_login
+{
+    width: 460px;
+    margin: auto;
+    padding: 10px 0 10px 10px;
+}
+.main_login
+{
+    width: 540px;
+    height: 350px;
+    position: relative;
+    padding: 10px 0px 0px 0px;
+    background: url(images/bg_login.png) repeat-x;
+}
+.select_group
+{
+    width: 50%;
+    margin: auto;
+    background: #FFFFFF;
+    border: 1px #cccccc solid;
+    height: 60px;
+    margin-top: 40px;
+    text-align: center;
+    padding-top: 30px;
+    color: #666666;
+    font-size: 14px;
+}
+
+.uploadbtn
+{
+    vertical-align: bottom;
+}
+
+.postInput
+{
+    width: 100%;
+}
+.requiredInput
+{
+    height: 100%;
+    position: relative;
+}
+.requiredInput .requiredBlock
+{
+    background-color: #CC0000;
+    bottom: 0;
+    left: -4px;
+    position: absolute;
+    top: 1px;
+    width: 3px;
+}
+.requiredLegend
+{
+    float: right;
+}
+.requiredExampleOuter
+{
+    margin: 0 0.2em 0 0.3em;
+    padding: 1px 0;
+}
+.requiredExample
+{
+    border-left: 3px solid #CC0000;
+    font-size: 80%;
+    vertical-align: 1px;
+    width: 100%;
+}
+.requiredLegend
+{
+    color: #000000;
+    font-weight: normal;
+}
+.errorMsg
+{
+    color: #D74C3B;
+}
+.requiredLegendContainer
+{
+    font-size: 0.9em;
+    height: 18px;
+    margin-right: 10px;
+    margin-top: 5px;
+}
+.rowStyle
+{
+    padding: 0 7px 0 0;
+    text-align: right;
+    vertical-align: top;
+}
+.rowControlStyle
+{
+    text-align: left;
+    padding-left: 10px;
+    padding-bottom: 10px;
+}
+.file_Description
+{
+    width: 100%;
+}
+.lnkUrl
+{
+    padding-left: 20px;
+}
+.tbComments
+{
+    min-height: 40px;
+    border-radius: 5px 5px 5px 5px;
+    resize: none;
+}
+
+.middle
+{
+    text-align: left; /* expand this column to as large as it can get within table? */
+}
+.wrap
+{
+    word-wrap: break-word; /* use up entire cell this div is contained in? */
+}
+.expander
+{
+}
+
+.disp_none
+{
+    display: none;
+}
+textarea
+{
+    border-style: solid;
+    border-width: thin;
+    overflow: auto;
+    border-color: GrayText;
+}
+.showMore
+{
+    background: url("images/bg_showMore.gif") repeat-x scroll left center transparent;
+    border: 1px solid #D4DADC;
+    font-weight: bold;
+    height: 20px;
+    text-align: center;
+    width: 98%;
+    vertical-align: middle;
+    border-radius: 3px 3px 3px 3px;
+    font-size: 0.92em;
+    padding-top: 5px;
+}
+.Like_box_GVCommentList
+{
+    width: 100%;
+    padding: 3px 0 5px 0;
+    text-align: left;
+}
+
+.fixtable
+{
+    table-layout: fixed;
+    width: 100%;
+}
+
+.deleteComment
+{
+    text-align: right;
+    display: none;
+}
+.trDelete
+{
+    width: 3%;
+    vertical-align: top;
+}
+
+.topNav_box
+{
+    width: 100%;
+    padding: 5px 0 0 0;
+}
+
+.topNav
+{
+    width: 368px;
+    height: 23px;
+    padding: 0 0 0 10px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+}
+.tab_selected
+{
+    width: 75px;
+    height: 19px;
+    background: url("images/tab_selected.png") no-repeat left;
+    margin: auto;
+    padding: 4px 0 0 0;
+    text-align: center;
+}
+.tab_normal
+{
+    width: 75px;
+    height: 19px;
+    background: url("images/tab.png") no-repeat left;
+    margin: auto;
+    padding: 4px 0 0 0;
+    text-align: center;
+}
+.topNav ul
+{
+    padding: 0px;
+    margin: auto;
+}
+.topNav li
+{
+    width: 71px;
+    list-style-type: none;
+    display: inline;
+    margin: 0px;
+    float: left;
+    text-align: center;
+}
+
+.clear-1
+{
+    clear: both;
+    font-size: 1px;
+}
+
+.title_group_mysite
+{
+    font: 13px;
+    color: #000000;
+    padding: 5px 0 5px 0;
+}
+
+
+
+
+.boxFiles
+{
+    width: 100%;
+    margin: 0px;
+    padding: 0px 0 5px 0;
+}
+.boxFilesTL, .boxFilesTR, .boxFilesTM, .boxFilesBL, .boxFilesBR, .boxFilesBM
+{
+    background: url("images/img_commentBox.png") no-repeat;
+}
+.boxFilesTL
+{
+    background-position: top left;
+    height: 8px;
+}
+.boxFilesTR
+{
+    background-position: top right;
+    height: 8px;
+    margin-left: 8px;
+}
+.boxFilesTM
+{
+    background-position: -0px -10px;
+    background-repeat: repeat-x;
+    height: 8px;
+    margin-right: 8px;
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    color: #FFFFFF;
+    font-weight: bold;
+    padding: 0px;
+}
+.boxFilesBL
+{
+    background-position: 0px -20px;
+    height: 8px;
+}
+.boxFilesBR
+{
+    background-position: right -20px;
+    height: 8px;
+    margin-left: 8px;
+}
+.boxFilesBM
+{
+    background-position: -0px -30px;
+    background-repeat: repeat-x;
+    height: 8px;
+    margin-right: 8px;
+}
+.bg_commentBox
+{
+    border: 2px #77c5df solid;
+    background: url("images/bg_commentBox.gif") repeat-x left top;
+    border-bottom: 0px;
+    border-top: 0px;
+    padding: 0 0 0 8px;
+}
+
+
+.commentBox_mysite
+{
+    width: 98%;
+    padding: 8px 0px 0px 0;
+    background: url("images/background2.png") no-repeat right top;
+    text-align: left;
+}
+.close_btn
+{
+    width: 25px;
+    text-align: left;
+    vertical-align: top;
+}
+
+.table_userComment
+{
+    width: 100%;
+    border: 0px;
+}
+.users_photo_2
+{
+    width: 3%;
+    vertical-align: top;
+}
+
+
+.textfield_com_new
+{
+    width: 100%;
+    height: 20px;
+    padding: 0 5px 0 5px;
+    border-color: #c7cacb;
+    border-style: solid;
+    border-width: 2px 1px 1px 1px;
+    background: ffffff;
+    color: #7d7d78;
+}
+.textfield_com_new2
+{
+    width: 100%;
+    height: 60px;
+    padding: 0 5px 0 5px;
+    border-color: #c7cacb;
+    border-style: solid;
+    border-width: 2px 1px 1px 1px;
+    background: ffffff;
+    color: #7d7d78;
+}
+.Noborder
+{
+    background: none;
+}
+
+.middle
+{
+    text-align: left; /* expand this column to as large as it can get within table? */
+}
+.wrap
+{
+    word-wrap: break-word; /* use up entire cell this div is contained in? */
+}
+
+.lblLoggedInuser
+{
+    width: 80px;
+    word-wrap: break-word;
+    padding-right: 20px;
+}
+
+
+
+/* Group Search CSS */
+
+#container
+{
+    width: 99%;
+    height: auto;
+    background: none;
+    margin-top: 20px;
+}
+
+#header
+{
+    border: 1px solid #D4DADC;
+    background: url("images/grid_headerbg.gif") #fff repeat-x 0px bottom;
+    padding-left: 5px;
+    padding-top: 5px;
+    padding-bottom: 4px;
+    font-weight: bold;
+    width: 100%;
+    text-align: left;
+}
+
+.group_info
+{
+    padding-left: 5px;
+    border-color: #D4DADC;
+    border-style: solid;
+    border-width: 1px;
+    padding-top: 5px;
+    width: 100%;
+    border-top: none;
+    min-height: 50px;
+    padding-bottom: 5px;
+    clear: both;
+}
+
+
+.group_info p
+{
+    font-size: 11px;
+    color: black;
+    margin-top: 2px;
+}
+
+
+.group_info a
+{
+    text-decoration: none;
+}
+.group_info a:hover
+{
+    text-decoration: underline;
+    color: #3399ff;
+}
+.group_info img
+{
+    border: none;
+    float: left;
+    margin-right: 5px;
+}
+
+#Prev_next
+{
+    background: url("images/bg_lists.png") repeat-x;
+    width: 100%;
+    text-align: center;
+    white-space: nowrap;
+    font-size: 75%;
+    color: #a8a8a8;
+    height: 10px;
+    line-height: 10px;
+    padding-top: 4px;
+}
+#Prev_next span a
+{
+    text-decoration: none;
+}
+#Prev_next img
+{
+    border: none;
+}
+
+.groups_photo
+{
+    width: 45px;
+    float: left;
+    margin: 0px 15px 0px 0px;
+}
+
+.SearchGroupBtn
+{
+    width: 100%;
+    display: none;
+    vertical-align: top;
+}
+
+.imgBtnSearchGroup
+{
+    width: 90px;
+    height: 24px;
+    vertical-align: middle;
+    cursor: pointer;
+    border-width: 0;
+}
+
+.drop_down_listMyChatter
+{
+    display: none;
+    margin-left: 75px;
+    border: 1px solid #D4DADC;
+    width: auto;
+    position: absolute;
+    z-index: 95;
+    background-color: #FFFFFF;
+    padding-bottom: 5px;
+    border-radius: 5px 5px 5px 5px;
+    box-shadow: 0 2px 5px #ACACAC;
+    margin-top: 2px;
+    padding: 7px 5px;
+    text-align: left;
+    white-space: nowrap;
+    z-index: 95;
+}
+
+.menu_item
+{
+    font-size: 11px;
+    font-weight: 500;
+    margin: 4px 0px 4px 2px;
+    width: auto;
+    height: 12px;
+    line-height: 18px;
+    font-size: 0.9em;
+    vertical-align: middle;
+}
+.menu_item a
+{
+    text-decoration: none;
+    width: 100%;
+    float: left;
+    text-align: left;
+    display: block;
+    margin-right: 4px;
+    color: #015BA7;
+    padding: 2px;
+}
+.menu_item img
+{
+    float: left;
+}
+.menu_item a:hover
+{
+    text-decoration: underline;
+    background-color: #E3F3FF;
+    cursor: pointer;
+}
+.menu_item:hover
+{
+    text-decoration: underline;
+    background-color: #E3F3FF;
+    cursor: pointer;
+}
+.SelectedFilter
+{
+    cursor: pointer;
+    font-weight: bold;
+    color: #015BA7;
+}
+
+
+.SelectedFilter:hover
+{
+}
+
+#menu_parent
+{
+    font-family: inherit;
+    font-size: medium: font-weight:bold;
+    position: relative;
+    height: 12px;
+    line-height: 12px;
+    white-space: nowrap;
+    margin-bottom: 5px;
+    color: #222222;
+}
+
+/* ---------------Top Search Box  -------------- */
+
+#left_curve
+{
+    float: left;
+}
+
+#loginbox
+{
+    float: left;
+    line-height: 14px;
+}
+
+.SearchBox
+{
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    padding-top: 1px;
+    height: 19px;
+    width: 188px;
+    border: 1px #D5D5D5 solid;
+    vertical-align: middle;
+}
+#input_btn
+{
+    float: left;
+    margin-left: 5px;
+}
+
+#input_btn img
+{
+    border: none;
+}
+
+#divTopSearchBox
+{
+    padding-bottom: 20px;
+}
+
+/* ------------------End Top Search Box  --------------- */
+/* ------------------Start of Autocomplete CSS --------- */
+.ac_results
+{
+    padding: 0px;
+    border: 1px solid black;
+    background-color: white;
+    overflow: hidden;
+    z-index: 99999;    
+}
+
+.ac_results ul
+{
+    list-style-position: outside;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.ac_results li
+{
+    margin: 0px;
+    padding: 2px 5px;
+    cursor: default;
+    display: block; /* 	if width will be 100% horizontal scrollbar will apear when scroll mode will be used	width: 100%;*/
+    font: menu;
+    font-size: 12px; /* it is very important, if line-height not setted or setted in relative units scroll will be broken in firefox */
+    line-height: 16px;
+    overflow: hidden;
+}
+
+.ac_odd
+{
+    background-color: White;
+}
+
+.ac_over
+{
+    background-color: #c6e1ff;
+    color: #222222;
+    cursor: pointer;
+    border-style: solid;
+    border-width: thin;
+    border-color: #99ccff;
+}
+/* ------------------End of Autocomplete CSS --------- */
+.linkComment
+{
+    cursor: pointer;
+    text-decoration: none !important;
+}
+.SearchLine
+{
+    clear: both;
+    font-size: 1px;
+    padding-top: 7px;
+    padding-bottom: 7px;
+}
+
+
+/*Follow Classes Start*/
+#dvcontainer
+{
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 16px;
+    margin-top: 8px;
+}
+#box
+{
+    min-height: 70px;
+    width: 260px;
+    border: 1px solid #D2D2D2;
+    padding: 10px;
+    overflow-x: hidden;
+    background-color: White;
+}
+#content
+{
+    margin-left: 60px;
+    max-width: 225px;
+    overflow: hidden;
+}
+
+#name
+{
+    color: #015BA7;
+    width: 180px;
+    padding-bottom: 5px;
+    margin-bottom: 5px;
+    border-bottom-color: #D2D2D2;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    word-wrap: break-word;
+}
+#name a:link
+{
+    text-decoration: none;
+    color: #015BA7;
+}
+#name a:visited
+{
+    text-decoration: none;
+    color: #126aed;
+}
+#name a:hover
+{
+    text-decoration: none;
+}
+#userName
+{
+    font-size: 85%;
+    font-weight: bold;
+    color: #015BA7;
+    text-decoration: none;
+}
+#follow
+{
+    font-size: 75%;
+    color: #0095E2;
+    margin-bottom: 3px;
+    text-decoration: none;
+}
+#follow a:link
+{
+    text-decoration: none;
+    color: #0095E2;
+    font-weight: normal;
+}
+#follow a:visited
+{
+    text-decoration: none;
+    color: #0095E2;
+    font-weight: normal;
+}
+#follow a:hover
+{
+    text-decoration: underline;
+    cursor: pointer;
+    font-weight: normal;
+}
+#unfollow
+{
+    font-size: 75%;
+    display: none;
+    margin-bottom: 3px;
+    text-decoration: none;
+    font-weight: normal;
+}
+#message
+{
+    font-size: 75%;
+    color: #0095E2;
+    text-decoration: none;
+    font-weight: normal;
+}
+#message a:link
+{
+    text-decoration: none;
+    cursor: pointer;
+    color: #0095E2;
+    font-weight: normal;
+}
+#message a:visited
+{
+    color: #0095E2;
+    text-decoration: none;
+    font-weight: normal;
+}
+#message a:hover
+{
+    text-decoration: underline;
+    cursor: pointer;
+    font-weight: normal;
+}
+img
+{
+    border: none;
+    text-decoration: none;
+}
+#icon
+{
+    float: left;
+    margin-right: 5px;
+    width: 16px;
+    height: 16px;
+    border: none;
+}
+#icon1
+{
+    float: left;
+    margin-right: 5px;
+    width: 16px;
+    height: 16px;
+    border: none;
+}
+#icon2
+{
+    border: none;
+    width: 16px;
+    height: 16px;
+}
+#close
+{
+    margin-left: 5px;
+}
+#user_image_a
+{
+    width: 16px;
+    height: 16px;
+    float: left;
+}
+#dvUserAction
+{
+    display: none;
+    position: absolute;
+    z-index: 2147483647;    
+    font-size: 75%;
+}
+.spnFollow
+{
+    line-height: 18px;
+    height: 20px;
+    text-decoration: none;
+    font-weight: normal;
+    color: Black;
+    vertical-align: top;
+}
+
+.lblPhone
+{
+    color: Black;
+    text-decoration: none;
+    font-weight: normal;
+    font-size: 12px;
+}
+.lbltype
+{
+    color: #7D7D84;
+    text-decoration: none;
+    font-weight: normal;
+}
+/*Follow Classes End*/
+
+.UserImg
+{
+    width: 45px;
+    height: 45px;
+}
+.DivUser
+{
+    display: none;
+    position: absolute;
+    z-index: 1;
+    height: 70px;
+}
+
+/*Send Msg*/
+#container1
+{
+    margin: auto;
+    width: 500px;
+    background-color: white; /*---or load background img of 500*500--*/
+}
+#msg_layout
+{
+    /*margin-left: 50px;*/
+    margin-top: 15px;
+    width: 451px;
+}
+#to
+{
+    min-height: 32px;
+    /*line-height: 32px;*/
+    background-color: white;   
+    overflow-x: hidden;
+    overflow-y: visible;
+    margin-right: 8px;
+    float: right;
+    width: 85%;
+    border: 1px #cccccc solid;    
+}
+
+#to span
+{
+    background-color: #EFF7FA;
+    margin: 3px;
+    border: 1px #D4DADC solid;
+    padding: 3px;
+    height: 15px;
+    float: left;
+    position: relative; 
+    text-indent: 0;
+}
+.toTextBox
+{
+    line-height: 22px;
+    height: 22px;
+    border: 0px;
+}
+#msg_layout #msg
+{
+    display: inline-block;
+    width: 100%;
+    margin-top: 10px;
+    background-color: White;
+}
+#msg p
+{
+    width: 12%;
+    text-align: right;
+    float: left;
+    font-size: 13px;
+    font-weight: 500;
+    color: #4A4A56;
+}
+.txtBody
+{
+    border: 1px #cccccc solid;
+    float: left;
+    width: 85%;
+    overflow-y: scroll;
+    vertical-align: middle;
+    margin-left: 5px;
+    resize: none;
+}
+#buttons
+{
+    margin-top: 20px; /*margin-left: 240px;*/
+    height: 100%;
+    overflow: hidden;
+    text-align: center;
+}
+.remove
+{
+    font-size: 12px;
+    font-weight: bold;
+    text-decoration: none;
+}
+.remove a:hover
+{
+    text-decoration: none;
+}
+.toLabel
+{
+    width: 12%;
+    text-align: right;
+    float: left;
+    height: 20px;
+    font-weight: bold;
+}
+
+#buttons
+{
+    margin-top: 20px;
+    height: 100%;
+    overflow: hidden;
+}
+/*Send Msg End*/

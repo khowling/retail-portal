@@ -427,7 +427,7 @@ input.modal-button {
 #login-content code {background:#141414; border-left:3px solid #65B43D; color:#bbb; display:block; font-size:12px; margin-bottom:12px; padding:4px 6px 6px;}
 #login-content a {color:#ddd;}
 
-#login-content a.modalCloseImg {background:url(image/lightbox/x.png) no-repeat; width:25px; height:29px; display:inline; z-index:3200; position:absolute; top:-15px; right:-16px; cursor:pointer;}
+#login-content a.modalCloseImg {background:url(images/lightbox/x.png) no-repeat; width:25px; height:29px; display:inline; z-index:3200; position:absolute; top:-15px; right:-16px; cursor:pointer;}
 
 #login-content h3 {color:#84b8d9;}
 
@@ -442,7 +442,7 @@ a.fbconnect_login_button {
 }
 
 .FBConnectButton {
-    background: url("/image/connect_sprite.png") no-repeat scroll 0 0 #29447E;
+    background: url("images/connect_sprite.png") no-repeat scroll 0 0 #29447E;
     cursor: default;
     display: inline-block;
     outline: medium none;
@@ -450,7 +450,7 @@ a.fbconnect_login_button {
     text-decoration: none;
 }
 .FBConnectButton .FBConnectButton_Text {
-    background: url("/image/connect_sprite.png") repeat scroll 0 0 #5F78AB;
+    background: url("images/connect_sprite.png") repeat scroll 0 0 #5F78AB;
     border-bottom: 1px solid #1A356E;
     border-top: 1px solid #879AC0;
     color: #FFFFFF;

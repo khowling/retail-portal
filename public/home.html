@@ -1,0 +1,320 @@
+<!doctype html>
+<head>
+
+  <meta content="initial-scale=1, maximum-scale=1" name="viewport">
+    <!--
+    <meta name=”Viewport” content=”width=550; user-scaleable=no; initial-scale=1.0” />
+-->
+    <link rel="stylesheet" href="css/jquery.jgrowl.css"/>
+    <link rel="stylesheet" href="css/jQuizMe.css"/>
+    <link rel="stylesheet" href="css/responsive.css"/>
+    <link rel="stylesheet" href="css/fullcalendar.css"/>
+
+
+    <link rel="stylesheet" href="css/jquery-ui-1.8.18.custom.css"/>
+
+    <script src="js/libs/modernizr-2.0.6.min.js"> </script>
+    <!-- jquery & plugins (addins needs to be included after jquery -->
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script type="text/javascript" src="js/libs/jquery.jgrowl_minimized.js"></script>
+    <!-- <script type="text/javascript" src="js/libs/jquery.simplemodal.js"></script> -->
+    <script type="text/javascript" src="js/libs/jquery-ui-1.8.18.custom.min.js"></script>
+    <script type="text/javascript" src="js/jquery.countup.js"></script>
+    <script type="text/javascript" src="js/libs/jQuizMe-2.2.js"></script>
+    <script type="text/javascript" src="js/libs/gauge.min.js"></script>
+    <script type="text/javascript" src="js/libs/jquery.gauge.min.js"></script>
+    <script type="text/javascript" src="js/libs/jquery.bxSlider.js"></script>
+    <script type="text/javascript" src="js/libs/jquery.cutetime.js"></script>
+    <script type="text/javascript" src="js/libs/fullcalendar.js"></script>
+
+
+	<script type="text/javascript" src="js/jquery.chatter.js"></script>
+	<script type="text/javascript" charset="utf-8" src="cordova-1.5.0.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="css/jRating.jquery.css" media="screen" />
+    <script type="text/javascript" src="js/libs/jRating.jquery.js"></script>
+    <script type="text/javascript" src="js/myjs.js"></script>
+
+
+  </head>
+<body>
+
+  <!-- HEADER -->
+  <div id="titleheader">
+    <div class="inner" style="margin-bottom: 0px;">
+      <h2 class="title" style="float:left;">
+        <img src="images/nk_nokia_logo.png" style="background: #4472A7; margin-right: 10px;"/>engaging learning
+      </h2>
+
+
+      <div id="nav">
+        <ul style="padding-left: 0px;">
+          <li>
+            <a href="#">Scan QR</a>
+          </li>
+          <li>
+            <a href="#">Enter QR</a>
+          </li>
+          <li>
+            <a href="/logout">Logout</a>
+          </li>
+        </ul>
+      </div>
+
+
+      <div style="clear:both;"></div>
+    </div>
+  </div>
+
+  <!-- BODY -->
+  <div id="main-body">
+    <div id="pageBody" class="wrapper clearfix">
+      
+      
+      
+      
+
+
+<script>
+    $(document).ready (function(){
+	
+		function getQueryParams(qs) {
+			qs = qs.split("+").join(" ");
+
+			var params = {}, tokens,
+				re = /[?&]?([^=]+)=([^&]*)/g;
+
+			while (tokens = re.exec(qs)) {
+				params[decodeURIComponent(tokens[1])]
+					= decodeURIComponent(tokens[2]);
+			}
+
+			return params;
+		}
+		
+		urlquery = getQueryParams(document.location.search);
+		//alert (JSON.stringify(urlquery));
+		$('#myuserName').text( urlquery.fullname);
+		$('#myimage').attr ({'src': urlquery.user_pic});
+		$('#myoutletimage').attr ({'src': urlquery.outlet_pic});
+		$('#userOrg1').text( urlquery.outlet);
+		$('#userOrg2').text( urlquery.outlet);
+
+
+        initPoints ();
+        //$('#chatterdiv').load('http://nokiaknowledge2.herokuapp.com/chat/me');
+        $('#chatterdiv').chatter({
+			fullname: urlquery.fullname,
+			user_pic: urlquery.user_pic,
+			outlet: urlquery.outlet
+		});
+		document.addEventListener("deviceready", function() { $('#chatterdiv').data('chatter').setmobileattachments(); } , false);
+		//$('#chatterdiv').data('chatter').setmobileattachments();
+        
+        $(window).resize(function() {
+            if ($("#jdialog").dialog( "isOpen" )) {
+                $("#jdialog").dialog("option", "position", "center");
+                var cw = $("#jdialog").dialog( "option", "width" );
+                var tw = getTargetWidth();
+                if (cw != tw) 
+                    $("#jdialog").dialog( "option", "width", tw );
+            }
+                
+        });
+        
+		if (urlquery.idx > 0) {
+			lasteventprocessed = urlquery.idx;
+		}
+		//alert ('launching poll with ' + lasteventprocessed);
+        poll();
+    });
+                            
+</script>
+
+
+<div id="jdialog">
+    <div id="eventArea">
+		<div id="event-container"></div>
+	</div>
+</div>
+
+
+<!-- LEFT PAGE -->
+<div id="home-left" >
+    
+    <div style="float: left; margin-right: 5px;">
+    
+         <!-- ME and MY POINTS -->
+        <div class="myboarder">
+            <!-- Header -->
+            <div>
+            	<div style="float:left; margin-top: 6px; margin-bottom: 6px;"><h3><span id="myuserName"></span></h3><div id="userOrg1" style="color: #EBA555;"></div></div>
+            	<div id="orgImage" style="float: right;margin: 5px;"><img id="myoutletimage" src="" width="55"/></div>
+            	<div style="clear: both;"></div>
+            </div>
+            <!-- Content -->
+            <div class="myboarder-inside" style="text-align: center; height: 120px; background: white; border-radius: 4px; border: 2px;">
+            	<div id="userImage" style="float:left; text-align: center; width: 50%;">
+                    <img id="myimage" src="" width="75" style="margin: 5px;"/>
+                </div>
+            	<div style="float:left; text-align: center; width: 45%; margin-top: -5px;">
+            		<canvas id="points-guage" width="110" height="100"></canvas>
+            	</div>
+            	<div style="clear:both; color: black; font-weight:bold;" >My Points <span class="timer">0</span></div>
+            </div>
+        </div>
+    </div>
+    
+    <div style="float: left;">    
+	    <!-- RECOMMENDED -->
+		<div class="myboarder">
+			<!-- Header -->
+            <div>
+				<div style="float:left; margin-top: 6px; margin-bottom: 6px;"><h3>Recommended</h3></div>
+				<div class="carousel" style="float: right; margin: 5px;">
+					<ol id="carousel_items_items" class="carousel_itemList">
+					</ol>
+				</div>
+				<div style="clear: both;"></div>
+			</div>
+		    <!-- Content -->
+			<ul id="slider1" class="myboarder-inside" style="text-align: center; height: 80px; margin-top: 20px;">
+                <li class="itemList" >
+					<img src="images/icons/knowledge-icon.gif" class="quizImage">
+					<div style="font-weight: bold;" class="itemName">The Basics</div> 
+					<span class="itemDesc">Portal Training</span>
+					<div style="float: right;">
+						<div style="margin: 2px; height: 10px; width: 60px; overflow: hidden; z-index: 1; position: relative;" class="knowRating" id="whydoineedaid"><div class="jRatingColor"></div><div class="jRatingAverage" style="width: 40px; top: -10px;"></div><div class="jStar" style="width: 60px; height: 10px; top: -20px; background: url(&quot;images/jrating/small.png&quot;) repeat-x scroll 0% 0% transparent;"></div></div>
+						<div style="margin: 2px;">(4234 ratings)</div>
+					</div>
+					<br>
+					<div class="itemResults">HTML5 Video Stream</div>	
+                </li>
+                    							
+                <li class="itemList" >
+					<img src="images/icons/WP7.jpg" class="quizImage">
+					<div style="font-weight: bold;" class="itemName">Windows Phone 7</div> 
+					<span class="itemDesc">Presenting Training</span>
+					<div style="float: right;">
+						<div style="margin: 2px; height: 10px; width: 60px; overflow: hidden; z-index: 1; position: relative;" class="knowRating" id="whydoineedaid"><div class="jRatingColor"></div><div class="jRatingAverage" style="width: 40px; top: -10px;"></div><div class="jStar" style="width: 60px; height: 10px; top: -20px; background: url(&quot;images/jrating/small.png&quot;) repeat-x scroll 0% 0% transparent;"></div></div>
+						<div style="margin: 2px;">(4234 ratings)</div>
+					</div>
+					<br>
+					<div class="itemResults">HTML5 Video Stream</div>
+                </li>							
+			</ul>
+		</div>
+		<div style="clear: both;"></div>
+	</div>
+    
+	<div style="clear: both;"></div>
+    
+    <!--CHATTER -->
+	<div class="myboarder" style="margin-top: 10px;">
+		<!-- Header -->
+        <div>
+			<div style="float:left; margin-top: 6px; margin-bottom: 6px;"><h3>My Team</h3></div>
+			<div id="userOrg2" style="float: right;margin-top: 15px; margin-bottom: 5px; color: #EBA555;"></div>
+			<div style="clear: both;"></div>
+		</div>
+        <!-- Content -->
+        <div id="chatterdiv" class="myboarder-inside" style="background: white;  "></div>
+        <div style="clear: both;"></div>
+	</div>
+    
+
+</div> <!-- #home-left -->
+	
+<!-- RIGHT PAGE -->
+<div id="home-right">
+
+    <!-- KNOWLEDGE -->
+     <div class="myboarder">
+        <!-- Header -->
+		<div>
+			<div style="float:left; margin-top: 6px; margin-bottom: 6px;"><h3>Knowledge</h3></div>
+			<div style="float: right; margin-top: 5px; margin-bottom: 5px;"><input type="text" placeholder="search knowledge" class="modal-text-input" name="username" value=""></div>
+			<div style="clear: both;"></div>
+		</div>
+		<!-- Content -->
+		<ul id="knowledgeList" class="myboarder-inside" style="background: white; ">
+			<li id="knowledge-template"  style="display : none; " class="itemList">
+				<img class="quizImage" style="width: 50px;" src=""/>
+				<div class="itemName" style="font-weight: bold;"></div> 
+				<span class="itemDesc"></span>
+				<div style="float: right;">
+					<div id="whydoineedaid" class="knowRating" style="margin: 2px;"></div>
+					<div class="itemRate" style="margin: 2px;">(4234 ratings)</div>
+				</div>
+				<br/>
+				<div class="itemResults"></div>
+			</li>
+		</ul>
+	</div>
+    
+    <!-- TRAINING -->
+     <div class="myboarder">
+        <!-- Header -->
+    	<div>
+			<div style="float:left; margin-top: 6px; margin-bottom: 6px;"><h3>My Outlets Training</h3></div>
+			<div style="float: right; margin-top: 5px; margin-bottom: 5px;"><input type="text" placeholder="search knowledge" class="modal-text-input" name="username" value=""></div>
+			<div style="clear: both;"></div>
+		</div>
+		<!-- Content -->
+		<ul id="trainingList" class="myboarder-inside" style="background: white; ">
+        
+            <li id="training-template" style="display : none;" class="itemList">
+            	<img class="quizImage" src="images/icons/trainingClass.jpg"/>
+        		
+        		<div class="quizPass" style="display : none;">
+        			<img style="margin: 10px;" height="50px;" src="images/booked.jpg"></img>
+                    <a><img class="onclick_trainingFeed" style="margin: 10px;" height="50px;" src="images/chat.jpeg" ></img></a>
+        		</div>
+        		<div class="itemName" style="font-weight: bold;"></div> 
+        		<span class="itemDesc"></span>
+        		<br/>
+        		<div class="itemResults"></div>
+        	</li>
+
+		</ul>
+	</div>
+    
+    <!-- QUIZ -->
+    <div id="quiz-container" class="myboarder" style="margin-top: 10px;">
+    	<!-- Header -->
+        <div>
+    		<div style="float:left; margin-top: 6px; margin-bottom: 6px;"><h3>Quiz</h3></div>
+    		<div style="float: right;margin-top: 15px; margin-bottom: 5px; color: #EBA555;">quizzes appear when something important occures</div>
+    		<div style="clear: both;"></div>
+    	</div>
+        <!-- Content -->
+        <ul id="quizList" class="myboarder-inside quizList_3in_2col">
+        	<li id="quiz-template" style="display : none;" class="itemList">
+        		<img class="quizImage" src="images/icons/quiz_icon.gif"/>
+        		
+        		<div class="quizPass" style="display : none;">
+        			<img style="margin: 10px;" height="40px;" src="images/pass.gif"></img>
+        		</div>
+        		<div class="itemName" style="font-weight: bold;"></div> 
+        		<span class="itemDesc"></span>
+        		<br/>
+        		<div class="itemResults"></div>
+        	</li>
+        </ul>
+    </div>
+</div> <!-- #home-right -->
+
+
+    </div>
+    <!-- #pageBody -->
+  </div>
+  <!-- #main-body -->
+
+  <div id="footer">
+    <footer class="wrapper">
+      <h3>footer</h3>
+    </footer>
+  </div>
+
+</body>
+</html>

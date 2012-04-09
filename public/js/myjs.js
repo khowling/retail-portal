@@ -77,7 +77,7 @@
 
 		function launchknowledge (kid, kdata) {
 			$("#event-container").empty();
-			var tw = getTargetWidth();
+			
 			if (kdata.knowledgedata.type == 'EMBEDDED_IFRAME') {
 				var _utLayOut = $("<iframe/>").attr({ "width": "100%", "height": "400px", "src": kdata.knowledgedata.url, "frameborder":"0", "allowfullscreen":""});
 				$("#event-container").append(_utLayOut);
@@ -109,18 +109,19 @@
                 */
 				//return true;
             }
+			var tw = getTargetWidth();
             $("#jdialog").dialog ({ 
                 title: kdata.name,
                 modal: true, 
                 width: tw,
-                buttons: {               	
-    				Cancel: function() {
+				open: function(event, ui) {
+					$(this).closest('.ui-dialog').find('.ui-dialog-titlebar-close').show();
+				}, 
+				beforeClose: function() {
                         if ($("#video-container")[0])
                             $("#video-container")[0].pause();
 						$("#event-container").empty();
-    					$("#jdialog").dialog( "close" );
-    				}
-                }
+    			}
             });
             
             return true;
@@ -139,7 +140,7 @@
 				disableRestart: true,
 				statusUpdate: function( quizInfo, currQuiz ){
 						if (quizInfo.deleted == true) {
-							$.post( '/donequiz', { id: quizid,  score: quizInfo.score, quesTried: quizInfo.quesTried},
+							$.post( 'http://nokiaknowledge2.herokuapp.com/donequiz', { id: quizid,  score: quizInfo.score, quesTried: quizInfo.quesTried},
 								function( data ) {
 										//$.modal.close();
                                         $("#jdialog").dialog( "close" );
@@ -156,7 +157,10 @@
                 title: itemdata.desc,
                 modal: true, 
                 width: tw,
-                buttons: {}
+                buttons: {},
+				open: function(event, ui) {
+					$(this).closest('.ui-dialog').find('.ui-dialog-titlebar-close').hide();
+				}
                 });
 
 			return true;
@@ -168,20 +172,26 @@
                 $("<p/>").css('font-weight','bold').text('Chat with the folks on the course, here they are'),
                 $("div/").attr("id", "feed-container"));
                 
-            var trainingid = $(e).parent().parent().attr('id');
-            $('#feed-container').load('/chat/' + trainingid);
-            
+            var trainingid = e.data.itm;
+            //$('#feed-container').load('/chat/' + trainingid);
+            $('#feed-container').chatter({
+				fullname: urlquery.fullname,
+				user_pic: urlquery.user_pic,
+				outlet: urlquery.outlet,
+				feedid: trainingid
+			});
+			
             var tw = getTargetWidth();
             $("#jdialog").dialog ({ 
                 title: 'Training Feed',
                 modal: true, 
                 width: tw,
-                 buttons: {                   
-        			Close: function() {
+				open: function(event, ui) {
+					$(this).closest('.ui-dialog').find('.ui-dialog-titlebar-close').show();
+				}, 
+				beforeClose: function() {
                         $("#event-container").empty();
-    					$("#jdialog").dialog( "close" );
-    				}
-                }
+    			}
                 });
             
 			return true;
@@ -224,7 +234,7 @@
                     if (confirm('Event: ' + calEvent.title + ' on '+ calEvent.start +' would you like to book?')) {
                         $(this).css('border-color', 'red');
                             //alert ('posting ' + tid + ' : ' + calEvent.start);
-                            $.post( '/booktraining', { tid: tid, tdate: calEvent.start },
+                            $.post( 'http://nokiaknowledge2.herokuapp.com/booktraining', { tid: tid, tdate: calEvent.start },
     							function() {
                                     $("#event-container").empty();
     								$("#jdialog").dialog( "close" );
@@ -277,8 +287,9 @@
 			if (!poll_err) {
 				//console.log("creating longpoll request");
 				$.ajax({ 
-					url: "/longpoll/" + lasteventprocessed, 
+					url: "http://nokiaknowledge2.herokuapp.com/longpoll/" + lasteventprocessed, 
 					success: function(res){
+						//alert ('success ' + JSON.stringify(res));
 						if (res.item_type == 'QUIZ' || res.item_type == 'KNOWLEDGE' || res.item_type == 'TRAINING') {
 							lasteventprocessed = res.index;
 
@@ -293,7 +304,7 @@
 
 								} else if (res.item_type == 'KNOWLEDGE') {
 									
-									if (!res.item_data.icon)  res.item_data.icon = '/image/icons/knowledge-icon.gif';
+									if (!res.item_data.icon)  res.item_data.icon = 'images/icons/knowledge-icon.gif';
 									itemid = $('#knowledge-template').clone().attr({"id": res.item_id }).removeAttr("style").appendTo("#knowledgeList").on('click', function(e) {
 										launchknowledge (res.item_id, res.item_data);
 										 return false;
@@ -321,8 +332,9 @@
 							} else if (res.item_type == 'TRAINING') {
     							if (res.results_data) {
                                     //alert ('training results data :' + res.item_id + ' : ' + JSON.stringify(res.results_data));
-									$(itemid).find(".itemResults").text(res.results_data.type).end();
-									$(itemid).find(".quizPass").removeAttr("style");
+									$(itemid).find(".itemResults").text(res.results_data.type);
+									$(itemid).find(".quizPass").show();
+									$(itemid).find("img.onclick_trainingFeed").click ({itm: res.item_id}, trainingfeed);
 								} else {
 									$(itemid).find(".itemResults").text('click for more information and to book a place!').end();
 								}
@@ -334,6 +346,7 @@
 						}
 					}, 
 					error: function(XMLHttpRequest, textStatus, errorThrown){
+							
 							poll_err = true;
 							$.jGrowl("error: connection with server lost  (" + JSON.stringify(errorThrown) + ")");
 						}, 
@@ -373,7 +386,7 @@
 							$("#userOrg1").text("Carphone Warehouse - Slough");
 							$("#userOrg2").text("Carphone Warehouse - Slough");
 							
-							var _orgOut = $("<img/>").attr({"src": "/image/carphone_warehouse.jpg", "width": "55"});
+							var _orgOut = $("<img/>").attr({"src": "/images/carphone_warehouse.jpg", "width": "55"});
 							$("#orgImage").append(_orgOut);
 							
 							
