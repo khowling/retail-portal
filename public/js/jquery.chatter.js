@@ -112,6 +112,10 @@
 			var struct, minutesOffset = 0;
 			var numericKeys = [ 1, 4, 5, 6, 7, 10, 11 ];
 			// 1 YYYY 2 MM 3 DD 4 HH 5 mm 6 ss 7 msec 8 Z 9 ± 10 tzHH 11 tzmm
+			if (itm.createdDate.match(/\.000+0000$/)) {
+				itm.createdDate = itm.createdDate.replace(/\.000+0000$/, '.000Z');
+				alert ('new string ' + itm.createdDate);
+			}
 			if ((struct = /^(\d{4}|[+\-]\d{6})(?:-(\d{2})(?:-(\d{2}))?)?(?:T(\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{3}))?)?(?:(Z)|([+\-])(\d{2})(?::(\d{2}))?)?)?$/.exec(itm.createdDate))) {
 				// avoid NaN timestamps caused by “undefined” values being passed to Date.UTC
 				for (var i = 0, k; (k = numericKeys[i]); ++i) {
