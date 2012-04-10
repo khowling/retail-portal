@@ -74,11 +74,9 @@
 
 
 	$(document).ready(function() {
-		console.log('document ready');
 
 		$('#logmein').submit(function() {
-			console.log('sumbit');
-			
+
 			$.support.cors = true;
 			// if ('undefined' !== typeof netscape) netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
 			var jqxhr = $.post('http://nokiaknowledge2.herokuapp.com/ajaxlogin',{username: $('[name=username]').val() , password: $('[name=password]').val()} ,
@@ -92,11 +90,8 @@
 					$('#logerrors').text (data.message);
 				}
 			}, 'json')
-			.error(function(e) { console.log("POST error " + JSON.stringify(e)); })
-			.success(function() {
-			console.log("POST success");
-		});
-		return false;
+			.error(function(e) { $('#logerrors').text("POST error " + JSON.stringify(e)); }));
+			return false;
 		})
 	});
 
