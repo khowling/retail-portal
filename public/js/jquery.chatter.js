@@ -107,10 +107,10 @@
 			} 
 			
 			var timestamp = new Date(Date.parse(itm.createdDate));
-			
+			alert ('parsing : ' + itm.createdDate + ', standard function = ' + timestamp.toString());
 			// https://github.com/csnover/js-iso8601/blob/master/iso8601.js
 			var struct, minutesOffset = 0;
-			var origParse = Date.parse, numericKeys = [ 1, 4, 5, 6, 7, 10, 11 ];
+			var numericKeys = [ 1, 4, 5, 6, 7, 10, 11 ];
 			// 1 YYYY 2 MM 3 DD 4 HH 5 mm 6 ss 7 msec 8 Z 9 ± 10 tzHH 11 tzmm
 			if ((struct = /^(\d{4}|[+\-]\d{6})(?:-(\d{2})(?:-(\d{2}))?)?(?:T(\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{3}))?)?(?:(Z)|([+\-])(\d{2})(?::(\d{2}))?)?)?$/.exec(itm.createdDate))) {
 				// avoid NaN timestamps caused by “undefined” values being passed to Date.UTC
@@ -129,10 +129,11 @@
 						minutesOffset = 0 - minutesOffset;
 					}
 				}
-				alert ('ok ' + struct[1] + ': ' + struct[2]+ ': ' + struct[3]);
+				
 				timestamp = Date.UTC(struct[1], struct[2], struct[3], struct[4], struct[5] + minutesOffset, struct[6], struct[7]);
+				alert ('UTC ' + struct[1] + ' : ' + struct[2]+ ' : ' + struct[3] + ' : ' +  struct[4] + ' : ' + struct[5]+ ' : ' + struct[6] + ' : ' + struct[7] + ' ::: ' + timestamp.toString());
 			}
-			alert (timestamp.toString());
+
 			ret.ctime = $.cuteTime({}, timestamp.toString());  
 			ret.id = itm.id;
 			return ret;
