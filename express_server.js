@@ -111,7 +111,7 @@ app.get ('/feedfile', function(req,res) {
     
     var host =  (require('url').parse(foauth.getOAuthResponse().instance_url))['host'];
 	res.header('Content-Type', mt);
-	res.attachment('myfile');
+	res.attachment('myfile.gif');
 	
 	var data = null;
 	https.get({
