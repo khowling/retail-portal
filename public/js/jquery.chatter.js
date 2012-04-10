@@ -198,7 +198,7 @@
 				.find('label.lblFileDesc').text(itm.attachment.description).end()
 				.find('.imgFile').click(function () {
 					
-					alert ($.browser);
+					alert (navigator.userAgent);
 					var image_href = _serverurl+'/feedfile?what=' + escape(itm.attachment.downloadUrl) + '&mt=' + escape(itm.attachment.mimeType);
 					window.open(image_href);
 					
