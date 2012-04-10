@@ -197,13 +197,10 @@
 				.find('label.lblFileName').text(itm.attachment.title).end()
 				.find('label.lblFileDesc').text(itm.attachment.description).end()
 				.find('.imgFile').click(function () {
-					
+					var image_href = _serverurl+'/feedfile?what=' + escape(itm.attachment.downloadUrl) + '&mt=' + escape(itm.attachment.mimeType);
 					if (navigator.userAgent.indexOf('WP7') != -1) {
-						
-						var image_href = _serverurl+'/feedfile?what=' + escape(itm.attachment.downloadUrl) + '&mt=' + escape(itm.attachment.mimeType);
 						window.open(image_href);
 					} else { 
-					
 						$("#event-container").empty();
 						$("#event-container").append(
 							$("<img/>", { "style": "max-width: 400px;", "src": image_href}) //.load (function (){
