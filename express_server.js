@@ -111,7 +111,7 @@ app.get ('/feedfile', function(req,res) {
     
     var host =  (require('url').parse(foauth.getOAuthResponse().instance_url))['host'];
 	res.header('Content-Type', mt);
-	res.attachment();
+	res.attachment('myfile');
 	
 	var data = null;
 	https.get({
@@ -137,7 +137,7 @@ app.get ('/feedfile', function(req,res) {
 		  console.log(e);
 		})
 });
-
+/*
 app.get ('/chat/:what', function(req,res) {
     var uid = req.session.username,
         udata = req.session.userdata,
@@ -151,7 +151,7 @@ app.get ('/chat/:what', function(req,res) {
     res.render('chat.ejs', { layout: false, locals: {  feedid: whatid, udata: udata } });
     //res.render('chat.ejs', { locals: {  feedid: udata.outlet.id, udata: udata } });
 });
-
+*/
 app.get ('/myfeed/:what', function (req,res) {
     var uid = req.session.username,
         udata = req.session.userdata,
@@ -162,29 +162,41 @@ app.get ('/myfeed/:what', function (req,res) {
 		return;
 	}
     if (whatid == 'me') {
-        // get user names and pictures and outlets too!
+        var team_data = null,
+			feedres = null,
+			sentres = false;
+		
+		var sendresponse = function () {
+			if (feedres && team_data && sentres==false) {
+				req.session = null; // method doesnt update the session
+				sentres = true;
+				res.send({team: team_data, feed :feedres, me: udata});
+			}
+		}
+		
+		// get user names and pictures and outlets too!
          queryAPI('query?q='+escape('select Name, PortalPic__c,  (select Name, Points__c, PortalPic__c from Contacts) from Account where Id = \'' + udata.outlet.id + '\''), null, 'GET',  function (results) {
-               console.log ('myfeed: got team query results :' + JSON.stringify(results));
-               var team_data = {};
-               if (results.totalSize == 1) {
-                    team_data.outlet  = { name: results.records[0].Name, pic: results.records[0].PortalPic__c};
-                    team_data.outlet_team = {};
-                    
-                    if (results.records[0].Contacts) {
-                        var team =  results.records[0].Contacts.records;
-                        for (var m in team) {
-                             team_data.outlet_team[team[m].Name] =   { 
-                                    points: team[m].Points__c,
-                                    pic: team[m].PortalPic__c
-                            };
-                        }
-                    }
-               }
-             queryAPI('chatter/feeds/record/'+udata.outlet.id+'/feed-items', null, 'GET', function (results1) {
-                //console.log ('/myfeed : results : ' + JSON.stringify(results));
-                req.session = null; // method doesnt update the session
-                res.send({team: team_data, feed :results1, me: udata});
-            });
+		   console.log ('myfeed: got team query results :' + JSON.stringify(results));
+		   team_data = {};
+		   if (results.totalSize == 1) {
+				team_data.outlet  = { name: results.records[0].Name, pic: results.records[0].PortalPic__c};
+				team_data.outlet_team = {};
+				
+				if (results.records[0].Contacts) {
+					var team =  results.records[0].Contacts.records;
+					for (var m in team) {
+						 team_data.outlet_team[team[m].Name] =   { 
+								points: team[m].Points__c,
+								pic: team[m].PortalPic__c
+						};
+					}
+				}
+		   }
+		   sendresponse();
+        });
+		queryAPI('chatter/feeds/record/'+udata.outlet.id+'/feed-items', null, 'GET', function (results) {
+			feedres = results;
+			sendresponse();
         });
     } else {
         // its a training id
@@ -421,7 +433,7 @@ var event_collection = {
 		}
 	};
 
-
+/*
 app.get('/', function(req, res){
     res.render('logon.ejs', { locals: {  loggedon: false, message: '' } });
 });
@@ -429,14 +441,8 @@ app.get('/', function(req, res){
 //    console.log ('/:urlpage + ' + req.params.urlpage);
 //    res.render(req.params.urlpage + '.ejs', { locals: { } });
 //});
+*/
 
-app.get('/logout', function (req,res) {
-    req.session.username = null;
-    req.session.udata = null;
-    req.session.destroy();
-    res.redirect('/');
-    
-});
 // LOGIN POST
 app.post('/ajaxlogin', function (req,res) {
     var uid = req.body.username;
@@ -516,7 +522,9 @@ app.get('/logout', function (req,res) {
     res.redirect('/');
     
 });
+
 // LOGIN POST
+/*
 app.post('/home', function (req,res) {
     var uid = req.body.username;
     console.log ('login: Attempt to login as ' + uid);
@@ -608,7 +616,7 @@ app.get('/home', function (req,res) {
     }
     res.render('logon.ejs', { locals: { loggedon: false, message : 'Please Logon'} });
 });
-
+*/
 var event_index = 1;
 var events_by_user = {};
 function createEvents(uid, udata, just_completed) {
