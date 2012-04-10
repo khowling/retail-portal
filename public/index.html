@@ -49,15 +49,6 @@
 
       <div id="nav">
         <ul style="padding-left: 0px;">
-          <li>
-            <a href="#">Scan QR</a>
-          </li>
-          <li>
-            <a href="#">Enter QR</a>
-          </li>
-          <li>
-            <a href="/logout">Logout</a>
-          </li>
         </ul>
       </div>
 
@@ -79,7 +70,7 @@
 
 			$.support.cors = true;
 			// if ('undefined' !== typeof netscape) netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
-			var jqxhr = $.post('http://nokiaknowledge2.herokuapp.com/ajaxlogin',{username: $('[name=username]').val() , password: $('[name=password]').val()} ,
+			$.post('http://nokiaknowledge2.herokuapp.com/ajaxlogin',{username: $('[name=username]').val() , password: $('[name=password]').val()} ,
 			function(data) {
 			//alert ('returned from the server ' + JSON.stringify(data));
 				if (data.username) {
@@ -89,8 +80,7 @@
 				} else {
 					$('#logerrors').text (data.message);
 				}
-			}, 'json')
-			.error(function(e) { $('#logerrors').text("POST error " + JSON.stringify(e)); }));
+			}, 'json').error(function(e) { $('#logerrors').text("POST error " + JSON.stringify(e)); });
 			return false;
 		})
 	});

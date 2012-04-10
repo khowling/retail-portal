@@ -100,7 +100,7 @@
 			
 			var ret = {};
 			if (posttxt.length < 2) {
-				ret = { pic: 'image/NokiaLogo.gif', author: 'Nokia', ptxt: posttxt[0] };
+				ret = { pic: 'images/NokiaLogo.gif', author: 'Nokia', ptxt: posttxt[0] };
 			} else {
 				var pauthor = posttxt[0];
 				ret = { pic: plugin.feedmembers[pauthor].pic, author: pauthor, ptxt: posttxt[1] };
@@ -398,7 +398,6 @@
 		var readyURI;
 		var uploadPhoto = function (imageURI) {
 			readyURI = imageURI;
-			var target = '/pathname/filename.jpg';
 			var divAttachFile = $("div.compUploadDiv", $element); // FILE UPLOAD FROM COMPUTER
 			var divFileUpload = $("div.divFileUpload", $element); // div Mobile file upload options
 
@@ -428,7 +427,7 @@
 
 			var ft = new FileTransfer();
 			
-			ft.upload(imageURI, "/post/<%= feedid %>", function success(results) {
+			ft.upload(imageURI, _serverurl+'/post/<%= feedid %>', function success(results) {
 				imgCloseClick();
 				var meteam = {};
 				meteam['<%= udata.fullname %>'] = { pic: '<%= udata.picture_url %>'};
