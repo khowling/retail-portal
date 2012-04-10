@@ -130,7 +130,7 @@
 					}
 				}
 				
-				timestamp = Date.UTC(struct[1], struct[2], struct[3], struct[4], struct[5] + minutesOffset, struct[6], struct[7]);
+				timestamp = new Date(Date.UTC(struct[1], struct[2], struct[3], struct[4], struct[5] + minutesOffset, struct[6], struct[7]));
 				alert ('UTC ' + struct[1] + ' : ' + struct[2]+ ' : ' + struct[3] + ' : ' +  struct[4] + ' : ' + struct[5]+ ' : ' + struct[6] + ' : ' + struct[7] + ' ::: ' + timestamp.toString());
 			}
 
