@@ -198,7 +198,7 @@
 				.find('label.lblFileDesc').text(itm.attachment.description).end()
 				.find('.imgFile').click(function () {
 					
-					if (navigator.userAgent.indexOf('WP7') != -1)) {
+					if (navigator.userAgent.indexOf('WP7') != -1) {
 						
 						var image_href = _serverurl+'/feedfile?what=' + escape(itm.attachment.downloadUrl) + '&mt=' + escape(itm.attachment.mimeType);
 						window.open(image_href);
@@ -220,8 +220,6 @@
 						});
 					
 					}
-					
-					
 				});
 			}
 			//alert ('created new post dom ' + newpost.html());
