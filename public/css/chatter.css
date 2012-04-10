@@ -641,6 +641,10 @@ a:hover
     text-align: left;
     padding: 10px;
 }
+tr.feed-post
+{
+    display: block;
+}
 .reqInfo
 {
     width: 100%;

@@ -115,8 +115,8 @@
 
 			var post = processsfdcfeeditem(itm);
 
-			var newpost = $('tr.feed-post', $element).clone();
-			newpost = newpost.attr({"id": itm.id }).removeAttr('style').removeClass('feed-post')
+			var newpost = $('tr.feed-post-template', $element).clone();
+			newpost = newpost.attr({"id": itm.id }).removeAttr('style').removeClass('feed-post-template').addClass('feed-post')
 				.find('.spanFeed').text(post.ptxt).end()
 				.find('.aFeedAuthor').text(post.author).end()
 				.find('.pFeedAuthor').attr({"src": post.pic }).end()
