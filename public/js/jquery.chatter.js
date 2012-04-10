@@ -106,10 +106,10 @@
 				ret = { pic: plugin.feedmembers[pauthor].pic, author: pauthor, ptxt: posttxt[1] };
 			} 
 			
-			//var pdate = new Date(Date.parse(itm.createdDate));
+			var timestamp = new Date(Date.parse(itm.createdDate));
 			
 			// https://github.com/csnover/js-iso8601/blob/master/iso8601.js
-			var timestamp, struct, minutesOffset = 0;
+			var struct, minutesOffset = 0;
 			var origParse = Date.parse, numericKeys = [ 1, 4, 5, 6, 7, 10, 11 ];
 			// 1 YYYY 2 MM 3 DD 4 HH 5 mm 6 ss 7 msec 8 Z 9 ± 10 tzHH 11 tzmm
 			if ((struct = /^(\d{4}|[+\-]\d{6})(?:-(\d{2})(?:-(\d{2}))?)?(?:T(\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{3}))?)?(?:(Z)|([+\-])(\d{2})(?::(\d{2}))?)?)?$/.exec(itm.createdDate))) {
@@ -129,13 +129,10 @@
 						minutesOffset = 0 - minutesOffset;
 					}
 				}
-
+				alert ('ok ' + struct[1] + ': ' + struct[2]+ ': ' + struct[3]);
 				timestamp = Date.UTC(struct[1], struct[2], struct[3], struct[4], struct[5] + minutesOffset, struct[6], struct[7]);
 			}
-			else {
-				timestamp = origParse ? origParse(itm.createdDate) : NaN;
-			}
-		
+			alert (timestamp.toString());
 			ret.ctime = $.cuteTime({}, timestamp.toString());  
 			ret.id = itm.id;
 			return ret;
