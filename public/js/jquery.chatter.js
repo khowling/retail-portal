@@ -107,7 +107,7 @@
 			} 
 			
 			var pdate = new Date(Date.parse(itm.createdDate));
-			ret.ctime = $.cuteTime({}, pdate.toString());  
+			ret.ctime = $.cuteTime({}, pdate.toString()) + ' : ' + pdate + ' : ' + itm.createdDate;  
 			ret.id = itm.id;
 			return ret;
 		}	   
