@@ -198,8 +198,11 @@
 				.find('label.lblFileDesc').text(itm.attachment.description).end()
 				.find('.imgFile').click(function () {
 					
-					var image_href = _serverurl+'/feedfile?what=' + escape(itm.attachment.downloadUrl) + '&mt=' + escape(itm.attachment.mimeType);
 					
+					var image_href = _serverurl+'/feedfile?what=' + escape(itm.attachment.downloadUrl) + '&mt=' + escape(itm.attachment.mimeType);
+					window.open(image_href);
+					
+					/*
 					$("#event-container").empty();
 					$("#event-container").append(
 						$("<img/>", { "style": "max-width: 400px;", "src": image_href}) //.load (function (){
@@ -214,6 +217,7 @@
 							$(this).closest('.ui-dialog').find('.ui-dialog-titlebar-close').show();
 						}
 					});
+					*/
 				});
 			}
 			//alert ('created new post dom ' + newpost.html());
