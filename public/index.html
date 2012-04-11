@@ -49,6 +49,15 @@
 
       <div id="nav">
         <ul style="padding-left: 0px;">
+          <li>
+            <a href="#">Scan QR</a>
+          </li>
+          <li>
+            <a href="#">Enter QR</a>
+          </li>
+          <li>
+            <a href="/logout">Logout</a>
+          </li>
         </ul>
       </div>
 
@@ -64,26 +73,9 @@
 <script>
 
 
-	$(document).ready(function() {
-
-		$('#logmein').submit(function() {
-
-			$.support.cors = true;
-			// if ('undefined' !== typeof netscape) netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
-			$.post('http://nokiaknowledge2.herokuapp.com/ajaxlogin',{username: $('[name=username]').val() , password: $('[name=password]').val()} ,
-			function(data) {
-			//alert ('returned from the server ' + JSON.stringify(data));
-				if (data.username) {
-					var newurl = 'home.html?fullname=' + escape(data.userdata.fullname) + '&outlet=' + escape(data.userdata.outlet.name) + '&outlet_pic=' + escape(data.userdata.outlet.picture_url) + '&user_pic=' + escape(data.userdata.picture_url) + '&idx=' +  escape(data.current_index);
-					//alert (newurl);
-					window.location = newurl;
-				} else {
-					$('#logerrors').text (data.message);
-				}
-			}, 'json').error(function(e) { $('#logerrors').text("POST error " + JSON.stringify(e)); });
-			return false;
-		})
-	});
+  $(document).ready(function() {
+    $('#logmein').submit(logmein);
+  });
 
 </script>
 
@@ -100,12 +92,12 @@
                 	<p><span id="logerrors" style="color: red;"></span></p>
                 	<p>
                 		<label>Username</label>
-                		<input type="text" class="modal-text-input" name="username" value="">
+                		<input type="text" class="modal-text-input" name="username" value=""/>
                 	</p>
                
                 	<p>
                 		<label>Password</label>
-                		<input type="password" class="modal-text-input" name="password">
+                		<input type="password" class="modal-text-input" name="password"/>
                 	</p>
                
                 	<p>

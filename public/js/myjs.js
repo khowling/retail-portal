@@ -1,4 +1,6 @@
     	
+		var _serverurl = 'http://nokiaknowledge2.herokuapp.com/';
+
         function initPoints () {
 				var slider = $('#slider1').bxSlider({
 						controls: false,
@@ -124,7 +126,7 @@
 				disableRestart: true,
 				statusUpdate: function( quizInfo, currQuiz ){
 						if (quizInfo.deleted == true) {
-							$.post( 'http://nokiaknowledge2.herokuapp.com/donequiz', { id: quizid,  score: quizInfo.score, quesTried: quizInfo.quesTried},
+							$.post( _serverurl+'donequiz', { id: quizid,  score: quizInfo.score, quesTried: quizInfo.quesTried},
 								function( data ) {
 										//$.modal.close();
                                         $("#jdialog").dialog( "close" );
@@ -202,7 +204,7 @@
 						if (confirm('Event: ' + calEvent.title + ' on '+ calEvent.start +' would you like to book?')) {
 							$(this).css('border-color', 'red');
 								alert ('posting ' + tid + ' : ' + calEvent.start);
-								$.post( 'http://nokiaknowledge2.herokuapp.com/booktraining', { tid: tid, tdate: calEvent.start},
+								$.post( _serverurl+'booktraining', { tid: tid, tdate: calEvent.start},
     								function() {
 										$("#event-container").empty();
     									$("#jdialog").dialog( "close" );
@@ -259,7 +261,7 @@
 			if (!poll_err) {
 				//console.log("creating longpoll request");
 				$.ajax({ 
-					url: "http://nokiaknowledge2.herokuapp.com/longpoll/" + lasteventprocessed, 
+					url: _serverurl+'longpoll/' + lasteventprocessed, 
 					success: function(res){
 						//alert ('success ' + JSON.stringify(res));
 						if (res.item_type == 'QUIZ' || res.item_type == 'KNOWLEDGE' || res.item_type == 'TRAINING') {
@@ -328,46 +330,63 @@
 		}
         
         
-        /*
-        
-        $("#logmein").submit(function(event) {
-    		
-				event.preventDefault(); 
-						
-				// get some values from elements on the page: 
-				var $form = $( this ),
-						un = $form.find( 'input[name="username"]' ).val(),
-						url = $form.attr( 'action' );
-						if (!un) {
-							//alert ('Please enter username');
-							 un = 'keith';
-						}
-				// Send the data using post and put the results in a div 
-				$.post( url, { username: un },
-					function( data ) {
-						
-						// data.userdata.points
-						// data.username
-						
-							var _userOut = $("<img/>").attr({"src": data.userdata.picture_url, "width": "75", "style": "margin: 5px;"});
-							$("#userImage").append(_userOut);
-							$("#myuserName").text(data.username);
-												
-							$("#userOrg1").text("Carphone Warehouse - Slough");
-							$("#userOrg2").text("Carphone Warehouse - Slough");
-							
-							var _orgOut = $("<img/>").attr({"src": "/images/carphone_warehouse.jpg", "width": "55"});
-							$("#orgImage").append(_orgOut);
-							
-							
-							$.modal.close();
-							
-							$('#chatterdiv').load('/2.html');
-							poll();
-					});
+	function logmein() {
 
-			});
-            
-         */   
+			$.support.cors = true;
+			// if ('undefined' !== typeof netscape) netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
+			$.post('ajaxlogin',{username: $('[name=username]').val() , password: $('[name=password]').val()} ,
+				function(data) {
+					console.log ('returned from the server ' + JSON.stringify(data));
+					if (data.username) {
+						//var newurl = 'home.html?fullname=' + escape(data.userdata.fullname) + '&outlet=' + escape(data.userdata.outlet.name) + '&outlet_pic=' + escape(data.userdata.outlet.picture_url) + '&user_pic=' + escape(data.userdata.picture_url) + '&idx=' +  escape(data.current_index);
+						//console.log ('newurl : ' + newurl);
+						//window.open ('home.html');
+						$('#pageBody').empty();
+						//var pathName = window.location.protocol + '//' +  window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
+						var urltarget = _serverurl+'home.html';
+						console.log ('loading ' + urltarget);
+						$('#pageBody').load (urltarget, function() {
+ 
+							$('#pageBody').innerHtml(e.target.result);
+							$('#myuserName').text( data.userdata.fullname);
+							$('#myimage').attr ({'src': data.userdata.picture_url});
+							$('#myoutletimage').attr ({'src': data.userdata.outlet.picture_url});
+							$('#userOrg1').text( data.userdata.outlet.name);
+							$('#userOrg2').text( data.userdata.outlet.name);
+
+							
+							initPoints ();
+							$('#chatterdiv').chatter({
+								fullname: data.userdata.fullname,
+								user_pic: data.userdata.picture_url,
+								outlet: data.userdata.outlet.name
+							});
+							//document.addEventListener("deviceready", function() { $('#chatterdiv').data('chatter').setmobileattachments(); } , false);
+							//$('#chatterdiv').data('chatter').setmobileattachments();
+        
+							$(window).resize(function() {
+								if ($("#jdialog").dialog( "isOpen" )) {
+									$("#jdialog").dialog("option", "position", "center");
+									var cw = $("#jdialog").dialog( "option", "width" );
+									var tw = getTargetWidth();
+									if (cw != tw) 
+										$("#jdialog").dialog( "option", "width", tw );
+								}
+                
+							});
+        
+							if (data.current_index > 0) {
+								lasteventprocessed = data.current_index;
+							}
+							//alert ('launching poll with ' + lasteventprocessed);
+							poll();
+						});
+
+					} else {
+						$('#logerrors').text (data.message);
+					 }
+				}, 'json').error(function(e) { $('#logerrors').text("POST error " + JSON.stringify(e)); });
+			  return false;
+	 }
             
             
