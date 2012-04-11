@@ -603,18 +603,19 @@ a:hover
 }
 .File_info_left
 {
-    width: 130px;
+    width: 29px;
     padding: 15px 0 0 0;
     float: left;
     text-align: center;
 }
 .File_info_right
 {
-    width: 65%;
+    width: 68%;
     padding: 10px 0 0 0;
-    float: left;
+    float: right;
     text-align: left;
 }
+
 .Upload_file_box
 {
     width: 100%;

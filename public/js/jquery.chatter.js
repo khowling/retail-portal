@@ -210,7 +210,7 @@
 							$("<img/>", { "style": "max-width: 400px;", "src": image_href}) //.load (function (){
 							);
 						$("#jdialog").dialog ({ 
-							title: 'View file ' + itm.attachment.title,
+							title: 'View file ' + itm.attachment.title + navigator.userAgent,
 							modal: true, 
 							width: 'auto',
 							open: function(event, ui) {
