@@ -395,7 +395,7 @@ input.modal-button {
     //margin-right: auto;
     
 }
-@media screen and (max-width: 480px) and (orientation:landscape) {
+@media screen and (orientation:landscape) {
     html {
         -webkit-text-size-adjust: none;
         -ms-text-size-adjust: none;
