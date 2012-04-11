@@ -430,12 +430,13 @@
 			var tempfile1 = imageURI.substring(imageURI.lastIndexOf('/') + 1);
 			var tempfile2 = tempfile1.substring(tempfile1.lastIndexOf('/') + 1);
 			var filename = tempfile2.split("#");
-			console.log ('setting filename ' + filename[0] + ' : ' + $('span.uploadFileName', $element).attr('class'));
-			$('span.uploadFileName', $element).val(filename[0]);
+			
+			$('span.uploadFileName', $element).text(filename[0]);
 			$('img.imgThumbNail', $element).attr ('src', imageURI);
 		}
 		var imgbtnShare_Click = function  () {
-
+			$("div.divShareBtnFrmSP", $element).hide();
+			$("div.divShareImgFrmSP", $element).show();
 			var options = new FileUploadOptions();
 			options.fileKey="file";
 			options.fileName=readyURI.substr(readyURI.lastIndexOf('/')+1);
@@ -454,6 +455,8 @@
 			var ft = new FileTransfer();
 			
 			ft.upload(readyURI, _serverurl+'post/'+plugin.settings.feedid, function success(results) {
+				$("div.divShareBtnFrmSP", $element).show();
+				$("div.divShareImgFrmSP", $element).hide();
 				imgCloseClick();
 				var meteam = {};
 				meteam['<%= udata.fullname %>'] = { pic: '<%= udata.picture_url %>'};
@@ -468,6 +471,8 @@
 			$("div.divFileUpload", $element).hide(); //  div Mobile file upload options
 			$("div.divAttachFile", $element).show(); // File & Link options against a post
 			$("div.documentDiv", $element).hide(); // FILE ATTACHED, ready to POST-
+			$("div.divShareBtnFrmSP", $element).show();
+			$("div.divShareImgFrmSP", $element).hide();
 			$("div.compUploadDiv", $element).hide(); // FILE UPLOAD FROM COMPUTER
 			var fplUpload = $("input.fplUpload", $element); // Input to select file.
 			$("input.txtFileName", $element).val(''); // Filename
