@@ -258,12 +258,13 @@
 		var poll_err = false;		
 		
 		function poll(){
+			console.log("poll() function");
 			if (!poll_err) {
-				//console.log("creating longpoll request");
+				console.log("creating longpoll request ");
 				$.ajax({ 
 					url: _serverurl+'longpoll/' + lasteventprocessed, 
 					success: function(res){
-						//alert ('success ' + JSON.stringify(res));
+						console.log ('success : poll res ' + lasteventprocessed +  ' : ' + JSON.stringify(res));
 						if (res.item_type == 'QUIZ' || res.item_type == 'KNOWLEDGE' || res.item_type == 'TRAINING') {
 							lasteventprocessed = res.index;
 
@@ -316,17 +317,22 @@
 							mypoints = res.my_points;
 
 						}
+						console.log ('success() :  finished');
 					}, 
 					error: function(XMLHttpRequest, textStatus, errorThrown){
-							
+							console.log ('error() : got an error');
 							poll_err = true;
 							$.jGrowl("error: connection with server lost  (" + JSON.stringify(errorThrown) + ")");
 						}, 
 					dataType: "json", 
-					complete: poll, 
+					complete: function () {
+							console.log ('complete() :  ' + lasteventprocessed +  ' : calling poll again');
+							//poll();
+						}, 
 					timeout: 60000 
 				});
 			}
+			return false;
 		}
         
         
@@ -334,7 +340,7 @@
 
 			$.support.cors = true;
 			// if ('undefined' !== typeof netscape) netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
-			$.post('ajaxlogin',{username: $('[name=username]').val() , password: $('[name=password]').val()} ,
+			$.post(_serverurl+'ajaxlogin',{username: $('[name=username]').val() , password: $('[name=password]').val()} ,
 				function(data) {
 					console.log ('returned from the server ' + JSON.stringify(data));
 					if (data.username) {
@@ -347,7 +353,7 @@
 						console.log ('loading ' + urltarget);
 						$('#pageBody').load (urltarget, function() {
  
-							
+						
 							$('#myuserName').text( data.userdata.fullname);
 							$('#myimage').attr ({'src': data.userdata.picture_url});
 							$('#myoutletimage').attr ({'src': data.userdata.outlet.picture_url});
@@ -361,7 +367,8 @@
 								user_pic: data.userdata.picture_url,
 								outlet: data.userdata.outlet.name
 							});
-							//document.addEventListener("deviceready", function() { $('#chatterdiv').data('chatter').setmobileattachments(); } , false);
+							console.log ('addEventListener deviceready');
+							document.addEventListener("deviceready", function() { console.log ('deviceready'); $('#chatterdiv').data('chatter').setmobileattachments(); } , false);
 							//$('#chatterdiv').data('chatter').setmobileattachments();
         
 							$(window).resize(function() {

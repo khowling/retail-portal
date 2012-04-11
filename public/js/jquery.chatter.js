@@ -46,7 +46,7 @@
 			$element.on('click', 'input.imgBtnShareFrmComp' , addPostingWithPic);
 			$element.on('click', 'input.imgbtnFrmSP' , imgbtnShare_Click);
 			
-			$element.load ('chat.html', function () {
+			$element.load (_serverurl+'chat.html', function () {
 
 				// DROPDOWN
 				$("span.selected_feed", $element).text(plugin.settings.outlet);
@@ -83,12 +83,13 @@
 					function onFail(message)   {
 						alert('Error selecting picture');
 					},
-					{sourceType : Camera.PictureSourceType.SAVEDPHOTOALBUM});
+					{destinationType: navigator.camera.DestinationType.FILE_URI,
+                     sourceType: navigator.camera.PictureSourceType.PHOTOLIBRARY});
 			});
 		}
 		   
 		// private properties and methods
-		var _serverurl = 'http://nokiaknowledge2.herokuapp.com';
+		var _serverurl = 'http://nokiaknowledge2.herokuapp.com/';
 	
 		var filterVisibility = function () {
 			$("div.drop_down_listMyChatter", $element).toggle();
@@ -162,7 +163,7 @@
 						// pressed button to like comment on a feed item
 						var feeditem = e.data.itmid;
 						// call POST
-						$.post( _serverurl+'/postcomment', { 'feeditem' : feeditem, 'mess' : 'like' }, function(cmt){
+						$.post( _serverurl+'postcomment', { 'feeditem' : feeditem, 'mess' : 'like' }, function(cmt){
 								var processed_cmt = processsfdcfeeditem(cmt);
 								if (processed_cmt.ptxt == 'like') {
 									$('#' + feeditem + ' div.comment_feedback').show();
@@ -192,7 +193,7 @@
 						
 						
 							// call POST
-							$.post( _serverurl+'/postcomment', { 'feeditem' : feeditem, 'mess' : txtComment.val() }, function(cmt){
+							$.post( _serverurl+'postcomment', { 'feeditem' : feeditem, 'mess' : txtComment.val() }, function(cmt){
 								
 								divEComment.show();
 								divDComment.hide();
@@ -228,7 +229,8 @@
 				.find('label.lblFileName').text(itm.attachment.title).end()
 				.find('label.lblFileDesc').text(itm.attachment.description).end()
 				.find('.imgFile').click(function () {
-					var image_href = _serverurl+'/feedfile?what=' + escape(itm.attachment.downloadUrl) + '&mt=' + escape(itm.attachment.mimeType);
+					var image_href = _serverurl+'feedfile?what=' + escape(itm.attachment.downloadUrl) + '&mt=' + escape(itm.attachment.mimeType);
+					console.log ('userAgent : ' + navigator.userAgent);
 					if (navigator.userAgent.indexOf('WP7') != -1) {
 						window.open(image_href);
 					} else { 
@@ -340,7 +342,7 @@
 			divInactiveNoAttach.show();
 			if (ptxt.val().length > 1) {
 			
-				$.post( _serverurl+'/post/'+plugin.settings.feedid, { 'mess' : ptxt.val() }, function(results){
+				$.post( _serverurl+'post/'+plugin.settings.feedid, { 'mess' : ptxt.val() }, function(results){
 
 					newfeeddom (results).prependTo('table.feed-table', $element);
 
@@ -360,15 +362,6 @@
 			$("div.divAttachFile", $element).hide();
 			$("div.compUploadDiv", $element).show();
 			//$("input.fplUpload", $element).focus();
-/*
-			var divImgBtnShareFrmComp = document.getElementById("divImgBtnShareFrmComp");
-			var divimagShareFrmComp = document.getElementById("divimagShareFrmComp");
-	
-	
-			compUploadDiv.style.display = 'block';
-			divImgBtnShareFrmComp.style.display = 'none';
-			divimagShareFrmComp.style.display = 'block'
-*/
 		}
 		var its_setup = false;
 		var addPostingWithPic = function () {
@@ -413,7 +406,7 @@
 			});
 			
 			// Wrap it in a form
-			$("input.fplUpload", $element).wrap('<form action="' + _serverurl+'/post/'+plugin.settings.feedid + '" method="POST" enctype="multipart/form-data" target="'+frame_id+'" />'
+			$("input.fplUpload", $element).wrap('<form action="' + _serverurl+'post/'+plugin.settings.feedid + '" method="POST" enctype="multipart/form-data" target="'+frame_id+'" />'
 			).after('<input type="hidden" name="' + 'mess' + '" value="' + ptxt.val() + '" />'+
 					'<input type="hidden" name="' + 'fname' + '" value="' + fname.val() + '" />'+
 					'<input type="hidden" name="' + 'fdesc' + '" value="' + fdesc.val() + '" />');
@@ -430,36 +423,35 @@
 		var readyURI;
 		var uploadPhoto = function (imageURI) {
 			readyURI = imageURI;
-			var divAttachFile = $("div.compUploadDiv", $element); // FILE UPLOAD FROM COMPUTER
-			var divFileUpload = $("div.divFileUpload", $element); // div Mobile file upload options
-
-			divFileUpload.hide();
+			$("div.compUploadDiv", $element).hide(); // FILE UPLOAD FROM COMPUTER
+			$("div.divFileUpload", $element).hide(); // div Mobile file upload options
 			$("div.documentDiv", $element).show(); // FILE ATTACHED, ready to POST-
 
 			var tempfile1 = imageURI.substring(imageURI.lastIndexOf('/') + 1);
 			var tempfile2 = tempfile1.substring(tempfile1.lastIndexOf('/') + 1);
 			var filename = tempfile2.split("#");
 			document.getElementById('path').innerHTML = filename[0];
-			divAttachFile.style.display = 'none';
 		}
 		var imgbtnShare_Click = function  () {
-			
+
 			var options = new FileUploadOptions();
 			options.fileKey="file";
-			options.fileName=imageURI.substr(imageURI.lastIndexOf('/')+1);
+			options.fileName=readyURI.substr(readyURI.lastIndexOf('/')+1);
 			options.mimeType="image/jpeg";
 
 			
 			var params = new Object();
-			params.mess = $("#txtNewFeed<%= feedid %>").text();
+			params.mess = $('textarea.txtNewFeedStyle', $element).text();
 			params.fname = options.fileName;
 			params.fdesc = "From my Windows Phone";
 
 			options.params = params;
 
+			console.log ('imgbtnShare_Click '+readyURI+' options : '  + JSON.stringify(options));
+
 			var ft = new FileTransfer();
 			
-			ft.upload(imageURI, _serverurl+'/post/<%= feedid %>', function success(results) {
+			ft.upload(readyURI, _serverurl+'post/'+plugin.settings.feedid, function success(results) {
 				imgCloseClick();
 				var meteam = {};
 				meteam['<%= udata.fullname %>'] = { pic: '<%= udata.picture_url %>'};
