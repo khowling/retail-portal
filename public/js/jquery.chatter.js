@@ -200,15 +200,15 @@
 				
 				newpost.find('div.divFileInfo').removeAttr('style').end()
 				.find('label.lblFileName').text(itm.attachment.title).end()
-				.find('a.aFileName').attr('src', image_href).end()
+				//.find('a.aFileName').attr('src', image_href).end()  // Doesnt work
 				.find('label.lblFileDesc').text(itm.attachment.description).end()
 				.find('.imgFile').click(function () {
 					
 					console.log ('userAgent : ' + navigator.userAgent);
-					if (navigator.userAgent.indexOf('WP7') != -1 || navigator.userAgent.indexOf('Windows Phone') != -1) {
-						console.log ('opening ' + image_href);
-						window.open(image_href);
-					} else { 
+//					if (navigator.userAgent.indexOf('WP7') != -1 || navigator.userAgent.indexOf('Windows Phone') != -1) {
+//						console.log ('opening ' + image_href);
+//						window.open(image_href);  // doesnt work - x-domain request!
+//					} else { 
 						$("#event-container").empty();
 						$("#event-container").append(
 							$("<img/>", { "style": "max-width: 400px;", "src": image_href}) //.load (function (){
@@ -222,7 +222,7 @@
 							}
 						});
 					
-					}
+//					}
 				});
 			}
 			//alert ('created new post dom ' + newpost.html());
