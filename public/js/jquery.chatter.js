@@ -135,10 +135,10 @@
 				}
 				
 				timestamp = new Date(Date.UTC(struct[1], struct[2], struct[3], struct[4], struct[5] + minutesOffset, struct[6], struct[7]));
-				debugs += '\n UTC ' + struct[1] + ' : ' + struct[2]+ ' : ' + struct[3] + ' : ' +  struct[4] + ' : ' + struct[5]+ ' : ' + struct[6] + ' : ' + struct[7] + ' ::: ' + timestamp.toString();
+				debugs += '\n UTC ' + struct[1] + ' : ' + struct[2]+ ' : ' + struct[3] + ' : ' +  struct[4] + ' : ' + struct[5]+ ' : ' + struct[6] + ' : ' + struct[7] + ' :DATE: ' + timestamp.toString() + ' :NOW: ' + new Date().toString();
 			}
 
-			ret.ctime = $.cuteTime({}, timestamp.toString()); //+ ' ::: ' + debugs;  
+			ret.ctime = $.cuteTime({}, timestamp.toString());// + ' ::: ' + debugs;  
 			ret.id = itm.id;
 			return ret;
 		}	   
@@ -236,9 +236,7 @@
 						$("#event-container").append(
 							$("<img/>", { "style": "max-width: 400px;", "src": image_href}) //.load (function (){
 							);
-						$('.transparent').css('background-color','black');	
 						$("#jdialog").dialog ({ 
-							dialogClass:'transparent', 
 							title: 'View file ' + itm.attachment.title,
 							modal: true, 
 							width: 'auto',

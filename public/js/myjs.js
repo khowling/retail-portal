@@ -75,21 +75,15 @@
             
         }
 
-		function launchknowledge (kid, kdata) {
+		function launchknowledge (e) {
+			var kid = e.data.itm;
+			var kdata = e.data.itmdata;
+
 			$("#event-container").empty();
 			
 			if (kdata.knowledgedata.type == 'EMBEDDED_IFRAME') {
 				var _utLayOut = $("<iframe/>").attr({ "width": "100%", "height": "400px", "src": kdata.knowledgedata.url, "frameborder":"0", "allowfullscreen":""});
 				$("#event-container").append(_utLayOut);
-				/*
-                $('#basic-modal-content').modal({ 
-						close : true,
-						onClose: function() {
-							$("#event-container").empty();
-							$.modal.close();
-					}});
-				*/
-                //return true;
 			}
 			
 			if (kdata.knowledgedata.type == 'HTML5_VIDEO') {
@@ -97,23 +91,13 @@
 					$("<source/>").attr({"src": kdata.knowledgedata.url, "type": 'video/mp4'}),
 					$("<span/>").text("Your browser does not support the video tag."));
 	            $("#event-container").append(_vLayOut);
-                
-                /*
-                $('#basic-modal-content').modal({ 
-						close : true,
-						onClose: function() {
-							$("#video-container")[0].pause();
-							$("#event-container").empty();
-							$.modal.close();
-					}});
-                */
-				//return true;
             }
 			var tw = getTargetWidth();
             $("#jdialog").dialog ({ 
                 title: kdata.name,
                 modal: true, 
                 width: tw,
+				buttons: {},
 				open: function(event, ui) {
 					$(this).closest('.ui-dialog').find('.ui-dialog-titlebar-close').show();
 				}, 
@@ -166,110 +150,98 @@
 			return true;
 		}
 		
-        function trainingfeed (e) {
-            $("#event-container").empty();
-            $("#event-container").append(
-                $("<p/>").css('font-weight','bold').text('Chat with the folks on the course, here they are'),
-                $("div/").attr("id", "feed-container"));
+        function launchtraining (e) {
+			var tid = e.data.itm;
+			var itemdata = e.data.itmdata;
+			$("#event-container").empty();
+
+			var showcalendar = false;
+			if (e.target.className == 'onclick_trainingFeed') {
+
+				$("#event-container").append(
+					$("<p/>").css('font-weight','bold').text('Chat with the folks on the course, here they are'),
+					$("<div/>", {"id": "feed-container", "style": "background: white;"}));
                 
-            var trainingid = e.data.itm;
-            //$('#feed-container').load('/chat/' + trainingid);
-            $('#feed-container').chatter({
-				fullname: urlquery.fullname,
-				user_pic: urlquery.user_pic,
-				outlet: urlquery.outlet,
-				feedid: trainingid
-			});
+				$('#feed-container').chatter({
+					fullname: urlquery.fullname,
+					user_pic: urlquery.user_pic,
+					outlet: urlquery.outlet,
+					feedid: tid
+				});
+			} 
+			else 
+			{
+				showcalendar = true;
+				$("#event-container").fullCalendar({
+					// put your options and callbacks here
+					 weekends: false,
+					 defaultView: 'agendaWeek',
+					 height: 401,
+					 events: [
+							{
+								title  : itemdata.name,
+								start  : '2012-03-19 12:30:00',
+								end    : '2012-03-19 14:30:00',
+								allDay : false // will make the time show
+							},
+							{
+								title  : itemdata.name,
+								start  : '2012-03-21 15:30:00',
+								end    : '2012-03-21 17:30:00',
+								allDay : false // will make the time show
+							},
+							{
+								title  : itemdata.name,
+								start  : '2012-03-23 09:30:00',
+								end    : '2012-03-23 11:30:00',
+								allDay : false // will make the time show
+							}
+						],
+					eventClick: function(calEvent, jsEvent, view) {
+            
+						if (confirm('Event: ' + calEvent.title + ' on '+ calEvent.start +' would you like to book?')) {
+							$(this).css('border-color', 'red');
+								alert ('posting ' + tid + ' : ' + calEvent.start);
+								$.post( 'http://nokiaknowledge2.herokuapp.com/booktraining', { tid: tid, tdate: calEvent.start},
+    								function() {
+										$("#event-container").empty();
+    									$("#jdialog").dialog( "close" );
+    								});
+
+						}
+
+						// change the border color just for fun
+
+					}
+				});
+                
+				
+				$("#event-container").prepend(
+					$("<p/>").css('font-weight','bold').text(itemdata.desc),
+					$("<p/>").css({'font-weight': 'bold', 'color': 'red'}).text('Book your place now!, there are ' + itemdata.info + ' people booked')
+					);
+
+				//$('#event-container').fullCalendar('option', 'height', 400);
+				
 			
-            var tw = getTargetWidth();
-            $("#jdialog").dialog ({ 
-                title: 'Training Feed',
-                modal: true, 
-                width: tw,
+			}
+
+						
+			var tw = getTargetWidth();
+			$("#jdialog").dialog ({ 
+				title: itemdata.name,
+				modal: true, 
+				width: tw,
+				buttons: {},
 				open: function(event, ui) {
 					$(this).closest('.ui-dialog').find('.ui-dialog-titlebar-close').show();
 				}, 
-				beforeClose: function() {
-                        $("#event-container").empty();
+				beforeClose: function() {											
+					$("#event-container").empty();
     			}
-                });
-            
-			return true;
-            
-        }
-
-        function launchtraining (tid, itemdata) {
-
-
-			$("#event-container").empty();
-           
-                
-			$("#event-container").fullCalendar({
-                // put your options and callbacks here
-                 weekends: false,
-                 defaultView: 'agendaWeek',
-                 height: 401,
-                 events: [
-                        {
-                            title  : itemdata.name,
-                            start  : '2012-03-19 12:30:00',
-                            end    : '2012-03-19 14:30:00',
-                            allDay : false // will make the time show
-                        },
-                        {
-                            title  : itemdata.name,
-                            start  : '2012-03-21 15:30:00',
-                            end    : '2012-03-21 17:30:00',
-                            allDay : false // will make the time show
-                        },
-                        {
-                            title  : itemdata.name,
-                            start  : '2012-03-23 09:30:00',
-                            end    : '2012-03-23 11:30:00',
-                            allDay : false // will make the time show
-                        }
-                    ],
-                eventClick: function(calEvent, jsEvent, view) {
-            
-                    if (confirm('Event: ' + calEvent.title + ' on '+ calEvent.start +' would you like to book?')) {
-                        $(this).css('border-color', 'red');
-                            //alert ('posting ' + tid + ' : ' + calEvent.start);
-                            $.post( 'http://nokiaknowledge2.herokuapp.com/booktraining', { tid: tid, tdate: calEvent.start },
-    							function() {
-                                    $("#event-container").empty();
-    								$("#jdialog").dialog( "close" );
-    							});
-
-                    }
-
-                    // change the border color just for fun
-                    
-            
-                }
             });
-            //
-            
-			//$('#basic-modal-content').modal({ close : false});
-            var tw = getTargetWidth();
-            $("#jdialog").dialog ({ 
-                title: itemdata.name,
-                modal: true, 
-                width: tw,
-                 buttons: {                   
-    				Close: function() {
-						//$("#event-container").fullCalendar( "destroy" );
-    					$("#jdialog").dialog( "close" );
-    				}
-                }
-                });
-            $("#event-container").prepend(
-                $("<p/>").css('font-weight','bold').text(itemdata.desc),
-                $("<p/>").css({'font-weight': 'bold', 'color': 'red'}).text('Book your place now!, there are ' + itemdata.info + ' people booked')
-                );
-                
-            //$('#event-container').fullCalendar('option', 'height', 400);
-            $('#event-container').fullCalendar( 'render' );
-			return true;
+
+			if (showcalendar) $('#event-container').fullCalendar( 'render' );
 		}
 		
         
@@ -305,20 +277,16 @@
 								} else if (res.item_type == 'KNOWLEDGE') {
 									
 									if (!res.item_data.icon)  res.item_data.icon = 'images/icons/knowledge-icon.gif';
-									itemid = $('#knowledge-template').clone().attr({"id": res.item_id }).removeAttr("style").appendTo("#knowledgeList").on('click', function(e) {
-										launchknowledge (res.item_id, res.item_data);
-										 return false;
-									}).find(".itemName").text(res.item_data.name).end().find(".itemDesc").text(res.item_data.desc).end()
+									itemid = $('#knowledge-template').clone().attr({"id": res.item_id }).removeAttr("style").appendTo("#knowledgeList").on('click', {itm: res.item_id, itmdata: res.item_data}, launchknowledge)
+										.find(".itemName").text(res.item_data.name).end().find(".itemDesc").text(res.item_data.desc).end()
 										.find(".itemResults").text(res.item_data.info).end()
 										.find(".quizImage").attr({"src": res.item_data.icon}).end()
 										.find(".knowRating").jRating({type: "small", isDisabled: true, defaultscore: 40});								
 								} else if (res.item_type == 'TRAINING') {
-    								itemid = $('#training-template').clone().attr({"id": res.item_id }).removeAttr("style").appendTo("#trainingList").on('click', function(e) {
-										launchtraining (res.item_id, res.item_data);
-										 return false;
-									}).find(".itemName").text(res.item_data.name).end().find(".itemDesc").text(res.item_data.desc).end();
+    								itemid = $('#training-template').clone().attr({"id": res.item_id }).removeAttr("style").appendTo("#trainingList").on('click', {itm: res.item_id, itmdata: res.item_data}, launchtraining)
+										.find(".itemName").text(res.item_data.name).end().find(".itemDesc").text(res.item_data.desc).end();
 								}
-								$.jGrowl("<p>New " + res.item_type + " for you<\p>" + res.item_data.name);
+								
 							}
 							if (res.item_type == 'QUIZ') {
 								if (res.results_data) {
@@ -327,6 +295,7 @@
 										$(itemid).find(".quizPass").removeAttr("style");
 									}
 								} else {
+									$.jGrowl("<p>New " + res.item_type + " for you<\p>" + res.item_data.name);
 									$(itemid).find(".itemResults").text(res.item_data.points + ' points available!').end();
 								}
 							} else if (res.item_type == 'TRAINING') {
@@ -334,8 +303,9 @@
                                     //alert ('training results data :' + res.item_id + ' : ' + JSON.stringify(res.results_data));
 									$(itemid).find(".itemResults").text(res.results_data.type);
 									$(itemid).find(".quizPass").show();
-									$(itemid).find("img.onclick_trainingFeed").click ({itm: res.item_id}, trainingfeed);
+									//$(itemid).find("img.onclick_trainingFeed").click ({itm: res.item_id}, trainingfeed);
 								} else {
+									$.jGrowl("<p>New " + res.item_type + " for you<\p>" + res.item_data.name);
 									$(itemid).find(".itemResults").text('click for more information and to book a place!').end();
 								}
 							}

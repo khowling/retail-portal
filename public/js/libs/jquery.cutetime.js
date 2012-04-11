@@ -279,7 +279,7 @@
 		refresh: -1,					// time in milliseconds before next refresh of page data; -1 == no refresh
 		time_ranges: [
 			{bound: NEG_INF,			// IMPORANT: bounds MUST be in ascending order, from negative infinity to positive infinity
-					cuteness: 'the future!',		unit_size: 0},
+					cuteness: 'just now',		unit_size: 0},
 			{bound: 0, 
 					cuteness: 'just now',			unit_size: 0},
 			{bound: 20 * 1000, 
