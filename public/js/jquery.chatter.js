@@ -202,7 +202,7 @@
 				.find('.imgFile').click(function () {
 					var image_href = _serverurl+'feedfile?what=' + escape(itm.attachment.downloadUrl) + '&mt=' + escape(itm.attachment.mimeType);
 					console.log ('userAgent : ' + navigator.userAgent);
-					if (navigator.userAgent.indexOf('WP7') != -1) {
+					if (navigator.userAgent.indexOf('WP7') != -1 || navigator.userAgent.indexOf('Windows Phone') != -1) {
 						window.open(image_href);
 					} else { 
 						$("#event-container").empty();
@@ -210,7 +210,7 @@
 							$("<img/>", { "style": "max-width: 400px;", "src": image_href}) //.load (function (){
 							);
 						$("#jdialog").dialog ({ 
-							title: 'View file ' + itm.attachment.title + navigator.userAgent,
+							title: 'View file ' + itm.attachment.title,
 							modal: true, 
 							width: 'auto',
 							open: function(event, ui) {
@@ -430,7 +430,7 @@
 			var tempfile1 = imageURI.substring(imageURI.lastIndexOf('/') + 1);
 			var tempfile2 = tempfile1.substring(tempfile1.lastIndexOf('/') + 1);
 			var filename = tempfile2.split("#");
-			
+			console.log ('setting filename ' + filename[0] + ' : ' + tempfile2);
 			$('span.uploadFileName', $element).val(filename[0]);
 			$('img.imgThumbNail', $element).attr ('src', imageURI);
 		}
