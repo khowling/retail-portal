@@ -203,6 +203,7 @@
 					var image_href = _serverurl+'feedfile?what=' + escape(itm.attachment.downloadUrl) + '&mt=' + escape(itm.attachment.mimeType);
 					console.log ('userAgent : ' + navigator.userAgent);
 					if (navigator.userAgent.indexOf('WP7') != -1 || navigator.userAgent.indexOf('Windows Phone') != -1) {
+						console.log ('opening ' + image_href);
 						window.open(image_href);
 					} else { 
 						$("#event-container").empty();

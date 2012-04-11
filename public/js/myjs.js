@@ -360,8 +360,9 @@
 							$('#userOrg1').text( data.userdata.outlet.name);
 							$('#userOrg2').text( data.userdata.outlet.name);
 
-							
+							/*
 							initPoints ();
+							*/
 							$('#chatterdiv').chatter({
 								fullname: data.userdata.fullname,
 								user_pic: data.userdata.picture_url,
@@ -370,7 +371,7 @@
 							console.log ('addEventListener deviceready');
 							document.addEventListener("deviceready", function() { console.log ('deviceready'); $('#chatterdiv').data('chatter').setmobileattachments(); } , false);
 							//$('#chatterdiv').data('chatter').setmobileattachments();
-        
+							/*
 							$(window).resize(function() {
 								if ($("#jdialog").dialog( "isOpen" )) {
 									$("#jdialog").dialog("option", "position", "center");
@@ -387,6 +388,7 @@
 							}
 							//alert ('launching poll with ' + lasteventprocessed);
 							poll();
+							*/
 						});
 
 					} else {
