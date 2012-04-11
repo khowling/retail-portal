@@ -196,11 +196,14 @@
 			if (itm.attachment) {
 				//alert (JSON.stringify(itm.attachment));
 				if (!itm.attachment.description) itm.attachment.description = '';
+				var image_href = _serverurl+'feedfile?what=' + escape(itm.attachment.downloadUrl) + '&mt=' + escape(itm.attachment.mimeType);
+				
 				newpost.find('div.divFileInfo').removeAttr('style').end()
 				.find('label.lblFileName').text(itm.attachment.title).end()
+				.find('a.aFileName').attr('src', image_href).end()
 				.find('label.lblFileDesc').text(itm.attachment.description).end()
 				.find('.imgFile').click(function () {
-					var image_href = _serverurl+'feedfile?what=' + escape(itm.attachment.downloadUrl) + '&mt=' + escape(itm.attachment.mimeType);
+					
 					console.log ('userAgent : ' + navigator.userAgent);
 					if (navigator.userAgent.indexOf('WP7') != -1 || navigator.userAgent.indexOf('Windows Phone') != -1) {
 						console.log ('opening ' + image_href);

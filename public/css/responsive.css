@@ -411,7 +411,7 @@ input.modal-button {
     }
 }
 
-@media screen and (max-width: 480px) and (orientation:portrait) { /* width <= 480 pixels  */
+@media screen  and (orientation:portrait) { /* width <= 480 pixels  */
     
     html {
         -webkit-text-size-adjust: none;
