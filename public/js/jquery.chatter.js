@@ -57,36 +57,7 @@
 				loadfeeds(plugin.settings.feedid);
 			});
         }
-		
-		// properties & public method
-		plugin.setmobileattachments = function() {
 
-			$element.off('click', 'a.lnkfileUpload', compUploadClick);
-			$element.on('click', 'a.lnkfileUpload', showUploadOptions);
-
-			$element.on ('click', '.upload_camera',  function () {
-	   
-					navigator.camera.getPicture(
-						uploadPhoto,
-						function onFail(message)   {
-							alert('Error taking picture');
-						},
-						{sourceType : Camera.PictureSourceType.CAMERA});
-					
-					//uploadPhoto('/path/file.jpg');
-				});
-
-			$element.on ('click', '.upload_photo',  function () {
-				//console.log("SAVEDPHOTOALBUM");
-				navigator.camera.getPicture(
-					uploadPhoto,
-					function onFail(message)   {
-						alert('Error selecting picture');
-					},
-					{destinationType: navigator.camera.DestinationType.FILE_URI,
-                     sourceType: navigator.camera.PictureSourceType.PHOTOLIBRARY});
-			});
-		}
 		   
 		// private properties and methods
 		var _serverurl = 'http://nokiaknowledge2.herokuapp.com/';
@@ -414,7 +385,36 @@
 			$("input.fplUpload", $element).parent('form').submit();
 
 		}
-		 /*  USING THIS FOR PHONEGAP- shows file upload options */
+		/*  USING THIS FOR PHONEGAP */
+		// properties & public method
+		plugin.setmobileattachments = function() {
+
+			$element.off('click', 'a.lnkfileUpload', compUploadClick);
+			$element.on('click', 'a.lnkfileUpload', showUploadOptions);
+
+			$element.on ('click', '.upload_camera',  function () {
+	   
+					navigator.camera.getPicture(
+						uploadPhoto,
+						function onFail(message)   {
+							alert('Error taking picture');
+						},
+						{sourceType : Camera.PictureSourceType.CAMERA});
+					
+					//uploadPhoto('/path/file.jpg');
+				});
+
+			$element.on ('click', '.upload_photo',  function () {
+				//console.log("SAVEDPHOTOALBUM");
+				navigator.camera.getPicture(
+					uploadPhoto,
+					function onFail(message)   {
+						alert('Error selecting picture');
+					},
+					{destinationType: navigator.camera.DestinationType.FILE_URI,
+                     sourceType: navigator.camera.PictureSourceType.PHOTOLIBRARY});
+			});
+		}
 		var showUploadOptions = function () {
 			$("input.txtFileName", $element).val("");
 			$("div.divFileUpload", $element).show();
@@ -430,7 +430,8 @@
 			var tempfile1 = imageURI.substring(imageURI.lastIndexOf('/') + 1);
 			var tempfile2 = tempfile1.substring(tempfile1.lastIndexOf('/') + 1);
 			var filename = tempfile2.split("#");
-			document.getElementById('path').innerHTML = filename[0];
+			$('span.uploadFileName', $element).text(filename[0]);
+			$('img.imgThumbNail'$element).attr ('src', imageURI);
 		}
 		var imgbtnShare_Click = function  () {
 
@@ -499,7 +500,6 @@
 				if (strName == null) {
 					return null
 				} else {
-					$("span.hdnFileUploadPath", $element).val (strFilepath);
 					var extIndex = strName[0].lastIndexOf(".");
 					var fileName = strName[0].substring(0, extIndex);
 					$("input.txtFileName", $element).val (fileName);
