@@ -347,7 +347,7 @@
 						console.log ('loading ' + urltarget);
 						$('#pageBody').load (urltarget, function() {
  
-							$('#pageBody').innerHtml(e.target.result);
+							
 							$('#myuserName').text( data.userdata.fullname);
 							$('#myimage').attr ({'src': data.userdata.picture_url});
 							$('#myoutletimage').attr ({'src': data.userdata.outlet.picture_url});
