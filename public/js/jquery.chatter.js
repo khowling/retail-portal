@@ -432,7 +432,7 @@
 			var filename = tempfile2.split("#");
 			
 			$('span.uploadFileName', $element).val(filename[0]);
-			$('img.imgThumbNail'$element).attr ('src', imageURI);
+			$('img.imgThumbNail', $element).attr ('src', imageURI);
 		}
 		var imgbtnShare_Click = function  () {
 
