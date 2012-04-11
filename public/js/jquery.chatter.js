@@ -430,7 +430,8 @@
 			var tempfile1 = imageURI.substring(imageURI.lastIndexOf('/') + 1);
 			var tempfile2 = tempfile1.substring(tempfile1.lastIndexOf('/') + 1);
 			var filename = tempfile2.split("#");
-			$('span.uploadFileName', $element).text(filename[0]);
+			
+			$('span.uploadFileName', $element).val(filename[0]);
 			$('img.imgThumbNail'$element).attr ('src', imageURI);
 		}
 		var imgbtnShare_Click = function  () {
