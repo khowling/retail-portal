@@ -1,14 +1,14 @@
 
-/*
+
 body {
     font-family: "Georgia",serif;
-    //line-height: 150%;
+    line-height: 150%;
     margin: 15px;
     padding: 0;
     font-size: 12px;
     font-family: Tahoma,Geneva,sans-serif;
 }
-*/
+
 .wrapper{
     max-width: 960px;
     margin-right: auto;

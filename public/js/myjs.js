@@ -356,7 +356,7 @@
 							console.log ('loading ' + urltarget);
 							e.data.targetdiv.load (urltarget, function() {
 	 
-							
+								$('body').removeAttr('style');
 								$('#myuserName').text( _userdata.fullname);
 								$('#myimage').attr ({'src': _userdata.picture_url});
 								$('#myoutletimage').attr ({'src': _userdata.outlet.picture_url});
