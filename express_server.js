@@ -28,7 +28,8 @@ foauth.login(clientId, clientSecret , sfuser, sfpasswd, function(){
 });
 
 app.post ('/post/:what', function (req,res) {
-    var uid = req.session.username,
+    console.log ('/post/:what' + req.params.what);
+	var uid = req.session.username,
         udata = req.session.userdata,
         whatid = req.params.what,
         files = req.files,
@@ -38,6 +39,7 @@ app.post ('/post/:what', function (req,res) {
 
         
     if (!uid) {
+		console.log ('/post/:what : no uid');
 		res.send ('Please Login', 400);
 		return;
 	} 
@@ -46,7 +48,7 @@ app.post ('/post/:what', function (req,res) {
     
     if (files) {
         
-        console.log('/post ' + filename);
+        console.log('/post got a file' + filename);
         console.dir(files);
         
         var host =  (require('url').parse(foauth.getOAuthResponse().instance_url))['host'];
@@ -69,6 +71,7 @@ app.post ('/post/:what', function (req,res) {
         });
         
     } else {
+		console.log('/post no file');
         var bdy = { "body" :   {"messageSegments" : [{"type": "Text", "text" : udata.fullname + ': '+ req.body.mess  }] }};
         queryAPI('chatter/feeds/record/'+whatid+'/feed-items', bdy, 'POST',  function(results) {
             //console.log ('/post : results : ' + JSON.stringify(results));
