@@ -267,6 +267,7 @@
 				console.log("----- poll("+(new Date()).toString()+") creating ajax request for " + longpollidx);
 				$.ajax({ 
 					url: _serverurl+'longpoll/' + longpollidx, 
+					cache: false,
 					success: function(res){
 						console.log ('----- poll('+(new Date()).toString()+') success : poll response for ' + longpollidx +  ' :  response data ' + res.item_type + ' response idx ' + res.index);
 						if (res.item_type == 'QUIZ' || res.item_type == 'KNOWLEDGE' || res.item_type == 'TRAINING') {
@@ -323,7 +324,6 @@
 
 						}
 						console.log ('----- poll('+(new Date()).toString()+') success finished :  for ' + longpollidx +  ' :  response data ' + res.item_type + ' response idx ' + res.index);
-						poll();
 					}, 
 					error: function(XMLHttpRequest, textStatus, errorThrown){
 							console.log ('----- poll() error() : got an error');
@@ -331,12 +331,12 @@
 							$.jGrowl("connection with server lost  (" + JSON.stringify(errorThrown) + ")");
 						}, 
 					dataType: "json",
-/*					
+		
 					complete: function () {
 							console.log ('----- poll() complete() :  ' + longpollidx +  ' : calling poll again');
-							poll();
+							setTimeout (poll, 1000);
 						}, 
-*/
+
 					timeout: 60000 
 				});
 			}
