@@ -261,16 +261,16 @@
 		var poll_err = false;		
 		
 		function poll(){
-			console.log("-----------  poll() function started");
+			console.log("----- poll("+(new Date()).toString()+") function started");
 			if (!poll_err) {
 				var longpollidx = lasteventprocessed;
-				console.log("----- poll() creating ajax request for " + longpollidx);
+				console.log("----- poll("+(new Date()).toString()+") creating ajax request for " + longpollidx);
 				$.ajax({ 
 					url: _serverurl+'longpoll/' + longpollidx, 
 					success: function(res){
-						console.log ('----- poll() success : poll response for ' + longpollidx +  ' :  response data ' + res.item_type + ' response idx ' + res.index);
+						console.log ('----- poll('+(new Date()).toString()+') success : poll response for ' + longpollidx +  ' :  response data ' + res.item_type + ' response idx ' + res.index);
 						if (res.item_type == 'QUIZ' || res.item_type == 'KNOWLEDGE' || res.item_type == 'TRAINING') {
-							console.log ('----- poll() got event, incrementing lasteventprocessed to : ' +  res.index);
+							console.log ('----- poll('+(new Date()).toString()+') got event, incrementing lasteventprocessed to : ' +  res.index);
 							lasteventprocessed = res.index;
 
 							var itemid = $('#' + res.item_id);
@@ -322,18 +322,21 @@
 							mypoints = res.my_points;
 
 						}
-						console.log ('----- poll() success finished :  for ' + longpollidx +  ' :  response data ' + res.item_type + ' response idx ' + res.index)
+						console.log ('----- poll('+(new Date()).toString()+') success finished :  for ' + longpollidx +  ' :  response data ' + res.item_type + ' response idx ' + res.index);
+						poll();
 					}, 
 					error: function(XMLHttpRequest, textStatus, errorThrown){
 							console.log ('----- poll() error() : got an error');
 							poll_err = true;
 							$.jGrowl("connection with server lost  (" + JSON.stringify(errorThrown) + ")");
 						}, 
-					dataType: "json", 
+					dataType: "json",
+/*					
 					complete: function () {
 							console.log ('----- poll() complete() :  ' + longpollidx +  ' : calling poll again');
 							poll();
 						}, 
+*/
 					timeout: 60000 
 				});
 			}
