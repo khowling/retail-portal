@@ -452,9 +452,11 @@
 			ft.upload(readyURI, _serverurl+'post/'+plugin.settings.feedtopostid, function success(results) {
 				$("div.divShareBtnFrmSP", $element).show();
 				$("div.divShareImgFrmSP", $element).hide();
-				console.log ('got Results ' + JSON.stringify(results));
+				console.log ('got Results ' + results);
+				var jsonres = jQuery.parseJSON (results);
+				console.log ('got Results ' + jsonres.response.id + JSON.stringify(jsonres.response));
 				console.log ('call  newfeeddom');
-				newfeeddom (results.response).prependTo('table.feed-table', $element);
+				newfeeddom (jsonres.response).prependTo('table.feed-table', $element);
 				console.log ('setting text to empty ');
 				$('textarea.txtNewFeedStyle', $element).val('');
 				
