@@ -28,17 +28,18 @@ foauth.login(clientId, clientSecret , sfuser, sfpasswd, function(){
 });
 
 app.post ('/post/:what', function (req,res) {
-    console.log ('/post/:what' + req.params.what);
+    console.log ('/post/:what' + req.params.what + ' : ' + req.body.me);
 	var uid = req.session.username,
         udata = req.session.userdata,
         whatid = req.params.what,
         files = req.files,
         filename = req.body.fname,
-        filedesc = req.body.fdesc;
+        filedesc = req.body.fdesc,
+		me = req.body.me;
         
 
         
-    if (!uid) {
+    if (!uid && !me) {
 		console.log ('/post/:what : no uid');
 		res.send ('Please Login', 400);
 		return;
