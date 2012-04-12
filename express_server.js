@@ -304,6 +304,7 @@ function queryAPI (resturl, mbody, httpmethod, callback) {
 
 var hostapp = 'http://nokiaknowledge2.herokuapp.com';
 var event_collection = {
+/*
 	'K000': {
 			type: "KNOWLEDGE",
 			name: "Start Here  *** The Basics  ***",
@@ -441,6 +442,7 @@ var event_collection = {
 				]
 			}
 		}
+		*/
 	};
 
 /*
@@ -713,7 +715,7 @@ function nextEvent(user, lastindexprocessed) {
     if (!events_by_user[user]) return null;
     if (!lastindexprocessed) lastindexprocessed = 0;
     
-    //console.log ('nextEvent: from ' + user + ', lastindexprocessed : ' +  lastindexprocessed);
+    console.log ('nextEvent(): from ' + user + ', lastindexprocessed : ' +  lastindexprocessed);
     var event;
     var minTimestamp = new Date().getTime() - (maxAge * 1000);
     for(var i in events_by_user[user]) {
@@ -931,12 +933,12 @@ app.get('/longpoll/:lasteventprocessed', function (req, res) {
 	} 
     
 	var lasteventprocessed = req.params.lasteventprocessed;
-	console.log ('longpoll: got request from ' + uid + ' last eventprocessed from url : ' + lasteventprocessed);
+	console.log ('longpoll(): got request from ' + uid + ' last eventprocessed from url : ' + lasteventprocessed);
 	// check the required parameters
 
 	var event = nextEvent(uid, lasteventprocessed);
 	if (!event) {
-		console.log ('longpoll: pause it, no event to send');
+		console.log ('longpoll(): pause request, no event to send ' + lasteventprocessed);
 
 		var req_info = { request: req, response: res, lasteventprocessed: lasteventprocessed, completed: false};
 		req_info.timeoutid = setTimeout( function () { 
