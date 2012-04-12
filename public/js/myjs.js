@@ -334,7 +334,8 @@
 		
 					complete: function () {
 							console.log ('----- poll() complete() :  ' + longpollidx +  ' : calling poll again');
-							setTimeout (poll, 1000);
+							setTimeout (poll, 5);
+							
 						}, 
 
 					timeout: 60000 

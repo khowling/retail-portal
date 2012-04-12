@@ -304,7 +304,7 @@ function queryAPI (resturl, mbody, httpmethod, callback) {
 
 var hostapp = 'http://nokiaknowledge2.herokuapp.com';
 var event_collection = {
-/*
+
 	'K000': {
 			type: "KNOWLEDGE",
 			name: "Start Here  *** The Basics  ***",
@@ -442,7 +442,7 @@ var event_collection = {
 				]
 			}
 		}
-		*/
+
 	};
 
 /*
