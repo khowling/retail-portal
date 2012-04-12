@@ -1,6 +1,7 @@
     	
-		var _serverurl = '';
-
+		var _serverurl;
+		var _userdata;
+		
         function initPoints () {
 				var slider = $('#slider1').bxSlider({
 						controls: false,
@@ -165,10 +166,12 @@
 					$("<div/>", {"id": "feed-container", "style": "background: white;"}));
                 
 				$('#feed-container').chatter({
-					fullname: urlquery.fullname,
-					user_pic: urlquery.user_pic,
-					outlet: urlquery.outlet,
-					feedid: tid
+					serverurl: _serverurl,
+					feedid: tid,
+					fullname: _userdata.fullname,
+					user_pic: _userdata.picture_url,
+					outlet: _userdata.outlet.name,
+					feedtopostid: tid
 				});
 			} 
 			else 
@@ -339,37 +342,37 @@
 	function logmein(e) {
 	
 			_serverurl = e.data.serverurl;
-
 			$.support.cors = true;
 			// if ('undefined' !== typeof netscape) netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
 			$.post(_serverurl+'ajaxlogin',{username: e.data.username , password: e.data.password} ,
 				function(data) {
 					console.log ('returned from the server ' + JSON.stringify(data));
 					if (data.username) {
-						//var newurl = 'home.html?fullname=' + escape(data.userdata.fullname) + '&outlet=' + escape(data.userdata.outlet.name) + '&outlet_pic=' + escape(data.userdata.outlet.picture_url) + '&user_pic=' + escape(data.userdata.picture_url) + '&idx=' +  escape(data.current_index);
-						//console.log ('newurl : ' + newurl);
-						//window.open ('home.html');
+						_userdata = data.userdata;
+
 						if (e.data.targetdiv) {
 							e.data.targetdiv.empty();
-							//var pathName = window.location.protocol + '//' +  window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
 							var urltarget = _serverurl+'home.html';
 							console.log ('loading ' + urltarget);
 							e.data.targetdiv.load (urltarget, function() {
 	 
 							
-								$('#myuserName').text( data.userdata.fullname);
-								$('#myimage').attr ({'src': data.userdata.picture_url});
-								$('#myoutletimage').attr ({'src': data.userdata.outlet.picture_url});
-								$('#userOrg1').text( data.userdata.outlet.name);
-								$('#userOrg2').text( data.userdata.outlet.name);
+								$('#myuserName').text( _userdata.fullname);
+								$('#myimage').attr ({'src': _userdata.picture_url});
+								$('#myoutletimage').attr ({'src': _userdata.outlet.picture_url});
+								$('#userOrg1').text( _userdata.outlet.name);
+								$('#userOrg2').text( _userdata.outlet.name);
 
 								/*
 								initPoints ();
 								*/
 								$('#chatterdiv').chatter({
-									fullname: data.userdata.fullname,
-									user_pic: data.userdata.picture_url,
-									outlet: data.userdata.outlet.name
+									serverurl: _serverurl
+									feedid: 'me',
+									fullname: _userdata.fullname,
+									user_pic: _userdata.picture_url,
+									outlet: _userdata.outlet.name,
+									feedtopostid: _userdata.outlet.id
 								});
 								console.log ('addEventListener deviceready');
 								document.addEventListener("deviceready", function() { console.log ('deviceready'); $('#chatterdiv').data('chatter').setmobileattachments(); } , false);

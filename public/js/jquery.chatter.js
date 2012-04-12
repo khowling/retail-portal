@@ -21,11 +21,7 @@
     $.chatter = function(element, options) {
 	
 		//alert (JSON.stringify (options));
-		var defaults = {
-				'feedid' : 'me',
-				'background-color' : 'blue'
-			}
-		
+		var defaults = {};
         var plugin = this;
 		
 
@@ -37,6 +33,8 @@
 
         var init = function() {
             plugin.settings = $.extend({}, defaults, options);
+			
+			_serverurl = plugin.settings.serverurl;
 			
 			// delegated events : html doesnt need to be on the page
 			$element.on('click', 'a.lnkfileUpload', compUploadClick);  
@@ -60,7 +58,7 @@
 
 		   
 		// private properties and methods
-		var _serverurl = 'http://nokiaknowledge2.herokuapp.com/';
+		var _serverurl;
 	
 		var filterVisibility = function () {
 			$("div.drop_down_listMyChatter", $element).toggle();
@@ -397,19 +395,15 @@
 			$element.on('click', 'a.lnkfileUpload', showUploadOptions);
 
 			$element.on ('click', '.upload_camera',  function () {
-	   
 					navigator.camera.getPicture(
 						uploadPhoto,
 						function onFail(message)   {
 							alert('Error taking picture');
 						},
 						{sourceType : Camera.PictureSourceType.CAMERA});
-					
-					//uploadPhoto('/path/file.jpg');
 				});
 
 			$element.on ('click', '.upload_photo',  function () {
-				//console.log("SAVEDPHOTOALBUM");
 				navigator.camera.getPicture(
 					uploadPhoto,
 					function onFail(message)   {
@@ -430,42 +424,37 @@
 			$("div.compUploadDiv", $element).hide(); // FILE UPLOAD FROM COMPUTER
 			$("div.divFileUpload", $element).hide(); // div Mobile file upload options
 			$("div.documentDiv", $element).show(); // FILE ATTACHED, ready to POST-
-
-			var tempfile1 = imageURI.substring(imageURI.lastIndexOf('/') + 1);
-			var tempfile2 = tempfile1.substring(tempfile1.lastIndexOf('/') + 1);
-			var filename = tempfile2.split("#");
+			var filename = readyURI.substr(readyURI.lastIndexOf('/')+1);
 			
-			$('span.uploadFileName', $element).text(filename[0]);
+			$('span.uploadFileName', $element).text(filename);
 			$('img.imgThumbNail', $element).attr ('src', imageURI);
 		}
 		var imgbtnShare_Click = function  () {
 			$("div.divShareBtnFrmSP", $element).hide();
 			$("div.divShareImgFrmSP", $element).show();
+			
 			var options = new FileUploadOptions();
-			options.fileKey="file";
+			options.fileKey="attach";
 			options.fileName=readyURI.substr(readyURI.lastIndexOf('/')+1);
 			options.mimeType="image/jpeg";
-
 			
 			var params = new Object();
 			params.mess = $('textarea.txtNewFeedStyle', $element).text();
 			params.fname = options.fileName;
 			params.fdesc = "From my Windows Phone";
-
+			params.me = plugin.settings.fullname;
 			options.params = params;
 
 			console.log ('imgbtnShare_Click '+readyURI+' options : '  + JSON.stringify(options));
 
 			var ft = new FileTransfer();
 			
-			ft.upload(readyURI, _serverurl+'post/'+plugin.settings.feedid, function success(results) {
+			ft.upload(readyURI, _serverurl+'post/'+plugin.settings.feedtopostid, function success(results) {
 				$("div.divShareBtnFrmSP", $element).show();
 				$("div.divShareImgFrmSP", $element).hide();
 				imgCloseClick();
-				var meteam = {};
-				meteam['<%= udata.fullname %>'] = { pic: '<%= udata.picture_url %>'};
-				var newpost = newfeeddom (results, meteam, '<%= feedid %>');
-				newpost.prependTo('#feed-table'+'<%= feedid %>');
+				newfeeddom (results).prependTo('table.feed-table', $element);
+				$('textarea.txtNewFeedStyle', $element).val(null);
 				
 				} , function fail(error) {
 			alert("An error has occurred: Code = " + error.code);

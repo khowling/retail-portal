@@ -46,8 +46,10 @@ app.post ('/post/:what', function (req,res) {
 	} 
     if (whatid == 'me') whatid = udata.outlet.id;
 	
+	//  THIS IS A WORKAROUND BEBAUSE PHONGGAP DOESNT SEND COOKIES WITH FileTransfer.upload!! NEED TO FIX
 	var fullname = me;
     if (udata) fullname = udata.fullname;
+	// END OF WORKAROUND
     
     if (files) {
         
