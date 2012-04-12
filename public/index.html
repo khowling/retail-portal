@@ -43,7 +43,7 @@
   <div id="titleheader">
     <div class="inner" style="margin-bottom: 0px;">
       <h2 class="title" style="float:left;">
-        <img src="images/nk_nokia_logo.png" style="background: #4472A7; margin-right: 10px;"/>engaging learning
+        <img src="images/nk_nokia_logo.png" style="background: #4472A7; margin-right: 10px;"/>Engaging Learning
       </h2>
 
 
@@ -73,9 +73,13 @@
 <script>
 
 
-  $(document).ready(function() {
-    $('#logmein').submit(logmein);
-  });
+   $('#logmein').on('submit', {
+      serverurl: '/',
+      username: function() { return $('input[name=username]').val(); },
+      //username: 'keith',
+      password: function() { return $('input[name=password]').val(); },
+      targetdiv : $('#main-body')
+      }, logmein);
 
 </script>
 
