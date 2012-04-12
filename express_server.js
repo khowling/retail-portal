@@ -45,7 +45,9 @@ app.post ('/post/:what', function (req,res) {
 		return;
 	} 
     if (whatid == 'me') whatid = udata.outlet.id;
-    
+	
+	var fullname = me;
+    if (udata) fullname = udata.fullname;
     
     if (files) {
         
@@ -61,7 +63,7 @@ app.post ('/post/:what', function (req,res) {
               'Authorization': 'OAuth '+foauth.getOAuthResponse().access_token,
             },
           data: {
-            'text':  udata.fullname + ': '+ req.body.mess,
+            'text':  fullname + ': '+ req.body.mess,
             'desc': filedesc,
             'title': filename,
             'feedItemFileUpload': rest.file(files.attach.path, files.attach.name, null, 'binary',  files.attach.type)
@@ -73,7 +75,7 @@ app.post ('/post/:what', function (req,res) {
         
     } else {
 		console.log('/post no file');
-        var bdy = { "body" :   {"messageSegments" : [{"type": "Text", "text" : udata.fullname + ': '+ req.body.mess  }] }};
+        var bdy = { "body" :   {"messageSegments" : [{"type": "Text", "text" : fullname + ': '+ req.body.mess  }] }};
         queryAPI('chatter/feeds/record/'+whatid+'/feed-items', bdy, 'POST',  function(results) {
             //console.log ('/post : results : ' + JSON.stringify(results));
             req.session = null; // method doesnt update the session
