@@ -452,10 +452,13 @@
 			ft.upload(readyURI, _serverurl+'post/'+plugin.settings.feedtopostid, function success(results) {
 				$("div.divShareBtnFrmSP", $element).show();
 				$("div.divShareImgFrmSP", $element).hide();
-				imgCloseClick();
-				newfeeddom (results).prependTo('table.feed-table', $element);
-				$('textarea.txtNewFeedStyle', $element).val(null);
+				console.log ('got Results ' + JSON.stringify(results));
 				
+				newfeeddom (results).prependTo('table.feed-table', $element);
+				console.log ('setting text to empty ');
+				$('textarea.txtNewFeedStyle', $element).val('');
+				
+				imgCloseClick();
 				} , function fail(error) {
 			alert("An error has occurred: Code = " + error.code);
 			}, options);
