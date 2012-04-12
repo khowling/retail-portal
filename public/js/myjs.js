@@ -367,7 +367,7 @@
 								initPoints ();
 								*/
 								$('#chatterdiv').chatter({
-									serverurl: _serverurl
+									serverurl: _serverurl,
 									feedid: 'me',
 									fullname: _userdata.fullname,
 									user_pic: _userdata.picture_url,
