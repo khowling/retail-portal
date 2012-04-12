@@ -453,9 +453,9 @@
 				$("div.divShareBtnFrmSP", $element).show();
 				$("div.divShareImgFrmSP", $element).hide();
 
-				console.log ('got Results ' + results.response.id + JSON.stringify(results.response));
-				console.log ('got Results ' + JSON.stringify(results.response.id) + ' : ' + JSON.stringify(results.response.body));
-				newfeeddom (results.response).prependTo('table.feed-table', $element);
+				console.log ('got Results ' + results.response);
+				var jsonres = jQuery.parseJSON (results.response);
+				newfeeddom (jsonres).prependTo('table.feed-table', $element);
 				console.log ('setting text to empty ');
 				$('textarea.txtNewFeedStyle', $element).val('');
 				
