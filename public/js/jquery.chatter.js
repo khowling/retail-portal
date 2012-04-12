@@ -453,8 +453,8 @@
 				$("div.divShareBtnFrmSP", $element).show();
 				$("div.divShareImgFrmSP", $element).hide();
 				console.log ('got Results ' + JSON.stringify(results));
-				
-				newfeeddom (results).prependTo('table.feed-table', $element);
+				console.log ('call  newfeeddom');
+				newfeeddom (results.response).prependTo('table.feed-table', $element);
 				console.log ('setting text to empty ');
 				$('textarea.txtNewFeedStyle', $element).val('');
 				
