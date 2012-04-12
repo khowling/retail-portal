@@ -1,5 +1,5 @@
     	
-		var _serverurl = 'http://nokiaknowledge2.herokuapp.com/';
+		var _serverurl = '';
 
         function initPoints () {
 				var slider = $('#slider1').bxSlider({
@@ -336,60 +336,64 @@
 		}
         
         
-	function logmein() {
+	function logmein(e) {
+	
+			_serverurl = e.data.serverurl;
 
 			$.support.cors = true;
 			// if ('undefined' !== typeof netscape) netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
-			$.post(_serverurl+'ajaxlogin',{username: $('[name=username]').val() , password: $('[name=password]').val()} ,
+			$.post(_serverurl+'ajaxlogin',{username: e.data.username , password: e.data.password} ,
 				function(data) {
 					console.log ('returned from the server ' + JSON.stringify(data));
 					if (data.username) {
 						//var newurl = 'home.html?fullname=' + escape(data.userdata.fullname) + '&outlet=' + escape(data.userdata.outlet.name) + '&outlet_pic=' + escape(data.userdata.outlet.picture_url) + '&user_pic=' + escape(data.userdata.picture_url) + '&idx=' +  escape(data.current_index);
 						//console.log ('newurl : ' + newurl);
 						//window.open ('home.html');
-						$('#pageBody').empty();
-						//var pathName = window.location.protocol + '//' +  window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
-						var urltarget = _serverurl+'home.html';
-						console.log ('loading ' + urltarget);
-						$('#pageBody').load (urltarget, function() {
- 
-						
-							$('#myuserName').text( data.userdata.fullname);
-							$('#myimage').attr ({'src': data.userdata.picture_url});
-							$('#myoutletimage').attr ({'src': data.userdata.outlet.picture_url});
-							$('#userOrg1').text( data.userdata.outlet.name);
-							$('#userOrg2').text( data.userdata.outlet.name);
+						if (e.data.targetdiv) {
+							e.data.targetdiv.empty();
+							//var pathName = window.location.protocol + '//' +  window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
+							var urltarget = _serverurl+'home.html';
+							console.log ('loading ' + urltarget);
+							e.data.targetdiv.load (urltarget, function() {
+	 
+							
+								$('#myuserName').text( data.userdata.fullname);
+								$('#myimage').attr ({'src': data.userdata.picture_url});
+								$('#myoutletimage').attr ({'src': data.userdata.outlet.picture_url});
+								$('#userOrg1').text( data.userdata.outlet.name);
+								$('#userOrg2').text( data.userdata.outlet.name);
 
-							/*
-							initPoints ();
-							*/
-							$('#chatterdiv').chatter({
-								fullname: data.userdata.fullname,
-								user_pic: data.userdata.picture_url,
-								outlet: data.userdata.outlet.name
-							});
-							console.log ('addEventListener deviceready');
-							document.addEventListener("deviceready", function() { console.log ('deviceready'); $('#chatterdiv').data('chatter').setmobileattachments(); } , false);
-							//$('#chatterdiv').data('chatter').setmobileattachments();
-							/*
-							$(window).resize(function() {
-								if ($("#jdialog").dialog( "isOpen" )) {
-									$("#jdialog").dialog("option", "position", "center");
-									var cw = $("#jdialog").dialog( "option", "width" );
-									var tw = getTargetWidth();
-									if (cw != tw) 
-										$("#jdialog").dialog( "option", "width", tw );
+								/*
+								initPoints ();
+								*/
+								$('#chatterdiv').chatter({
+									fullname: data.userdata.fullname,
+									user_pic: data.userdata.picture_url,
+									outlet: data.userdata.outlet.name
+								});
+								console.log ('addEventListener deviceready');
+								document.addEventListener("deviceready", function() { console.log ('deviceready'); $('#chatterdiv').data('chatter').setmobileattachments(); } , false);
+								//$('#chatterdiv').data('chatter').setmobileattachments();
+								/*
+								$(window).resize(function() {
+									if ($("#jdialog").dialog( "isOpen" )) {
+										$("#jdialog").dialog("option", "position", "center");
+										var cw = $("#jdialog").dialog( "option", "width" );
+										var tw = getTargetWidth();
+										if (cw != tw) 
+											$("#jdialog").dialog( "option", "width", tw );
+									}
+					
+								});
+			
+								if (data.current_index > 0) {
+									lasteventprocessed = data.current_index;
 								}
-                
+								//alert ('launching poll with ' + lasteventprocessed);
+								poll();
+								*/
 							});
-        
-							if (data.current_index > 0) {
-								lasteventprocessed = data.current_index;
-							}
-							//alert ('launching poll with ' + lasteventprocessed);
-							poll();
-							*/
-						});
+						}
 
 					} else {
 						$('#logerrors').text (data.message);
