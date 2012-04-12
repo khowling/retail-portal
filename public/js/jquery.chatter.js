@@ -64,7 +64,7 @@
 			$("div.drop_down_listMyChatter", $element).toggle();
 		}
 		var processsfdcfeeditem = function  (itm) {
-			
+			console.log ('processsfdcfeeditem :' + itm.body.text);
 			var posttxt = itm.body.text.split(": ");
 			//alert ('processsfdcfeeditem ' + itm.body.text + '('+posttxt.length+') :: ' + JSON.stringify(outletteam));
 			
@@ -113,9 +113,9 @@
 			return ret;
 		}	   
 		var newfeeddom = function  (itm) {
-
+			console.log ('newfeeddom');
 			var post = processsfdcfeeditem(itm);
-
+			console.log ('creating feed-post with ' + JSON.stringify(post));
 			var newpost = $('tr.feed-post-template', $element).clone();
 			newpost = newpost.attr({"id": itm.id }).removeAttr('style').removeClass('feed-post-template').addClass('feed-post')
 				.find('.spanFeed').text(post.ptxt).end()
@@ -192,7 +192,7 @@
 			   ).end();
 			   
 			if (itm.attachment) {
-				//alert (JSON.stringify(itm.attachment));
+				console.log ('attachment : ' + JSON.stringify(itm.attachment));
 				if (!itm.attachment.description) itm.attachment.description = '';
 				var image_href = _serverurl+'feedfile?what=' + escape(itm.attachment.downloadUrl) + '&mt=' + escape(itm.attachment.mimeType);
 				
