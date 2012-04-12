@@ -363,9 +363,9 @@
 								$('#userOrg1').text( _userdata.outlet.name);
 								$('#userOrg2').text( _userdata.outlet.name);
 
-								/*
+								
 								initPoints ();
-								*/
+								
 								$('#chatterdiv').chatter({
 									serverurl: _serverurl,
 									feedid: 'me',
@@ -376,8 +376,8 @@
 								});
 								console.log ('addEventListener deviceready');
 								document.addEventListener("deviceready", function() { console.log ('deviceready'); $('#chatterdiv').data('chatter').setmobileattachments(); } , false);
-								//$('#chatterdiv').data('chatter').setmobileattachments();
-								/*
+								
+								
 								$(window).resize(function() {
 									if ($("#jdialog").dialog( "isOpen" )) {
 										$("#jdialog").dialog("option", "position", "center");
@@ -394,7 +394,7 @@
 								}
 								//alert ('launching poll with ' + lasteventprocessed);
 								poll();
-								*/
+								
 							});
 						}
 
