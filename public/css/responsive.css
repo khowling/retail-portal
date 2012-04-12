@@ -2,13 +2,12 @@
 
 body {
     font-family: "Georgia",serif;
-    line-height: 150%;
+    //line-height: 150%;
     margin: 15px;
     padding: 0;
     font-size: 12px;
     font-family: Tahoma,Geneva,sans-serif;
 }
-
 .wrapper{
     max-width: 960px;
     margin-right: auto;
@@ -396,32 +395,14 @@ input.modal-button {
     //margin-right: auto;
     
 }
-@media screen and (orientation:landscape) {
-    html {
-        -webkit-text-size-adjust: none;
-        -ms-text-size-adjust: none;
-    }
-	
-	.wrapper{
-		width: 480px;
-    }
-	
-    #login-content {
-        margin: 0;
-        padding:5px;
-    }
-}
 
-@media screen  and (orientation:portrait) { /* width <= 480 pixels  */
+@media screen and (max-width: 480px)  { /* width <= 480 pixels  */
     
     html {
         -webkit-text-size-adjust: none;
         -ms-text-size-adjust: none;
     }
-	
-	.wrapper{
-		width: 320px;
-    }
+
 	
     #login-content {
         margin: 0;
