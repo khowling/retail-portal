@@ -72,6 +72,8 @@ app.post ('/post/:what', function (req,res) {
           }
         }).on('complete', function(results) {
             req.session = null; // method doesnt update the session
+			console.log ('/post/:what : results : ' + results);
+			console.log ('/post/:what : results : ' + JSON.stringify(results));
             res.send (results);
         });
         

@@ -241,7 +241,7 @@
 		}	   
 		var loadfeeds = function () {
 			$.ajax({ 
-				url: "http://nokiaknowledge2.herokuapp.com/myfeed/" + plugin.settings.feedid, 
+				url: _serverurl+'myfeed/' + plugin.settings.feedid, 
 				success: function(res){
 					//alert ('got results ' + JSON.stringify(res));
 					//$('#imgCommentNew').attr ({ 'src' : res.me.picture_url });
@@ -454,7 +454,7 @@
 				$("div.divShareImgFrmSP", $element).hide();
 
 				console.log ('got Results ' + results.response.id + JSON.stringify(results.response));
-				console.log ('call  newfeeddom');
+				console.log ('got Results ' + JSON.stringify(results.response.id) + ' : ' + JSON.stringify(results.response.body));
 				newfeeddom (results.response).prependTo('table.feed-table', $element);
 				console.log ('setting text to empty ');
 				$('textarea.txtNewFeedStyle', $element).val('');
