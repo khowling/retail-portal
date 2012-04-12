@@ -438,8 +438,14 @@
 			options.fileName=readyURI.substr(readyURI.lastIndexOf('/')+1);
 			options.mimeType="image/jpeg";
 			
+			var ptxt = $('textarea.txtNewFeedStyle', $element);   
+			if (ptxt.val().length == 0) {
+				ptxt.val ('Posted a File');
+			}
+
+			
 			var params = new Object();
-			params.mess = $('textarea.txtNewFeedStyle', $element).text();
+			params.mess = ptxt.val();
 			params.fname = options.fileName;
 			params.fdesc = "From my Windows Phone";
 			params.me = plugin.settings.fullname;
