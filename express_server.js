@@ -942,7 +942,7 @@ app.get('/longpoll/:lasteventprocessed', function (req, res) {
 		req_info.timeoutid = setTimeout( function () { 
 			console.log ('longpoll:  timeout pulse');
 			req_info.request.resume();
-			req_info.response.send({type: "PULSE"});
+			req_info.response.send({item_type: "PULSE"});
 			req_info.completed = true;
 			 }, connectionTimeout * 1000); 
 

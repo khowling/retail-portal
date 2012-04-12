@@ -64,9 +64,8 @@
 			$("div.drop_down_listMyChatter", $element).toggle();
 		}
 		var processsfdcfeeditem = function  (itm) {
-			console.log ('processsfdcfeeditem :' + itm.body.text);
+			//console.log ('processsfdcfeeditem :' + itm.body.text);
 			var posttxt = itm.body.text.split(": ");
-			//alert ('processsfdcfeeditem ' + itm.body.text + '('+posttxt.length+') :: ' + JSON.stringify(outletteam));
 			
 			var ret = {};
 			if (posttxt.length < 2) {
@@ -113,9 +112,9 @@
 			return ret;
 		}	   
 		var newfeeddom = function  (itm) {
-			console.log ('newfeeddom');
+			//console.log ('newfeeddom');
 			var post = processsfdcfeeditem(itm);
-			console.log ('creating feed-post with ' + JSON.stringify(post));
+			//console.log ('creating feed-post with ' + JSON.stringify(post));
 			var newpost = $('tr.feed-post-template', $element).clone();
 			newpost = newpost.attr({"id": itm.id }).removeAttr('style').removeClass('feed-post-template').addClass('feed-post')
 				.find('.spanFeed').text(post.ptxt).end()
@@ -192,7 +191,7 @@
 			   ).end();
 			   
 			if (itm.attachment) {
-				console.log ('attachment : ' + JSON.stringify(itm.attachment));
+				//console.log ('attachment : ' + JSON.stringify(itm.attachment));
 				if (!itm.attachment.description) itm.attachment.description = '';
 				var image_href = _serverurl+'feedfile?what=' + escape(itm.attachment.downloadUrl) + '&mt=' + escape(itm.attachment.mimeType);
 				
@@ -211,10 +210,11 @@
 						$("#event-container").append(
 							$("<img/>", { "style": "max-width: 400px;", "src": image_href}) //.load (function (){
 							);
+						var tw = getTargetWidth();
 						$("#jdialog").dialog ({ 
 							title: 'View file ' + itm.attachment.title,
 							modal: true, 
-							width: 'auto',
+							width: tw,
 							open: function(event, ui) {
 								$(this).closest('.ui-dialog').find('.ui-dialog-titlebar-close').show();
 							}
@@ -445,7 +445,7 @@
 			params.me = plugin.settings.fullname;
 			options.params = params;
 
-			console.log ('imgbtnShare_Click '+readyURI+' options : '  + JSON.stringify(options));
+			//console.log ('imgbtnShare_Click '+readyURI+' options : '  + JSON.stringify(options));
 
 			var ft = new FileTransfer();
 			
@@ -453,10 +453,10 @@
 				$("div.divShareBtnFrmSP", $element).show();
 				$("div.divShareImgFrmSP", $element).hide();
 
-				console.log ('got Results ' + results.response);
+				//console.log ('got Results ' + results.response);
 				var jsonres = jQuery.parseJSON (results.response);
 				newfeeddom (jsonres).prependTo('table.feed-table', $element);
-				console.log ('setting text to empty ');
+				//console.log ('setting text to empty ');
 				$('textarea.txtNewFeedStyle', $element).val('');
 				
 				imgCloseClick();

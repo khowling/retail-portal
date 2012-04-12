@@ -261,14 +261,16 @@
 		var poll_err = false;		
 		
 		function poll(){
-			console.log("poll() function");
+			console.log("-----------  poll() function started");
 			if (!poll_err) {
-				console.log("creating longpoll request ");
+				var longpollidx = lasteventprocessed;
+				console.log("----- poll() creating ajax request for " + longpollidx);
 				$.ajax({ 
-					url: _serverurl+'longpoll/' + lasteventprocessed, 
+					url: _serverurl+'longpoll/' + longpollidx, 
 					success: function(res){
-						console.log ('success : poll res ' + lasteventprocessed +  ' : ' + JSON.stringify(res));
+						console.log ('----- poll() success : poll response for ' + longpollidx +  ' :  response data ' + res.item_type + ' response idx ' + res.index);
 						if (res.item_type == 'QUIZ' || res.item_type == 'KNOWLEDGE' || res.item_type == 'TRAINING') {
+							console.log ('----- poll() got event, incrementing lasteventprocessed to : ' +  res.index);
 							lasteventprocessed = res.index;
 
 							var itemid = $('#' + res.item_id);
@@ -320,17 +322,17 @@
 							mypoints = res.my_points;
 
 						}
-						console.log ('success() :  finished');
+						console.log ('----- poll() success finished :  for ' + longpollidx +  ' :  response data ' + res.item_type + ' response idx ' + res.index)
 					}, 
 					error: function(XMLHttpRequest, textStatus, errorThrown){
-							console.log ('error() : got an error');
+							console.log ('----- poll() error() : got an error');
 							poll_err = true;
-							$.jGrowl("error: connection with server lost  (" + JSON.stringify(errorThrown) + ")");
+							$.jGrowl("connection with server lost  (" + JSON.stringify(errorThrown) + ")");
 						}, 
 					dataType: "json", 
 					complete: function () {
-							console.log ('complete() :  ' + lasteventprocessed +  ' : calling poll again');
-							//poll();
+							console.log ('----- poll() complete() :  ' + longpollidx +  ' : calling poll again');
+							poll();
 						}, 
 					timeout: 60000 
 				});
