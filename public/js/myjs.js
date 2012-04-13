@@ -1,5 +1,10 @@
     	
-		var _serverurl;
+		
+        // DONT CRASH IN IE
+        if (typeof console == "undefined") var console = { log: function() {} };
+        
+        
+        var _serverurl;
 		var _userdata;
 		
         function initPoints () {

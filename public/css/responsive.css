@@ -27,7 +27,7 @@ h3 {
 }
 #pageBody {
     max-width: 1200px;
-    padding: 10px 0;
+//    padding: 10px 0;
 }
 /*
 #header, #nav, #footer, h1, h2, h3 {
@@ -107,6 +107,7 @@ h3 {
 }
 */
 #footer {
+    border-top: 10px solid #333; 
     background: none repeat scroll 0 0 #4472A7;
     clear: both;
     color: #FFFFFF;
@@ -117,9 +118,6 @@ h3 {
 #footer .inner {
     padding: 5px 20px;
 }
-
-/* MINE */
-#footer, .myboarder { border-top: 10px solid lightGrey; }
 
 /* If the viewport width <= 2000 pixels ... */
 @media screen and (max-width: 2000px) {
@@ -260,12 +258,11 @@ ul.peopleList_2in_3col {
 		height: 2.92in; 
 }
 .myboarder {
-	//border-top: 10px solid #DFDBCB; 
-	//color: white; 
+    margin-top: 10px;
 	box-shadow: 0 5px 10px #AAAAAA; 
 	padding: 0 2px 2px; 
-	//background: none repeat scroll 0 0 #6CA128;
     background: #4472A7;
+    border-top: 10px solid lightGrey; 
 }
 ul.myboarder-inside {
 	background: none repeat scroll 0% 0% white; 
@@ -299,6 +296,11 @@ li.itemList {
 		font-size: 9pt;
 }
 
+li.itemListRecommend {
+    width: 250px;
+    text-align: left;
+}
+
 li:hover {
 	cursor: pointer;
 	background: lightGrey;
@@ -322,7 +324,6 @@ div.quizPass {
 
 
 div.itemName {
-//	font-weight: bold;
 	margin-right: 0.5em;
 	text-overflow: ellipsis;
 	color: #2276BB;
@@ -336,7 +337,7 @@ span.itemDesc, div.itemRate {
 }
 
 div.itemResults {
-	font-size: 11px;
+    font-size: 11px;
 	color: #999;
 	line-height: 16px;
 	text-overflow: ellipsis;
@@ -385,15 +386,13 @@ input.modal-button {
 }
 
 #login-content {
-    //height:420px; 
+
     width:720px;
-    color:#bbb; 
-    background-color:#333; 
-    border:4px solid #444; 
+    color:#050505; 
+    background-color:#d4d4d4; 
+    border:1px solid #c0c79f; 
     padding:24px;
-    //margin-left: auto;
-    //margin-right: auto;
-    
+    margin: 30px 0;
 }
 
 @media screen and (max-width: 480px)  { /* width <= 480 pixels  */

@@ -15,19 +15,19 @@
         <div class="myboarder">
             <!-- Header -->
             <div>
-            	<div style="float:left; margin-top: 6px; margin-bottom: 6px;"><h3><span id="myuserName"></span></h3><div id="userOrg1" style="color: #EBA555;"></div></div>
+            	<div style="float:left; margin-top: 6px; margin-bottom: 6px;"><h3><span id="myuserName"></span><div style="clear:both; color: #EBA555;  margin-top: 4px;" >My Points <span class="timer">0</span></div></h3></div>
             	<div id="orgImage" style="float: right;margin: 5px;"><img id="myoutletimage" src="" width="55"/></div>
             	<div style="clear: both;"></div>
             </div>
             <!-- Content -->
-            <div class="myboarder-inside" style="text-align: center; height: 120px; background: white; border-radius: 4px; border: 2px;">
+            <div class="myboarder-inside" style="text-align: center; height: 98px; width: 250px;  background: white; border-radius: 4px; border: 2px;">
             	<div id="userImage" style="float:left; text-align: center; width: 50%;">
                     <img id="myimage" src="" width="75" style="margin: 5px;"/>
                 </div>
             	<div style="float:left; text-align: center; width: 45%; margin-top: -5px;">
             		<canvas id="points-guage" width="110" height="100"></canvas>
             	</div>
-            	<div style="clear:both; color: black; font-weight:bold;" >My Points <span class="timer">0</span></div>
+            	
             </div>
         </div>
     </div>
@@ -37,7 +37,7 @@
 		<div class="myboarder">
 			<!-- Header -->
             <div>
-				<div style="float:left; margin-top: 6px; margin-bottom: 6px;"><h3>Recommended</h3></div>
+				<div style="float:left; margin-top: 6px; margin-bottom: 6px;"><h3>Recommended</h3><div style="clear:both; color: #EBA555;  margin: 5px;" >Knowledge...Training...Quiz</div></div>
 				<div class="carousel" style="float: right; margin: 5px;">
 					<ol id="carousel_items_items" class="carousel_itemList">
 					</ol>
@@ -46,8 +46,8 @@
 			</div>
 		    <!-- Content -->
 			<ul id="slider1" class="myboarder-inside" style="text-align: center; height: 80px; margin-top: 20px;">
-                <li class="itemList" >
-					<img src="images/icons/knowledge-icon.gif" class="quizImage">
+                <li class="itemList itemListRecommend" >
+					<img src="images/icons/knowledge-icon.gif" class="quizImage" style="width: 50px;">
 					<div style="font-weight: bold;" class="itemName">The Basics</div> 
 					<span class="itemDesc">Portal Training</span>
 					<div style="float: right;">
@@ -58,8 +58,8 @@
 					<div class="itemResults">HTML5 Video Stream</div>	
                 </li>
                     							
-                <li class="itemList" >
-					<img src="images/icons/WP7.jpg" class="quizImage">
+                <li class="itemList itemListRecommend" >
+					<img src="images/icons/WP7.jpg" class="quizImage" style="width: 50px;">
 					<div style="font-weight: bold;" class="itemName">Windows Phone 7</div> 
 					<span class="itemDesc">Presenting Training</span>
 					<div style="float: right;">
@@ -81,7 +81,7 @@
 		<!-- Header -->
         <div>
 			<div style="float:left; margin-top: 6px; margin-bottom: 6px;"><h3>My Team</h3></div>
-			<div id="userOrg2" style="float: right;margin-top: 15px; margin-bottom: 5px; color: #EBA555;"></div>
+			<div id="userOrg2" style="float: right;margin: 12px 5px; color: #EBA555; font-weight:bold;"></div>
 			<div style="clear: both;"></div>
 		</div>
         <!-- Content -->
@@ -100,7 +100,7 @@
         <!-- Header -->
 		<div>
 			<div style="float:left; margin-top: 6px; margin-bottom: 6px;"><h3>Knowledge</h3></div>
-			<div style="float: right; margin-top: 5px; margin-bottom: 5px;"><input type="text" placeholder="search knowledge" class="modal-text-input" name="username" value=""></div>
+			<div style="float: right; margin-top: 5px; margin-bottom: 5px;"><input type="text" placeholder="search knowledge.." class="modal-text-input" name="username" value=""></div>
 			<div style="clear: both;"></div>
 		</div>
 		<!-- Content -->
@@ -124,7 +124,7 @@
         <!-- Header -->
     	<div>
 			<div style="float:left; margin-top: 6px; margin-bottom: 6px;"><h3>My Outlets Training</h3></div>
-			<div style="float: right; margin-top: 5px; margin-bottom: 5px;"><input type="text" placeholder="search knowledge" class="modal-text-input" name="username" value=""></div>
+			<div style="float: right; margin-top: 5px; margin-bottom: 5px;"><input type="text" placeholder="search training.." class="modal-text-input" name="username" value=""></div>
 			<div style="clear: both;"></div>
 		</div>
 		<!-- Content -->
@@ -151,7 +151,7 @@
     	<!-- Header -->
         <div>
     		<div style="float:left; margin-top: 6px; margin-bottom: 6px;"><h3>Quiz</h3></div>
-    		<div style="float: right;margin-top: 15px; margin-bottom: 5px; color: #EBA555;">quizzes appear when something important occures</div>
+            <div id="userOrg2" style="float: right;margin: 12px 5px; color: #EBA555; font-weight:bold;">Quizzes appear when you complete events</div>
     		<div style="clear: both;"></div>
     	</div>
         <!-- Content -->
