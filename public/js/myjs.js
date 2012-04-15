@@ -331,16 +331,16 @@
 						console.log ('----- poll('+(new Date()).toString()+') success finished :  for ' + longpollidx +  ' :  response data ' + res.item_type + ' response idx ' + res.index);
 					}, 
 					error: function(XMLHttpRequest, textStatus, errorThrown){
-							console.log ('----- poll() error() : got an error');
 							poll_err = true;
-							$.jGrowl("connection with server lost  (" + JSON.stringify(errorThrown) + ")");
+                            console.log ('----- poll() error() : connection lost, try again : ' + textStatus + ' :: ' + JSON.stringify(errorThrown));
+							$.jGrowl("conecting with server...");
 						}, 
 					dataType: "json",
 		
 					complete: function () {
 							console.log ('----- poll() complete() :  ' + longpollidx +  ' : calling poll again');
-							setTimeout (poll, 5);
-							
+							//setTimeout (poll, 5);
+							poll();
 						}, 
 
 					timeout: 60000 
