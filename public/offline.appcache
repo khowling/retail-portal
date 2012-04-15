@@ -84,3 +84,14 @@ http://localhost:3001/stream
 http://localhost:3001/longpoll
 http://localhost:3001/myfeed
 http://localhost:3001/logon
+http://nokiaknowledge2.herokuapp.com/post
+http://nokiaknowledge2.herokuapp.com/postcomment
+http://nokiaknowledge2.herokuapp.com/feedfile
+http://nokiaknowledge2.herokuapp.com/ajaxlogin
+http://nokiaknowledge2.herokuapp.com/logout
+http://nokiaknowledge2.herokuapp.com/donequiz
+http://nokiaknowledge2.herokuapp.com/booktraining
+http://nokiaknowledge2.herokuapp.com/stream
+http://nokiaknowledge2.herokuapp.com/longpoll
+http://nokiaknowledge2.herokuapp.com/myfeed
+http://nokiaknowledge2.herokuapp.com/logon
