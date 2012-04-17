@@ -303,6 +303,8 @@ function queryAPI (resturl, mbody, httpmethod, callback) {
 };
 
 var hostapp = 'http://nokiaknowledge2.herokuapp.com';
+
+// TO GO INTO MONGODB
 var event_collection = {
 
 	'K000': {
@@ -458,7 +460,7 @@ app.get('/', function(req, res){
 // LOGIN POST
 app.post('/ajaxlogin', function (req,res) {
     var uid = req.body.username;
-    console.log ('ajaxlogin: Attempt to login as ' + uid);
+    console.log ('ajaxlogin: Attempt to login as ' + uid + ', sessionid : ' + req.sessionID);
     
     if (uid) {
 
@@ -503,18 +505,22 @@ app.post('/ajaxlogin', function (req,res) {
                     }
                 }
                 
-                
-                
                 console.log ('/home - got userdata : ' + JSON.stringify(udata));    
                 var sess = req.session;
                 //Properties on req.session are automatically saved on a response
                 sess.username = uid;
                 sess.userdata = udata;  
                 sess.completed_events = udata.completed_events;  
-                var start_idx = event_index -1;
-                createEvents(uid, udata,  null);
-                createTrainings (uid, udata);
-                res.send({ username: uid, userdata: udata, current_index: start_idx});
+                
+//                sess.start_idx = event_index -1;
+//                createEvents(uid, udata,  null);
+//                createTrainings (uid, udata);
+                
+                res.send({ 
+                        username: uid, 
+                        userdata: udata
+//                        current_index: sess.start_idx
+                        });
                
                 return;
            } else {
@@ -527,27 +533,51 @@ app.post('/ajaxlogin', function (req,res) {
     }
 });
 
+app.get('/ajaxlogin', function (req,res) {
+    var uid = req.session.username,
+        udata = req.session.userdata;
+//        start_idx = req.session.start_idx;
+        
+    console.log ('ajaxlogin: checking valid session for ' + uid + ', sessionid : ' + req.sessionID);
+        
+    if (!uid) {
+        // no active session
+		res.send ('Please Login', 400);
+		return;
+	} else {
+	    // got active session
+        req.session = null; // not changing the session
+        
+        res.send({ 
+                username: uid, 
+                userdata: udata, 
+//                current_index: start_idx
+                }); 
+    }
+});
+
 app.get('/logout', function (req,res) {
     req.session.username = null;
     req.session.udata = null;
+    req.session.start_idx = null;
     req.session.destroy();
     res.redirect('/');
     
 });
 
-var event_index = 1;
-var events_by_user = {};
-function createEvents(uid, udata, just_completed) {
-	console.log ('createEvents :' + uid + ', just_completed : ' + just_completed);
-	
+//var event_index = 1;
+//var events_by_user = {};
+function createEvents(uid, udata, just_completed, sid) {
+	console.log ('createEvents :' + uid + ', just_completed (set if just want delta): ' + just_completed);
+	var ret_events = [];
 	for (var i in event_collection) {
 		var e = event_collection[i];
 		console.log ('createEvents : checking item : ' + i);
 		
 		var event = null, 
-				results_data = null,
-				selected = true, 
-				newlyselected = false;
+			results_data = null,
+			selected = true, 
+			newlyselected = false;
 				
 		for (var needtocomplete in e.forwho.completed) {
 			console.log ('createEvents: checking prereq for event, required : ' + needtocomplete + ', is it in ' + JSON.stringify(udata.completed_events) );
@@ -563,59 +593,61 @@ function createEvents(uid, udata, just_completed) {
 		if (((!selected) || (just_completed != null && newlyselected == false))) continue;
 		// 100 points for just getting a new event
 	    //udata.points = udata.points + 50;
-		console.log ('createEvents: points: adding ' + '50' + ', total now : ' + udata.points);
+		//console.log ('createEvents: points: adding ' + '50' + ', total now : ' + udata.points);
 
-		
-		
-		event = {
-			index: event_index++,
-			timestamp: new Date().getTime(),
-			active: true,
-			item_id: i,
-			item_type: e.type,
-			item_data: e,
-			results_data: udata.completed_events[i]
-		};
-		
-			
-		if (!events_by_user[uid])	events_by_user[uid] = [];	
-		events_by_user[uid].push(event);
-		console.log('createEvents: ADDED EVENT [' + event.index +  '] [' + event.item_id +'], results_data ' + results_data  + ', newlyselected : '+ newlyselected);
-	}
+		var event = {
+    //			index: event_index++,
+    //			timestamp: new Date().getTime(),
+    //			active: true,
+    			item_id: i,
+    			item_type: e.type,
+    			item_data: e,
+    			results_data: udata.completed_events[i]
+		    };
+		//if (!events_by_user[uid])	events_by_user[uid] = [];	
+		//events_by_user[uid].push(event);
+//		console.log('createEvents: ADDED EVENT  [' + event.item_id +'], event_data ' + JSON.stringify(event.item_data) + ', results_data ' + JSON.stringify(event.results_data)  + ', newlyselected : '+ newlyselected);
+        ret_events.push (event);
+    }
+    sendEventsToSession(ret_events, sid);
 }
 
-function createTrainings (uid, udata) {
-    console.log ('createTrainings');
+function createTrainings (uid, udata, sid) {
+    console.log ('createTrainings :' + uid);
      queryAPI('query?q='+escape('select Id, Name, Description__c, Start_date__c, Total_Participations__c, TR_Training__r.Content_Reference__c  , Training_Categories__c  from TR_Training_Availability__c where Account__c = \'' + udata.outlet.id + '\''), null, 'GET',  function (results) {
            console.log ('createTrainings: got  query results :' + JSON.stringify(results));
             if (results.totalSize >= 1) {
-
+                var ret_events = [];
                 for (var m in results.records) {
-                   var trec = results.records[m];
-                   var event = {
-                		index: event_index++,
-            			timestamp: new Date().getTime(),
-            			active: true,
-            			item_id: trec.Id,
-            			item_type: 'TRAINING',
-            			item_data: {
-                            name: trec.Name,
-                    		desc: trec.Description__c,
-                			info: trec.Total_Participations__c
-                          },
-            			results_data: udata.booked_training[trec.Id]
-            		};
-                    if (!events_by_user[uid])    events_by_user[uid] = [];	
-            		events_by_user[uid].push(event);
-            		console.log('createTrainings: ADDED EVENT [' + JSON.stringify(event));
+                    var trec = results.records[m];
+                    
+                    var event = {
+    //                		index: event_index++,
+    //            			timestamp: new Date().getTime(),
+    //            			active: true,
+                			item_id: trec.Id,
+                			item_type: 'TRAINING',
+                			item_data: {
+                                name: trec.Name,
+                        		desc: trec.Description__c,
+                    			info: trec.Total_Participations__c
+                                },
+            			    results_data: udata.booked_training[trec.Id]
+            		    };
+//                    if (!events_by_user[uid])    events_by_user[uid] = [];	
+//            		events_by_user[uid].push(event);
+                    console.log('createTrainings: ADDED EVENT [' + JSON.stringify(event));
+                    ret_events.push(event);
                     
                 }
-                notify_long_connection_by_user(uid, udata);
-            
+//              notify_long_connection_by_user(uid, udata);
+                sendEventsToSession(ret_events, sid);
            }
      });
 }
 
+
+/*
 var maxAge = 60;
 function nextEvent(user, lastindexprocessed) {
     if (!events_by_user[user]) return null;
@@ -638,41 +670,12 @@ function nextEvent(user, lastindexprocessed) {
 			}
     }
 }
-
-
-function notify_long_connection_by_user(uid, udata) {	
-	// started notify //
-	if (!long_connections_by_user[uid]) {
-		console.log ("notify_long_connection_by_user: no longpolling requests for " + uid + ", do nothing");
-	} else {
-		for (var i=0; i < long_connections_by_user[uid].length; i++) {
-			var req_info = long_connections_by_user[uid][i];
-			if (!req_info.completed) {
-				
-				console.log ('notify_long_connection_by_user: got active connection for user ' + uid);
-				
-				var event = nextEvent(uid, req_info.lasteventprocessed);
-				console.log ('notify_long_connection_by_user: ' + event);
-				if (event) {
-					console.log ('notify_long_connection_by_user: resume request & send event data' + event.index);
-					
-					clearTimeout(req_info.timeoutid);
-					req_info.completed = true;
-					
-					req_info.request.resume();
-					event.my_points = udata.points;
-                    req_info.request.session = null; // method doesnt update the session
-					req_info.response.send (JSON.stringify(event));
-					
-				}
-			}
-		}
-	}
-}
+*/
 
 var PASS_SCORE = 100;
 app.post('/donequiz', function (req,res) {
     var uid = req.session.username,
+        sid = req.sessionID,
         udata = req.session.userdata;
 	if (!uid) {
 		res.send ('Please Login', 400);
@@ -730,33 +733,34 @@ app.post('/donequiz', function (req,res) {
 
             
     		var event = {
-    			index: event_index++,
-    			timestamp: new Date().getTime(),
-    			active: true,
+//    			index: event_index++,
+//    			timestamp: new Date().getTime(),
+//    			active: true,
     			item_id: qid,
     			item_type: "QUIZ",
     			results_data: alreadydone[qid]
     		};
-    		if (!events_by_user[uid]) events_by_user[uid] = [];	
-    		events_by_user[uid].push(event);
+    		//if (!events_by_user[uid]) events_by_user[uid] = [];	
+    		//events_by_user[uid].push(event);
+            
+            sendEventsToSession([event], sid);
             
             req.session.userdata = udata;  // update the session store with the new values.
             console.log ('/donequiz - udata.completed_events : ' + JSON.stringify(req.session.userdata));
-            res.send({my_points: udata.points});
+            res.send({points: udata.points});
             
-            
-            
+
             if ((!aready_passed) && now_passed) {
         		// just passwd new quiz, hunt for new unlocks!!
-    			createEvents (uid, udata, qid);
+    			createEvents (uid, udata, qid, sid);
     		}
-    		notify_long_connection_by_user(uid, udata);
+    		//notify_long_connection_by_user(uid, udata);
         });
 	} else {
 	
     	// update points in response
         req.session = null;
-    	res.send({my_points: udata.points});
+    	res.send({points: udata.points});
 	}
 });
 
@@ -764,6 +768,7 @@ app.post('/donequiz', function (req,res) {
 
 app.post('/booktraining', function (req,res) {
     var uid = req.session.username,
+        sid = req.sessionID,
         udata = req.session.userdata;
     if (!uid) {
 		res.send ('Please Login', 400);
@@ -773,16 +778,18 @@ app.post('/booktraining', function (req,res) {
 	var tid = req.body.tid,
 		tdate = req.body.tdate;
 
-	console.log ('booktraining: complted quiz:' + tid + ', data : ' + tdate);
+	console.log ('booktraining() complted quiz:' + tid + ', data : ' + tdate);
 	// need to of least tryed one question to register quiz attempt!
 
 		
 		var alreadybooked = udata.booked_training;
         if (!alreadybooked[tid]) { // first atemmpt
+            console.log ('booktraining() first atemmpt');
     		alreadybooked[tid] = { id: "",   type: 'Booked on ' + tdate};
         } else {
             // just update date
-            alreadybooked[tid] = { type: 're-Booked on ' + tdate };
+            console.log ('booktraining() just update date');
+            alreadybooked[tid] = { id: alreadybooked[tid].id, type: 're-Booked on ' + tdate };
         }
         
         // send update to salesforce
@@ -795,7 +802,7 @@ app.post('/booktraining', function (req,res) {
             bdy.Training_Availability__c = tid;
             httpmethod = 'POST';
         }
-        console.log ('/booktraining - ' + sfdc_url + ' : ' + JSON.stringify(bdy));
+        console.log ('booktraining() ' + sfdc_url + ' : ' + JSON.stringify(bdy));
         
         queryAPI(sfdc_url, bdy, httpmethod, function(response) {
             if (response) {
@@ -806,67 +813,105 @@ app.post('/booktraining', function (req,res) {
 
             
     		var event = {
-    			index: event_index++,
-    			timestamp: new Date().getTime(),
-    			active: true,
+//    			index: event_index++,
+//    			timestamp: new Date().getTime(),
+//    			active: true,
     			item_id: tid,
     			item_type: "TRAINING",
     			results_data: alreadybooked[tid]
     		};
-    		if (!events_by_user[uid]) events_by_user[uid] = [];	
-    		events_by_user[uid].push(event);
+    		//if (!events_by_user[uid]) events_by_user[uid] = [];	
+    		//events_by_user[uid].push(event);
+            sendEventsToSession([event], sid);
+            
             
             req.session.userdata = udata;  // update the session store with the new values.
-            console.log ('/donequiz - udata.completed_events : ' + JSON.stringify(req.session.userdata));
-            res.send({my_points: udata.points});
+            console.log ('/booktraining - udata.completed_events : ' + JSON.stringify(req.session.userdata));
+            res.send({points: udata.points});
             
 
-    		notify_long_connection_by_user(uid, udata);
+    		//notify_long_connection_by_user(uid, udata);
         });
 
 });
 
+// If we have a LongPoll request, respond with the events. otherwise add it to the 'temp_events_pending_longpoll' array!
+var temp_events_pending_longpoll = {};
+function sendEventsToSession (events, sid) {
+    console.log ('sendEventsToSession()');
+    var req_info = long_connections_by_session[sid];
+    if (!req_info || req_info.completed) {
+		console.log ('sendEventsToSession() no outstanding longpolling requests for ' + sid + ', store events for pending longpoll');
+        if (!temp_events_pending_longpoll[sid])    
+            temp_events_pending_longpoll[sid] = events;
+        else
+            temp_events_pending_longpoll[sid].push.apply(temp_events_pending_longpoll[sid], events);
+	} else {
+        console.log ('sendEventsToSession() got active connection for user ' + sid + ', sending events');
+
+		clearTimeout(req_info.timeoutid);
+		req_info.completed = true;
+		req_info.request.resume();
+		//event.my_points = udata.points;
+        req_info.request.session = null; // method doesnt update the session
+		req_info.response.send (JSON.stringify(events));
+	}
+}
+
 /**
 * GET handler for retrieving events for the user.
 */
-var long_connections_by_user = {};
+var long_connections_by_session = {};
 app.get('/longpoll/:lasteventprocessed', function (req, res) {
     var uid = req.session.username,
-        udata = req.session.userdata;
+        udata = req.session.userdata,
+        sid = req.sessionID,
+        lasteventprocessed = req.params.lasteventprocessed;
+        
     if (!uid) {
 		res.send ('Please Login', 400);
 		return;
 	} 
     
-	var lasteventprocessed = req.params.lasteventprocessed;
-	console.log ('longpoll(): got request from ' + uid + ' last eventprocessed from url : ' + lasteventprocessed);
+    if (lasteventprocessed == 0) {
+        long_connections_by_session[sid] = null;
+        temp_events_pending_longpoll[sid] = null;
+        createEvents(uid, udata,  null, req.sessionID);
+        createTrainings (uid, udata, req.sessionID);
+    }
+    
+	console.log ('longpoll() got request from ' + uid + ' last eventprocessed from url : ' + lasteventprocessed);
 	// check the required parameters
 
-	var event = nextEvent(uid, lasteventprocessed);
-	if (!event) {
-		console.log ('longpoll(): pause request, no event to send ' + lasteventprocessed);
+    
+	//var event = nextEvent(uid, lasteventprocessed);
+    var events = temp_events_pending_longpoll[sid];
+	if (!events) {
+
+		console.log ('longpoll() pause request, no event to send ' + lasteventprocessed);
 
 		var req_info = { request: req, response: res, lasteventprocessed: lasteventprocessed, completed: false};
 		req_info.timeoutid = setTimeout( function () { 
-			console.log ('longpoll:  timeout pulse');
+			console.log ('longpoll()  timeout pulse');
 			req_info.request.resume();
 			req_info.response.send({item_type: "PULSE"});
 			req_info.completed = true;
 			 }, connectionTimeout * 1000); 
 
-		if (!long_connections_by_user[uid])
-			long_connections_by_user[uid] = [];  
-		long_connections_by_user[uid].push(req_info);
+		//if (!long_connections_by_session[sid])
+		//	long_connections_by_session[sid] = [];  
+		long_connections_by_session[sid] = req_info;
 		req.pause();
-		console.log ('longpoll: stored and paused request');
+		console.log ('longpoll() stored and paused request');
 
 	} else {
-			console.log ('longpoll: got event to send to user');
-			event.my_points =udata.points;
-			//setTimeout (function() {  // ADD A 1 SECOND DELAY - JUST FOR EFFECT!!!
-				res.send(JSON.stringify(event));
-				console.log ('longpoll sent :' + event.index);
-			//}, 1000);
+		console.log ('longpoll() got event to send to user');
+		//event.my_points =udata.points;
+		//setTimeout (function() {  // ADD A 1 SECOND DELAY - JUST FOR EFFECT!!!
+		res.send(JSON.stringify(events));
+		console.log ('longpoll sent :' + JSON.stringify(events));
+        temp_events_pending_longpoll[sid] = null;
+		//}, 1000);
 	}
 });
 

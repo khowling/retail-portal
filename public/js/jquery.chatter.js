@@ -80,13 +80,13 @@
 			// https://github.com/csnover/js-iso8601/blob/master/iso8601.js
 			var struct, minutesOffset = 0;
 			var numericKeys = [ 1, 4, 5, 6, 7, 10, 11 ];
-			// 1 YYYY 2 MM 3 DD 4 HH 5 mm 6 ss 7 msec 8 Z 9 ± 10 tzHH 11 tzmm
+			// 1 YYYY 2 MM 3 DD 4 HH 5 mm 6 ss 7 msec 8 Z 9 ï¿½ 10 tzHH 11 tzmm
 			if (itm.createdDate.match(/\.000\+0000$/)) {
 				itm.createdDate = itm.createdDate.replace(/\.000\+0000$/, '.000Z');
 				//alert ('new string ' + itm.createdDate);
 			}
 			if ((struct = /^(\d{4}|[+\-]\d{6})(?:-(\d{2})(?:-(\d{2}))?)?(?:T(\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{3}))?)?(?:(Z)|([+\-])(\d{2})(?::(\d{2}))?)?)?$/.exec(itm.createdDate))) {
-				// avoid NaN timestamps caused by “undefined” values being passed to Date.UTC
+				// avoid NaN timestamps caused by ï¿½undefinedï¿½ values being passed to Date.UTC
 				for (var i = 0, k; (k = numericKeys[i]); ++i) {
 					struct[k] = +struct[k] || 0;
 				}
@@ -208,8 +208,9 @@
 //					} else { 
 						$("#event-container").empty();
 						$("#event-container").append(
+                            $("<div/>", { "style": "text-align:center;" }).append(
 							$("<img/>", { "style": "max-width: 400px;", "src": image_href}) //.load (function (){
-							);
+							));
 						var tw = getTargetWidth();
 						$("#jdialog").dialog ({ 
 							title: 'View file ' + itm.attachment.title,
@@ -241,7 +242,8 @@
 		}	   
 		var loadfeeds = function () {
 			$.ajax({ 
-				url: _serverurl+'myfeed/' + plugin.settings.feedid, 
+				url: _serverurl+'myfeed/' + plugin.settings.feedid,
+                cache: false,
 				success: function(res){
 					//alert ('got results ' + JSON.stringify(res));
 					//$('#imgCommentNew').attr ({ 'src' : res.me.picture_url });

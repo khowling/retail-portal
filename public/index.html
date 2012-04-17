@@ -1,5 +1,5 @@
 <!doctype html>
-<html manifest="/offline.appcache">
+<html manifest="/offline.appcache.off">
 <head>
 
     <meta name="viewport" content="initial-scale=1, maximum-scale=1">
@@ -40,6 +40,17 @@
     <script>
     
         $(document).ready(function() {
+            
+            if (location.hash && location.hash.length >1) {
+                if (location.hash == '#home' ) {
+                    checklogin( {
+                        serverurl: '/',
+                        targetdiv : $('#main-body')
+                    });
+                };
+                
+            }
+            
             
             if (window.navigator.standalone) {
                 console.log ('offline');

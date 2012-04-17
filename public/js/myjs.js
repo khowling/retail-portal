@@ -8,7 +8,7 @@
 		var _userdata;
 		
         function initPoints () {
-				var slider = $('#slider1').bxSlider({
+				$('#slider1').bxSlider({
 						controls: false,
 						auto: true,
 						pager: true,
@@ -26,11 +26,7 @@
 						}
 					});
 				
-                
-                // LOGIN
-				// $('#login-content').modal( { close : false});
-                
-                
+
 				$('#points-guage').gauge('init', {
 						value: 0,
 						valueFormat: function(a,b){return '';},
@@ -47,31 +43,33 @@
 					});
 				
 				// job queue so points are adding smoothly
-				displaypoints = function  () {
+				/*
+                displaypoints = function  () {
 					//console.log ('incrementpoints: running with index : ' + incrementpoints_idx);
 					var incit = incrementpoints[incrementpoints_idx];
 					if (incit) {
 						//console.log ('incrementpoints: from : ' +incit.from+ ' to : ' + incit.to);
 						incrementpoints_idx++;
-						jQuery(function($) {
-											$('.timer').countTo({
-													from: incit.from,
-													to: incit.to,
-													speed: 1000,
-													refreshInterval: 10,
-													onComplete: function(value) {
-															//console.debug(this);
-													}
-											});
-									});
-						$('#points-guage').gauge('setValue', incit.to); 
+					
 					}
 				}
 				setInterval(displaypoints, 3000);
-				
+				*/
 		
 				return false;
 		};
+        
+        var oldpoints = 0;
+        function setPoints (points) {
+            
+			$('.timer').countTo({
+					from: oldpoints,
+					to: points,
+					speed: 1000,
+					refreshInterval: 10 });
+    		$('#points-guage').gauge('setValue', points); 
+            oldpoints = points;           
+        }
         
         function getTargetWidth() {
             if ($(window).width() <= 480)
@@ -95,9 +93,10 @@
 			}
 			
 			if (kdata.knowledgedata.type == 'HTML5_VIDEO') {
-				var _vLayOut = $("<video/>").attr({"id": "video-container", "height": "300",  "controls": "controls"}).append( 
+				var _vLayOut = $("<div/>", { "style": "text-align:center;" }).append( 
+                    $("<video/>").attr({"id": "video-container", "height": "300",  "controls": "controls"}).append( 
 					$("<source/>").attr({"src": kdata.knowledgedata.url, "type": 'video/mp4'}),
-					$("<span/>").text("Your browser does not support the video tag."));
+					$("<span/>").text("Your browser does not support the video tag.")));
 	            $("#event-container").append(_vLayOut);
             }
 			var tw = getTargetWidth();
@@ -121,7 +120,10 @@
 			
 		}
         
-		function launchquiz (quizid, itemdata) {
+		function launchquiz (e) {
+            var quizid = e.data.itm;
+			var itemdata = e.data.itmdata;
+            
 			var options = {
 				title: itemdata.name,
 				intro: '<p>' + itemdata.intro  +
@@ -135,6 +137,7 @@
 							$.post( _serverurl+'donequiz', { id: quizid,  score: quizInfo.score, quesTried: quizInfo.quesTried},
 								function( data ) {
 										//$.modal.close();
+                                        setPoints(data.points);
                                         $("#jdialog").dialog( "close" );
 								});
 						}
@@ -190,20 +193,20 @@
 					 events: [
 							{
 								title  : itemdata.name,
-								start  : '2012-03-19 12:30:00',
-								end    : '2012-03-19 14:30:00',
+								start  : '2012-04-16 12:30:00',
+								end    : '2012-04-16 14:30:00',
 								allDay : false // will make the time show
 							},
 							{
 								title  : itemdata.name,
-								start  : '2012-03-21 15:30:00',
-								end    : '2012-03-21 17:30:00',
+								start  : '2012-04-18 15:30:00',
+								end    : '2012-04-18 17:30:00',
 								allDay : false // will make the time show
 							},
 							{
 								title  : itemdata.name,
-								start  : '2012-03-23 09:30:00',
-								end    : '2012-03-23 11:30:00',
+								start  : '2012-04-20 09:30:00',
+								end    : '2012-04-20 11:30:00',
 								allDay : false // will make the time show
 							}
 						],
@@ -211,12 +214,12 @@
             
 						if (confirm('Event: ' + calEvent.title + ' on '+ calEvent.start +' would you like to book?')) {
 							$(this).css('border-color', 'red');
-								alert ('posting ' + tid + ' : ' + calEvent.start);
-								$.post( _serverurl+'booktraining', { tid: tid, tdate: calEvent.start},
-    								function() {
-										$("#event-container").empty();
-    									$("#jdialog").dialog( "close" );
-    								});
+							//alert ('posting ' + tid + ' : ' + calEvent.start);
+							$.post( _serverurl+'booktraining', { tid: tid, tdate: calEvent.start.toString()},
+								function() {
+									$("#event-container").empty();
+									$("#jdialog").dialog( "close" );
+								});
 
 						}
 
@@ -256,9 +259,9 @@
 		
         
         
-		var mypoints = 0;
-		var incrementpoints = [];
-		var incrementpoints_idx = 0;
+		//var mypoints = 0;
+		//var incrementpoints = [];
+		//var incrementpoints_idx = 0;
 		
 
 		
@@ -274,61 +277,64 @@
 					url: _serverurl+'longpoll/' + longpollidx, 
 					cache: false,
 					success: function(res){
-						console.log ('----- poll('+(new Date()).toString()+') success : poll response for ' + longpollidx +  ' :  response data ' + res.item_type + ' response idx ' + res.index);
-						if (res.item_type == 'QUIZ' || res.item_type == 'KNOWLEDGE' || res.item_type == 'TRAINING') {
-							console.log ('----- poll('+(new Date()).toString()+') got event, incrementing lasteventprocessed to : ' +  res.index);
-							lasteventprocessed = res.index;
-
-							var itemid = $('#' + res.item_id);
-							if (itemid.length == 0) {
-								// not on the page, create!
-								if (res.item_type == 'QUIZ') {
-									itemid = $('#quiz-template').clone().attr({"id": res.item_id }).removeAttr("style").appendTo("#quizList").on('click', function(e) {
-										launchquiz (res.item_id, res.item_data);
-										 return false;
-									}).find(".itemName").text(res.item_data.name).end().find(".itemDesc").text(res.item_data.desc).end();
-
-								} else if (res.item_type == 'KNOWLEDGE') {
-									
-									if (!res.item_data.icon)  res.item_data.icon = 'images/icons/knowledge-icon.gif';
-									itemid = $('#knowledge-template').clone().attr({"id": res.item_id }).removeAttr("style").appendTo("#knowledgeList").on('click', {itm: res.item_id, itmdata: res.item_data}, launchknowledge)
-										.find(".itemName").text(res.item_data.name).end().find(".itemDesc").text(res.item_data.desc).end()
-										.find(".itemResults").text(res.item_data.info).end()
-										.find(".quizImage").attr({"src": res.item_data.icon}).end()
-										.find(".knowRating").jRating({type: "small", isDisabled: true, defaultscore: 40});								
-								} else if (res.item_type == 'TRAINING') {
-    								itemid = $('#training-template').clone().attr({"id": res.item_id }).removeAttr("style").appendTo("#trainingList").on('click', {itm: res.item_id, itmdata: res.item_data}, launchtraining)
-										.find(".itemName").text(res.item_data.name).end().find(".itemDesc").text(res.item_data.desc).end();
-								}
-								
-							}
-							if (res.item_type == 'QUIZ') {
-								if (res.results_data) {
-									$(itemid).find(".itemResults").text('attp: ' + res.results_data.attempts + ' | first attempt (best) '+res.results_data.score+'% ('+res.results_data.bestscore+'%)').end();
-									if (res.results_data.passed) {
-										$(itemid).find(".quizPass").removeAttr("style");
-									}
-								} else {
-									$.jGrowl("<p>New " + res.item_type + " for you<\p>" + res.item_data.name);
-									$(itemid).find(".itemResults").text(res.item_data.points + ' points available!').end();
-								}
-							} else if (res.item_type == 'TRAINING') {
-    							if (res.results_data) {
-                                    //alert ('training results data :' + res.item_id + ' : ' + JSON.stringify(res.results_data));
-									$(itemid).find(".itemResults").text(res.results_data.type);
-									$(itemid).find(".quizPass").show();
-									//$(itemid).find("img.onclick_trainingFeed").click ({itm: res.item_id}, trainingfeed);
-								} else {
-									$.jGrowl("<p>New " + res.item_type + " for you<\p>" + res.item_data.name);
-									$(itemid).find(".itemResults").text('click for more information and to book a place!').end();
-								}
-							}
-					
-							incrementpoints.push( { from: mypoints, to: res.my_points });
-							mypoints = res.my_points;
-
-						}
-						console.log ('----- poll('+(new Date()).toString()+') success finished :  for ' + longpollidx +  ' :  response data ' + res.item_type + ' response idx ' + res.index);
+						console.log ('----- poll('+(new Date()).toString()+') success() poll response for ' + longpollidx);
+                        lasteventprocessed++;
+                        for (var i in res) {
+                            var event = res[i];
+                            console.log ('----- poll('+(new Date()).toString()+') success() poll :  response data ' + event.item_type + ' response idx ' + event.item_id);
+    						if (event.item_type == 'QUIZ' || event.item_type == 'KNOWLEDGE' || event.item_type == 'TRAINING') {
+    							console.log ('----- poll('+(new Date()).toString()+') got event, incrementing lasteventprocessed to : ' +  event.index);
+    						    // lasteventprocessed = res.index;
+    
+    							var itemid = $('#' + event.item_id);
+    							if (itemid.length == 0) {
+    								// not on the page, create!
+    								if (event.item_type == 'QUIZ') {
+    									itemid = $('#quiz-template').clone().attr({"id": event.item_id }).removeAttr("style").appendTo("#quizList").on('click', {itm: event.item_id, itmdata: event.item_data}, launchquiz )
+                                            .find(".itemName").text(event.item_data.name).end().find(".itemDesc").text(event.item_data.desc).end();
+    
+    								} else if (event.item_type == 'KNOWLEDGE') {
+    									
+    									if (!event.item_data.icon)  event.item_data.icon = 'images/icons/knowledge-icon.gif';
+    									itemid = $('#knowledge-template').clone().attr({"id": event.item_id }).removeAttr("style").appendTo("#knowledgeList").on('click', {itm: event.item_id, itmdata: event.item_data}, launchknowledge)
+    										.find(".itemName").text(event.item_data.name).end().find(".itemDesc").text(event.item_data.desc).end()
+    										.find(".itemResults").text(event.item_data.info).end()
+    										.find(".quizImage").attr({"src": event.item_data.icon}).end()
+    										.find(".knowRating").jRating({type: "small", isDisabled: true, defaultscore: 40});								
+    								} else if (event.item_type == 'TRAINING') {
+        								itemid = $('#training-template').clone().attr({"id": event.item_id }).removeAttr("style").appendTo("#trainingList").on('click', {itm: event.item_id, itmdata: event.item_data}, launchtraining)
+    										.find(".itemName").text(event.item_data.name).end().find(".itemDesc").text(event.item_data.desc).end();
+    								}
+    								
+    							}
+    							if (event.item_type == 'QUIZ') {
+    								if (event.results_data) {
+    									$(itemid).find(".itemResults").text('attp: ' + event.results_data.attempts + ' | first attempt (best) '+event.results_data.score+'% ('+event.results_data.bestscore+'%)').end();
+    									if (event.results_data.passed) {
+    										$(itemid).find(".quizPass").removeAttr("style");
+    									}
+    								} else {
+    									$.jGrowl("<p>New " + event.item_type + " for you<\p>" + event.item_data.name);
+    									$(itemid).find(".itemResults").text(event.item_data.points + ' points available!').end();
+    								}
+    							} else if (event.item_type == 'TRAINING') {
+        							if (event.results_data) {
+                                        //alert ('training results data :' + res.item_id + ' : ' + JSON.stringify(res.results_data));
+    									$(itemid).find(".itemResults").text(event.results_data.type);
+    									$(itemid).find(".quizPass").show();
+    									//$(itemid).find("img.onclick_trainingFeed").click ({itm: res.item_id}, trainingfeed);
+    								} else {
+    									$.jGrowl("<p>New " + event.item_type + " for you<\p>" + event.item_data.name);
+    									$(itemid).find(".itemResults").text('click for more information and to book a place!').end();
+    								}
+    							}
+    					
+    							//incrementpoints.push( { from: mypoints, to: event.my_points });
+    							//mypoints = event.my_points;
+    
+    						}
+                        }
+						console.log ('----- poll('+(new Date()).toString()+') success finished :  for ' + longpollidx);
 					}, 
 					error: function(XMLHttpRequest, textStatus, errorThrown){
 							poll_err = true;
@@ -350,70 +356,95 @@
 		}
         
         
+        
+// JAVASCRIPT WIZDOM
+// By declaring the function literal in the same scope as the 'e' local variable, 
+// the function becomes a closure that has access to that local variable.
+
 	function logmein(e) {
 	
-			_serverurl = e.data.serverurl;
-			$.support.cors = true;
-			// if ('undefined' !== typeof netscape) netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
-			$.post(_serverurl+'ajaxlogin',{username: e.data.username , password: e.data.password} ,
-				function(data) {
-					console.log ('returned from the server ' + JSON.stringify(data));
-					if (data.username) {
-						_userdata = data.userdata;
-
-						if (e.data.targetdiv) {
-							e.data.targetdiv.empty();
-							var urltarget = _serverurl+'home.html';
-							console.log ('loading ' + urltarget);
-							e.data.targetdiv.load (urltarget, function() {
-	 
-								$('body').removeAttr('style');
-								$('#myuserName').text( _userdata.fullname);
-								$('#myimage').attr ({'src': _userdata.picture_url});
-								$('#myoutletimage').attr ({'src': _userdata.outlet.picture_url});
-								$('#userOrg1').text( _userdata.outlet.name);
-								$('#userOrg2').text( _userdata.outlet.name);
-
-								
-								initPoints ();
-								
-								$('#chatterdiv').chatter({
-									serverurl: _serverurl,
-									feedid: 'me',
-									fullname: _userdata.fullname,
-									user_pic: _userdata.picture_url,
-									outlet: _userdata.outlet.name,
-									feedtopostid: _userdata.outlet.id
-								});
-								console.log ('addEventListener deviceready');
-								document.addEventListener("deviceready", function() { console.log ('deviceready'); $('#chatterdiv').data('chatter').setmobileattachments(); } , false);
-								
-								
-								$(window).resize(function() {
-									if ($("#jdialog").dialog( "isOpen" )) {
-										$("#jdialog").dialog("option", "position", "center");
-										var cw = $("#jdialog").dialog( "option", "width" );
-										var tw = getTargetWidth();
-										if (cw != tw) 
-											$("#jdialog").dialog( "option", "width", tw );
-									}
-					
-								});
-			
-								if (data.current_index > 0) {
-									lasteventprocessed = data.current_index;
-								}
-								//alert ('launching poll with ' + lasteventprocessed);
-								poll();
-								
-							});
-						}
-
-					} else {
-						$('#logerrors').text (data.message);
-					 }
-				}, 'json').error(function(e) { $('#logerrors').text("POST error " + JSON.stringify(e)); });
-			  return false;
+    	_serverurl = e.data.serverurl;
+    	$.support.cors = true;
+    	// if ('undefined' !== typeof netscape) netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
+    	$.post(_serverurl+'ajaxlogin',{username: e.data.username , password: e.data.password} , function(data) { showhome(data, e.data); }, 'json')
+            .error(function(e) { $('#logerrors').text(e.responseText); });
+        return false;
 	 }
+     
+
+    function checklogin(e) {
+	
+    	_serverurl = e.serverurl;
+    	$.support.cors = true;
+    	$.get(_serverurl+'ajaxlogin', function(data) { showhome(data, e); }, 'json')
+            .error(function(e) { $('#logerrors').text(e.responseText); });
+        return false;
+	}
+     
+     
+    function showhome (serverdata, localdata) {
+    	console.log ('returned from the server ' + JSON.stringify(serverdata));
+        
+    	if (serverdata.username) {
+    		_userdata = serverdata.userdata;
+    
+    		if (localdata.targetdiv) {
+    			localdata.targetdiv.empty();
+    			var urltarget = _serverurl+'home.html';
+    			console.log ('loading ' + urltarget);
+    			localdata.targetdiv.load (urltarget, function() {
+    
+                    location.hash = 'home';
+                    
+    				$('body').removeAttr('style');
+    				$('#myuserName').text( _userdata.fullname);
+    				$('#myimage').attr ({'src': _userdata.picture_url});
+    				$('#myoutletimage').attr ({'src': _userdata.outlet.picture_url});
+    				$('#userOrg1').text( _userdata.outlet.name);
+    				$('#userOrg2').text( _userdata.outlet.name);
+    
+    				
+    				initPoints ();
+                    //incrementpoints.push( { from: mypoints, to: _userdata.points });
+        			//mypoints = _userdata.points;
+                    
+                    setPoints(_userdata.points);
+    				
+    				$('#chatterdiv').chatter({
+    					serverurl: _serverurl,
+    					feedid: 'me',
+    					fullname: _userdata.fullname,
+    					user_pic: _userdata.picture_url,
+    					outlet: _userdata.outlet.name,
+    					feedtopostid: _userdata.outlet.id
+    				});
+    				console.log ('addEventListener deviceready');
+    				document.addEventListener("deviceready", function() { console.log ('deviceready'); $('#chatterdiv').data('chatter').setmobileattachments(); } , false);
+    				
+    				
+    				$(window).resize(function() {
+    					if ($("#jdialog").dialog( "isOpen" )) {
+    						$("#jdialog").dialog("option", "position", "center");
+    						var cw = $("#jdialog").dialog( "option", "width" );
+    						var tw = getTargetWidth();
+    						if (cw != tw) 
+    							$("#jdialog").dialog( "option", "width", tw );
+    					}
+    	
+    				});
+    
+    				//if (serverdata.current_index > 0) {
+    				//	lasteventprocessed = serverdata.current_index;
+    				//}
+    				//alert ('launching poll with ' + lasteventprocessed);
+    				poll();
+    				
+    			});
+    		}
+    
+    	} else {
+    		$('#logerrors').text (serverdata.message);
+        }
+    }
             
             
