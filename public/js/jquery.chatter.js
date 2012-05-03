@@ -22,19 +22,21 @@
 	
 		//alert (JSON.stringify (options));
 		var defaults = {};
-        var plugin = this;
+    var plugin = this;
 		
 
-        plugin.settings = {};
+    plugin.settings = {};
 		plugin.feedmembers = {};
+		
 
-        var $element = $(element),
-             element = element;
+    var $element = $(element),
+        element = element;
 
-        var init = function() {
-            plugin.settings = $.extend({}, defaults, options);
+    var init = function() {
+      plugin.settings = $.extend({}, defaults, options);
 			
 			_serverurl = plugin.settings.serverurl;
+			plugin.lastitemdate = null;
 			
 			// delegated events : html doesnt need to be on the page
 			$element.on('click', 'a.lnkfileUpload', compUploadClick);  
@@ -43,6 +45,7 @@
 			$element.on('change', 'input.fplUpload' , getNameFromPath);
 			$element.on('click', 'input.imgBtnShareFrmComp' , addPostingWithPic);
 			$element.on('click', 'input.imgbtnFrmSP' , imgbtnShare_Click);
+			$element.on('click', 'div.newFeedItemsMessage' , loadfeeds);
 			
 			$element.load (_serverurl+'chat.html', function () {
 
@@ -52,9 +55,10 @@
 				$(".click_filterVisibility",$element).on ('click' , filterVisibility);
 				// NEW COMMENT 
 				$("img.imgCommentNew", $element).attr ({'src' : plugin.settings.user_pic});
-				loadfeeds(plugin.settings.feedid);
+				loadfeeds();
+//				setInterval (checkfornewfeeds, 20 *1000);
 			});
-        }
+    }
 
 		   
 		// private properties and methods
@@ -63,6 +67,43 @@
 		var filterVisibility = function () {
 			$("div.drop_down_listMyChatter", $element).toggle();
 		}
+		var parseChatterDate = function (strdate) {
+				
+				var debugs = 'string : '  + strdate;
+				var timestamp = new Date(Date.parse(strdate));
+				//alert ('parsing : ' + itm.createdDate + ', standard function = ' + timestamp.toString());
+				// https://github.com/csnover/js-iso8601/blob/master/iso8601.js
+				var struct, minutesOffset = 0;
+				var numericKeys = [ 1, 4, 5, 6, 7, 10, 11 ];
+				// 1 YYYY 2 MM 3 DD 4 HH 5 mm 6 ss 7 msec 8 Z 9 � 10 tzHH 11 tzmm
+				if (strdate.match(/\.000\+0000$/)) {
+					strdate = strdate.replace(/\.000\+0000$/, '.000Z');
+					//alert ('new string ' + itm.createdDate);
+				}
+				if ((struct = /^(\d{4}|[+\-]\d{6})(?:-(\d{2})(?:-(\d{2}))?)?(?:T(\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{3}))?)?(?:(Z)|([+\-])(\d{2})(?::(\d{2}))?)?)?$/.exec(strdate))) {
+					// avoid NaN timestamps caused by �undefined� values being passed to Date.UTC
+					for (var i = 0, k; (k = numericKeys[i]); ++i) {
+						struct[k] = +struct[k] || 0;
+					}
+	
+					// allow undefined days and months
+					struct[2] = (+struct[2] || 1) - 1;
+					struct[3] = +struct[3] || 1;
+	
+					if (struct[8] !== 'Z' && struct[9] !== undefined) {
+						minutesOffset = struct[10] * 60 + struct[11];
+	
+						if (struct[9] === '+') {
+							minutesOffset = 0 - minutesOffset;
+						}
+					}
+					
+					timestamp = new Date(Date.UTC(struct[1], struct[2], struct[3], struct[4], struct[5] + minutesOffset, struct[6], struct[7]));
+					debugs += '\n UTC ' + struct[1] + ' : ' + struct[2]+ ' : ' + struct[3] + ' : ' +  struct[4] + ' : ' + struct[5]+ ' : ' + struct[6] + ' : ' + struct[7] + ' :DATE: ' + timestamp.toString() + ' :NOW: ' + new Date().toString();
+				}
+				return timestamp;
+		}
+		
 		var processsfdcfeeditem = function  (itm) {
 			//console.log ('processsfdcfeeditem :' + itm.body.text);
 			var posttxt = itm.body.text.split(": ");
@@ -74,43 +115,14 @@
 				var pauthor = posttxt[0];
 				ret = { pic: plugin.feedmembers[pauthor].pic, author: pauthor, ptxt: posttxt[1] };
 			} 
-			var debugs = 'string : '  + itm.createdDate;
-			var timestamp = new Date(Date.parse(itm.createdDate));
-			//alert ('parsing : ' + itm.createdDate + ', standard function = ' + timestamp.toString());
-			// https://github.com/csnover/js-iso8601/blob/master/iso8601.js
-			var struct, minutesOffset = 0;
-			var numericKeys = [ 1, 4, 5, 6, 7, 10, 11 ];
-			// 1 YYYY 2 MM 3 DD 4 HH 5 mm 6 ss 7 msec 8 Z 9 � 10 tzHH 11 tzmm
-			if (itm.createdDate.match(/\.000\+0000$/)) {
-				itm.createdDate = itm.createdDate.replace(/\.000\+0000$/, '.000Z');
-				//alert ('new string ' + itm.createdDate);
-			}
-			if ((struct = /^(\d{4}|[+\-]\d{6})(?:-(\d{2})(?:-(\d{2}))?)?(?:T(\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{3}))?)?(?:(Z)|([+\-])(\d{2})(?::(\d{2}))?)?)?$/.exec(itm.createdDate))) {
-				// avoid NaN timestamps caused by �undefined� values being passed to Date.UTC
-				for (var i = 0, k; (k = numericKeys[i]); ++i) {
-					struct[k] = +struct[k] || 0;
-				}
-
-				// allow undefined days and months
-				struct[2] = (+struct[2] || 1) - 1;
-				struct[3] = +struct[3] || 1;
-
-				if (struct[8] !== 'Z' && struct[9] !== undefined) {
-					minutesOffset = struct[10] * 60 + struct[11];
-
-					if (struct[9] === '+') {
-						minutesOffset = 0 - minutesOffset;
-					}
-				}
-				
-				timestamp = new Date(Date.UTC(struct[1], struct[2], struct[3], struct[4], struct[5] + minutesOffset, struct[6], struct[7]));
-				debugs += '\n UTC ' + struct[1] + ' : ' + struct[2]+ ' : ' + struct[3] + ' : ' +  struct[4] + ' : ' + struct[5]+ ' : ' + struct[6] + ' : ' + struct[7] + ' :DATE: ' + timestamp.toString() + ' :NOW: ' + new Date().toString();
-			}
-
+			var timestamp = parseChatterDate(itm.createdDate);
+			if (plugin.lastitemdate == null || plugin.lastitemdate < timestamp) plugin.lastitemdate = timestamp;
 			ret.ctime = $.cuteTime({}, timestamp.toString());// + ' ::: ' + debugs;  
 			ret.id = itm.id;
 			return ret;
-		}	   
+		}
+		
+		
 		var newfeeddom = function  (itm) {
 			//console.log ('newfeeddom');
 			var post = processsfdcfeeditem(itm);
@@ -199,9 +211,9 @@
 				.find('label.lblFileName').text(itm.attachment.title).end()
 				//.find('a.aFileName').attr('src', image_href).end()  // Doesnt work
 				.find('label.lblFileDesc').text(itm.attachment.description).end()
-				.find('.imgFile').click(function () {
+				.find('.imgFile, .aFileName').click(function () {
 					
-					console.log ('userAgent : ' + navigator.userAgent);
+						console.log ('userAgent : ' + navigator.userAgent);
 //					if (navigator.userAgent.indexOf('WP7') != -1 || navigator.userAgent.indexOf('Windows Phone') != -1) {
 //						console.log ('opening ' + image_href);
 //						window.open(image_href);  // doesnt work - x-domain request!
@@ -220,7 +232,7 @@
 								$(this).closest('.ui-dialog').find('.ui-dialog-titlebar-close').show();
 							}
 						});
-					
+						return false; 
 //					}
 				});
 			}
@@ -239,20 +251,53 @@
 				.find('.commentCreatedDate').text(cmt.ctime).end();
 			//alert ('created new comment com' + commenttr.html());
 			return commenttr;
-		}	   
-		var loadfeeds = function () {
+		}	 
+		var checkfornewfeeds = function() {
 			$.ajax({ 
 				url: _serverurl+'myfeed/' + plugin.settings.feedid,
                 cache: false,
 				success: function(res){
-					//alert ('got results ' + JSON.stringify(res));
-					//$('#imgCommentNew').attr ({ 'src' : res.me.picture_url });
+						if (res.feed.items.length >0) {
+
+							for (var idx in res.feed.items) {
+								var itm = res.feed.items[idx];
+								if (parseChatterDate(itm.createdDate) > plugin.lastitemdate) {
+									$('div.newFeedItemsMessage', $element).show();
+									return;
+								}
+								if (itm.comments.total >0){
+									var comments = itm.comments.comments;
+									for (var cidx in comments) {
+										var cmt = comments[cidx];
+										if (parseChatterDate(cmt.createdDate) > plugin.lastitemdate) {
+											$('div.newFeedItemsMessage', $element).show();
+											return;
+										}
+									}
+								}	
+							}
+						}
+					}
+			});
+		}
+		var loadfeeds = function () {
+			$('div.feed-loading', $element).show();
+			$('div.newFeedItemsMessage', $element).hide();
+			
+			var teamlistUl = $('ul.team-list', $element);
+			teamlistUl.empty();
+			$('tr.feed-post', $element).remove();
+			
+			$.ajax({ 
+				url: _serverurl+'myfeed/' + plugin.settings.feedid,
+                cache: false,
+				success: function(res){
+
+					$('div.feed-loading', $element).hide();
+					$('table.feed-table', $element).show();
 					
 					if (res.team) {
-						var teamlistUl = $('ul.team-list', $element);
-						//$('#selected_feed').text(res.team.outlet.name);
-						//$('#option1_feed').text(res.team.outlet.name);
-						
+
 						plugin.feedmembers = res.team.outlet_team;
 						for (var name in res.team.outlet_team) {
 							var tm = res.team.outlet_team[name];
@@ -274,9 +319,7 @@
 							//alert ('creating new feed dom for ' + JSON.stringify(itm));
 							var newpost = newfeeddom (itm);
 							
-							
-							var nocomments = itm.comments.total;
-							if (nocomments >0){
+							if (itm.comments.total >0){
 								// SHOW THE COMMENT DIV HOLDER! 
 								newpost.find('div.comment_feedback').show();
 								var comments = itm.comments.comments;

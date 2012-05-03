@@ -1,6 +1,44 @@
+<style>
+.feed-inner {
+	padding: 30px 50px;
+	background-color: white;
+	-webkit-border-radius: 0 0 5px 5px;
+	-moz-border-radius: 0 0 5px 5px;
+	border-radius: 0 0 5px 5px;
+}
+.loading {
+	background: url(images/loader.gif) center center no-repeat;
+	display: block;
+	width: 32px;
+	height: 32px;
+	margin: 0 auto;
+}
+.newFeedItemsMessage {
+	background-color: #FFFFDC;
+	border-color: #FCEEB4;
+	border-style: solid;
+	border-width: 1px;
+	color: black;
+	cursor: pointer;
+	line-height: 23px;
+	margin: 4px 3px 20px 0px;
+	padding: 0 14px;
+	whitespace: normal;
+	-moz-border-radius: 5px 5px 5px 5px;
+	text-align: center;
+}
+
+
+</style>
 
 <div class="main" id="divMain">
 
+	<div class="feed-loading" style="display: none;">
+		<div class="feed-inner">
+			<span class="loading" title="Loading..."></span>
+		</div>
+	</div>
+        
 	<!-- MY TEAM -->
 	<ul class="team-list" style="padding-left: 0px;">            
 	</ul>
@@ -407,7 +445,22 @@
 				</div>
 			</div>
 -->
-			<table class="feed-table" style="display: block;">
+
+
+        <div class="feed-loading" style="display: none;">
+          <div class="feed-inner">
+            <span class="loading" title="Loading..."></span>
+          </div>
+        </div>
+
+        <div style="cursor: pointer;" class="newFeedItemsMessage" style="display: block;">
+        		<a>You have new updates</a>
+        </div>
+        
+        
+        
+
+			<table class="feed-table" style="display: none;">
 				<tbody style="display: block;">
 					<tr class="feed-post-template" style="display: none;">
 						<td style="display: block; width: 100%;">
