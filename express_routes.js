@@ -1,6 +1,9 @@
 var rest = require('restler'),
     mongodb = require('mongodb'),
-    gridform = require('gridform'); // https://github.com/aheckmann/gridform
+    ObjectID = require('mongodb').ObjectID,
+    gridform = require('gridform'),
+    formidable = require('formidable'),
+    gridstream = require('gridfs-stream'); // https://github.com/aheckmann/gridform
 
 module.exports = function(app, collections){
     
@@ -10,52 +13,120 @@ module.exports = function(app, collections){
 ////////////////////////////////////////////////////////////////////////////////////////////////////////   
 
 app.get ('/profile', function(req,res) {
-    var uid = req.session.username,
-        udata = req.session.userdata;
+    var uid = req.session.userid,
+        udata = req.session.userdata || {};
         
-    if (!uid) {
-        res.send ('Please Login', 400);
-        return;
-    }   
+    console.log ('/profile uid ['+uid+'] : ' + JSON.stringify (udata));
     collections.groups_collection.find().toArray( function (err, groups) {
         console.log ('/profile groups : ' + JSON.stringify (groups));
         //res.render('profile.ejs', { layout: false, locals: {  feedid: whatid, udata: udata } });
-        res.render('profile.ejs', { locals: {  me: udata, groups: groups } });
+        res.render('profile.hogan', { layout: false, locals: {  me: udata, groups: groups } });
 	});
 });
 
 app.get('/media/:filename', function (req,res) {
-    var gs = new mongodb.GridStore(collections.db, req.params.filename, 'r');
+    var gs = new mongodb.GridStore(collections.db, new ObjectID(req.params.filename), 'r');
     gs.open(function(err, gs){
         gs.stream([autoclose=false]).pipe(res);
     });
-    
-    
-    
+
 });
 
 app.post ('/profile', function(req,res) {
     
+    /*
     var options = { db: collections.db };
     var form = gridform(options);
+    */
 
-      // parse normally
-    form.parse(req, function (err, fields, files) {
+    var uid = new ObjectID ();
+
+    var incomingForm = new formidable.IncomingForm();
+
+    // overwrite this method if you are interested in directly accessing the multipart stream
+    incomingForm.onPart = function(part) {
+        
+        console.log ('/profile onPart, partname : ['+part.name+'], part.filename :  ' + part.filename);
+        if (part.filename === undefined) {
+            // let formidable handle all non-file parts
+            return incomingForm.handlePart(part);
+        }
+ 
+        var form = this;
+        form._flushing++;
+        
+        
+        // open gridFS write Stream
+        var filename = 'profile-pic'+uid;
+        var options = {mode: 'w', content_type: part.mime};
+        if (form.chunk_size) options.chunk_size = this.chunk_size;
+        if (form.root) options.root = this.root;
+        if (form.metadata) options.metadata = this.metadata;
+        console.log ('/profile onPart  open gridFS ['+filename+']  : options : ' + options ); 
+        var grid_ws = gridstream(collections.db).createWriteStream(options);
+        
+        form.emit('fileBegin', part.name, grid_ws);
+        
+        /*
+        var gridOnDrain = function() { 
+            console.log ('/profile grid_ws.drain : resuming form');
+            form.resume();
+        }
+        grid_ws.on('drain', gridOnDrain);
+        */
+        
+        var partOnData = function(buffer) {
+            console.log ('/profile part.data:   pause form & write to grid');
+            //form.pause();
+            grid_ws.write(buffer);
+        };
+        part.on('data', partOnData);
+        
+        part.once('end', function  () {
+            console.log ('/profile part.end:  got end');
+            part.removeListener('data', partOnData);
+            //grid_ws.removeListener('drain', gridOnDrain);
+            grid_ws.once('drain', function (err) {
+                console.log ('/profile part.end: final grid_ws.drain:  ' + err);
+                if (err) return form.emit('error', err = err);
+
+                form._flushing--;
+                form.emit('file', 'fileid', grid_ws.id);
+                form._maybeEnd();
+              });
+            console.log ('/profile part.end:  end grid_ws');
+            grid_ws.end();
+          });
+    }
+
+    // we disabled the bodyParser for multipart, so using formidable to stream the data to mongo gridFS
+    incomingForm.parse(req, function (err, fields, files) {
     
-        console.log ('/profile fields ' + JSON.stringify(fields));
-        console.log ('/profile file [' + err + '] ' + JSON.stringify(files));
+        console.log ('/profile parse fields ' + JSON.stringify(fields));
+        console.log ('/profile parse file [' + err + '] ' + JSON.stringify(files));
         
         var user =  {
+            _id: uid,
             username : fields["user[email]"],
     		fullname: fields["user[name]"],
     		points: 0,
     		belongs_to_primary: fields["user[location]"],
             desc:  fields["user[description]"],
-            picture_url: files["profile_image[uploaded_data]"]["name"]
+            picture_url: '/media/'+files["fileid"],
+            completed_events: {},
+    	    booked_training: {}
         };
     
+        
         collections.users_collection.insert (user, function(err, docs) {
-            res.redirect('/');
+            console.log ('/profile parse, saved user, send response redirect');
+            
+            collections.groups_collection.findOne({_id: user.belongs_to_primary}, function(err, item) {
+                user.outlet = item;
+                req.session.userid = user._id;
+        		req.session.userdata = user;  
+                res.redirect('/#home');
+            });
         })
     
     });
@@ -90,25 +161,27 @@ app.post ('/profile', function(req,res) {
 
 // LOGIN POST
 app.post('/ajaxlogin', function (req,res) {
-    var uid = req.body.username;
-    console.log ('ajaxlogin: Attempt to login as ' + uid + ', sessionid : ' + req.sessionID);
+    var uname = req.body.username;
+    console.log ('ajaxlogin: Attempt to login as ' + uname + ', sessionid : ' + req.sessionID);
     
-    if (uid) {
-        collections.users_collection.findOne({username:uid}, function(err, item) {
-    			if (err || !item) {
+    if (uname) {
+        collections.users_collection.findOne({username: uname}, function(err, user) {
+    			if (err || !user) {
     				res.send({
-    					message: 'username not found (ensure Contact exists with username in PortalID__c field): ' + uid
+    					message: 'username not found: ' + uname
     					});
     			} else {
-						console.log ('/home - got userdata : ' + JSON.stringify(item));    
-						var sess = req.session;
-						//Properties on req.session are automatically saved on a response
-						sess.username = item.username;
-						sess.userdata = item;  
-						res.send({ 
-							username: item.username, 
-							userdata: item
-							});
+						console.log ('/home - got userdata : ' + JSON.stringify(user));  
+                        collections.groups_collection.findOne({_id: new ObjectID (user.belongs_to_primary)}, function(err, item) {
+                            user.outlet = item;
+    						//Properties on req.session are automatically saved on a response
+    						req.session.userid = user._id;
+    						req.session.userdata = user;  
+    						res.send({ 
+    							username: user._id, 
+    							userdata: user
+    							});
+                        });
 					}
 				return;
     	
@@ -185,7 +258,7 @@ app.post('/ajaxlogin', function (req,res) {
 });
 
 app.get('/ajaxlogin', function (req,res) {
-    var uid = req.session.username,
+    var uid = req.session.userid,
         udata = req.session.userdata;
 //        start_idx = req.session.start_idx;
         
@@ -208,9 +281,6 @@ app.get('/ajaxlogin', function (req,res) {
 });
 
 app.get('/logout', function (req,res) {
-    req.session.username = null;
-    req.session.udata = null;
-    req.session.start_idx = null;
     req.session.destroy();
     res.redirect('/');
     
@@ -223,7 +293,7 @@ app.get('/logout', function (req,res) {
 
 app.post ('/post/:what', function (req,res) {
     console.log ('/post/:what' + req.params.what + ' : ' + req.body.me);
-    var uid = req.session.username,
+    var uid = req.session.userid,
         udata = req.session.userdata,
         whatid = req.params.what,
         files = req.files,
@@ -284,7 +354,7 @@ app.post ('/post/:what', function (req,res) {
 
 app.post ('/postcomment', function (req,res) {
     
-    var uid = req.session.username,
+    var uid = req.session.userid,
          udata = req.session.userdata;
          
     if (!uid) {
@@ -302,7 +372,7 @@ app.post ('/postcomment', function (req,res) {
 });
 
 app.get ('/feedfile', function(req,res) {
-    var uid = req.session.username,
+    var uid = req.session.userid,
         what = req.query.what,
         mt = req.query.mt;
         
@@ -357,7 +427,7 @@ app.get ('/chat/:what', function(req,res) {
 });
 */
 app.get ('/myfeed/:what', function (req,res) {
-    var uid = req.session.username,
+    var uid = req.session.userid,
         udata = req.session.userdata,
         whatid = req.params.what;
         
@@ -463,7 +533,7 @@ app.get ('/myfeed/:what', function (req,res) {
 
 var PASS_SCORE = 100;
 app.post('/donequiz', function (req,res) {
-    var uid = req.session.username,
+    var uid = req.session.userid,
         sid = req.sessionID,
         udata = req.session.userdata;
     if (!uid) {
@@ -485,7 +555,7 @@ app.post('/donequiz', function (req,res) {
         collections.events_collection.findOne({_id: qid}, function(err, record) {
     		var alreadydone = udata.completed_events;
     		var points_award = 0;
-            
+
     		if (!alreadydone[qid]) { // first atemmpt
     			alreadydone[qid] = { id: "", passed: now_passed, score: score, attempts: 1, bestscore: score};
     			points_award = score * record.points/100;
@@ -498,8 +568,8 @@ app.post('/donequiz', function (req,res) {
     			alreadydone[qid].attempts = alreadydone[qid].attempts + 1;
     			alreadydone[qid].bestscore = Math.max(alreadydone[qid].bestscore, score);
     			if (!aready_passed) alreadydone[qid].passed = now_passed;
-    		} 
-    
+    		}
+
     		console.log ('donequiz: create results event ' + JSON.stringify(alreadydone[qid]));
     		// create event to register new results of quiz
             
@@ -691,7 +761,7 @@ function sendEventsToSession (events, sid) {
 
 var connectionTimeout = 25; // always send a empty '200' reponse to each open request after 60seconds.
 app.get('/longpoll/:lasteventprocessed', function (req, res) {
-    var uid = req.session.username,
+    var uid = req.session.userid,
         udata = req.session.userdata,
         sid = req.sessionID,
         lasteventprocessed = req.params.lasteventprocessed;

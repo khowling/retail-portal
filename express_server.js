@@ -6,6 +6,7 @@ as long as our module doesn't expose anything, 'require' isn't very useful. To e
 */
 
 var express = require('express'), // web framework
+    expressHogan = require('express-hogan.js'),
     url = require('url'), // process the environment URLS
     mongodb = require('mongodb'), // https://github.com/christkv/node-mongodb-native
     db_url = url.parse(process.env.MONGO_DB),
@@ -27,8 +28,7 @@ var collections = {
 var amqp_connection = amqp.createConnection({ host: 'localhost', port : 5672}).on('ready', function () {
     var e = amqp_connection.exchange('longpolls', { type: 'fanout' }, function (exchange) {
         console.log('Exchange longpolls created ' + exchange.name + ' is open');
-        
-        
+
         collections.longpoll_exchange = exchange;
         // publish using 
         // longpoll_exchange.publish ('#', {m: 'keiths message ' + i}, { contentType: 'application/json'});
@@ -126,29 +126,31 @@ db_connector.open(function(err, db) {
         
         // Order of these middlewares is VERY important!
         app.configure(function(){
-            
+
             // serve the static resources
             app.use(express.static(__dirname + '/public'));    // middleware for static resources
-            
+
             // log the incoming request (not for static resources)
             app.use(express.logger());
-            
+
             // process the cookies on the request
             app.use(express.cookieParser());
-            
+
             // set the request 'session' property
             app.use(express.session({
               	secret: "genhashfromthis",
            		store: mstore
         	}));  // middleware for session management
-            
+
             // middleware for parsing a POST body into 'req.body'
             app.use(express.bodyParser()); 
+            // DELETE THE default bodyParser logic for multipart data, as it creates a file on the filesystem, and we want to create a mongo gridfs file.
             delete express.bodyParser.parse['multipart/form-data'];
 
             
             // set the views
             app.set('views', __dirname + '/views');
+            app.register('.hogan', expressHogan);
 
             // lastly, match the request with the defined routes
             require('./express_routes')(app, collections);
