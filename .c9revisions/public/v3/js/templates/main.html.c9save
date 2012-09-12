@@ -1,0 +1,2 @@
+{"ts":1346685221576,"silentsave":true,"restoring":false,"patch":[[]],"length":0}
+{"contributors":[],"silentsave":false,"ts":1346685234809,"patch":[[{"diffs":[[1,"<h3>Template says: <%= model.message %></h3>"]],"start1":0,"start2":0,"length1":0,"length2":44}]],"length":44,"saved":false}

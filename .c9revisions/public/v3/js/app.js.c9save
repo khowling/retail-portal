@@ -1,0 +1,2 @@
+{"ts":1346684795722,"silentsave":true,"restoring":false,"patch":[[]],"length":0}
+{"contributors":[],"silentsave":false,"ts":1346684804420,"patch":[[{"diffs":[[1,"// This is the main entry point for the App\ndefine(['routers/home'], function(router){\n    var init = function(){\n\t\tthis.router = new router();\n\t};\n\n\treturn { init: init};\n});"]],"start1":0,"start2":0,"length1":0,"length2":175}]],"length":175,"saved":false}

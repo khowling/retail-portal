@@ -1,0 +1,71 @@
+
+<div class="well">
+<form name="Regform" class="form-horizontal" ng-controller="RegisterCtrl">
+  <legend>User Details</legend>
+  
+  <div class="control-group">
+    <label class="control-label" for="inputEmail">Pic</label>
+    <div class="controls">
+      <input id="lefile" type="file" style="display:none"></input>
+      <a style="cursor: pointer;" onclick="$('input[id=lefile]').click();">
+      <img src="http://www.placehold.it/140x140" class="img-rounded">
+      </a>
+    </div>
+  </div>
+  
+  <div class="control-group" ng-class="{error: Regform.email.$invalid}">
+    <label class="control-label" for="inputEmail">Email</label>
+    <div class="controls">
+      <div class="input-prepend">
+          <span class="add-on"><i class="icon-envelope"></i></span>
+          <input ng-model="Register.Email" name="email" type="email" placeholder="Email" required>
+    </div>
+    </div>
+  </div>
+  <div class="control-group" ng-class="{error: Regform.username.$invalid}">
+    <label class="control-label" for="inputUsername">Username</label>
+    <div class="controls">
+      <input type="text" ng-model="Register.Username" ng-minlength="5"
+       ng-maxlength="20" name="username" placeholder="Username" required>
+    </div>
+  </div>
+  
+  <div class="control-group">
+    <label class="control-label" for="inputPassword">Organization</label>
+    <div class="controls">
+      <select ng-model="Register.Organization"  placeholder="Organization">
+          <option>1</option>
+          <option>2</option>
+          <option>3</option>
+          <option>4</option>
+          <option>5</option>
+      </select>
+    </div>
+  </div>
+  
+  
+  <div class="control-group">
+    <label class="control-label" for="inputPassword">Password</label>
+    <div class="controls">
+      <input type="password" ng-model="Register.Password" placeholder="Password">
+    </div>
+  </div>
+ 
+  <div class="control-group">
+    <label class="control-label" for="inputPassword">Bio</label>
+    <div class="controls">
+      <textarea rows="3" ng-model="Register.Bio" placeholder="Bio"></textarea>
+    </div>
+  </div>
+
+  
+  <div class="control-group">
+    <div class="controls">
+      <a href="#/" class="btn">Cancel</a>
+      <button ng-click="save()" ng-disabled="Regform.$invalid"
+          class="btn btn-primary">Save</button>
+          
+    </div>
+  </div>
+</form>
+</div>

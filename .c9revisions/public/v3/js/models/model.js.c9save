@@ -1,0 +1,2 @@
+{"ts":1346685070638,"silentsave":true,"restoring":false,"patch":[[]],"length":0}
+{"contributors":[],"silentsave":false,"ts":1346685077798,"patch":[[{"diffs":[[1,"define(['jquery', 'backbone', 'underscore'], function($, Backbone, _){\n    var Model = Backbone.Model.extend({});\n\n\treturn Model;\n});"]],"start1":0,"start2":0,"length1":0,"length2":133}]],"length":133,"saved":false}
