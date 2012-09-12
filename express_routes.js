@@ -159,6 +159,7 @@ app.post ('/profile', function(req,res) {
 });
 
 
+
 // LOGIN POST
 app.post('/ajaxlogin', function (req,res) {
     var uname = req.body.username;
@@ -280,9 +281,49 @@ app.get('/ajaxlogin', function (req,res) {
     }
 });
 
+app.get('/login-oauth/:provider', function (req, res) {
+    // We have nothing - redirect to the Authorization Server
+    req.session.oauth_state = req.url;
+    var oauthURL = "https://" + process.env.SFDC_HOSTNAME + "/services/oauth2/authorize?response_type=code&" +
+        "client_id=" + process.env.CLIENT_ID + "&redirect_uri=" + "http://localhost:" + (process.env.PORT || 3001) + "/auth-callback" + "&display=touch";
+    console.log('redirecting: '+oauthURL);
+	res.redirect(oauthURL);  // Redirect to salesforce.com
+	res.end();
+});
+
+app.get('/auth-callback', function (req, res) {
+    if (req.query.code){
+        // Callback from the Authorization Server
+        console.log('code: '+req.query.code);
+        
+        rest.post("https://" + process.env.SFDC_HOSTNAME +'/services/oauth2/token', {
+            data: { 
+                code: req.query.code,
+                grant_type: 'authorization_code',
+                client_id: process.env.CLIENT_ID,
+                redirect_uri: "http://localhost:" + (process.env.PORT || 3001) + "/auth-callback",
+                client_secret: process.env.CLIENT_SECRET
+            },
+            }).on('complete', function(data, response) {
+              if (response.statusCode == 200) {
+                req.session.oauth = data;
+                //state = req.session.oauth_state;
+                //delete req.session.oauth_state;
+                //console.log('oauth done - redirecting to '+state);
+            	res.redirect('/v3');
+              }
+            }).on('error', function(e) {
+    			  console.error(e);
+    		});
+    }
+});
+                
+
 app.get('/logout', function (req,res) {
+    console.error('logout called');
     req.session.destroy();
-    res.redirect('/');
+    //res.redirect('/');
+    res.end();
     
 });
 
